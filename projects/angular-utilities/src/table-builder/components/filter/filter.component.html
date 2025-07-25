@@ -1,0 +1,81 @@
+<mat-card appearance="outlined" class="filter-card" *ngIf="filter">
+  <mat-card-content>
+    <form #form="ngForm"  (keydown.enter)="onEnter(form.value,$event)" (keydown.escape)="close.emit()">
+      <input type="hidden" name="filterId" [ngModel]="filter.filterId" />
+      <input type="hidden" name="key" [ngModel]="filter.key" />
+      <input type="hidden" name="fieldType" [ngModel]="filter.fieldType" />
+      <div class="head-row" >
+        <h4 class="filter-name">{{(filter.key | spaceCase)}} Filter</h4>
+        <button class="cancel-button small-button" color="primary" mat-icon-button (click)="close.emit();" type="button"
+            matTooltip="Close">
+          <mat-icon class="cancel-button" color="primary">close</mat-icon>
+        </button>
+      </div>
+      <div class="filter-row">
+          <div class="inline">
+            <mat-form-field class="my-filter" >
+                <mat-select  placeholder="Select Filter Type" name="filterType"  [(ngModel)]="currentFilterType" >
+                    <mat-option *ngFor="let kvp of  filterTypes[filter.fieldType] | keyvalue " [value]="$any(kvp.value)[0]">
+                        {{ kvp.key }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+          </div>
+          <ng-container [ngSwitch]="true">
+              <ng-container *ngSwitchCase="filter.fieldType === FieldType.String || filter.fieldType === FieldType.Array || filter.fieldType === FieldType.Link ||
+                                            filter.fieldType === FieldType.Unknown || filter.fieldType === FieldType.PhoneNumber" >
+                  <ng-container *ngTemplateOutlet="String"></ng-container>
+              </ng-container>
+              <ng-container   *ngSwitchCase="filter.fieldType === FieldType.Number || filter.fieldType === FieldType.Currency">
+                  <tb-number-filter [info]="filter" [CurrentFilterType]="currentFilterType!" ></tb-number-filter>
+              </ng-container>
+              <ng-container  *ngSwitchCase="filter.fieldType === FieldType.Boolean">
+                <ng-container   *ngTemplateOutlet="Boolean"></ng-container>
+              </ng-container>
+              <ng-container *ngSwitchCase="filter.fieldType === FieldType.Date">
+                  <tb-date-filter [info]="filter" [CurrentFilterType]="currentFilterType!"></tb-date-filter>
+              </ng-container>
+              <ng-container *ngSwitchCase="filter.fieldType === FieldType.DateTime">
+                <tb-date-time-filter [info]="filter" [CurrentFilterType]="currentFilterType!"></tb-date-time-filter>
+              </ng-container>
+              <ng-container *ngSwitchCase='filter.fieldType === FieldType.Enum' >
+                <ng-container  *ngTemplateOutlet="Enum"></ng-container>
+              </ng-container>
+          </ng-container>
+          <mat-radio-group name="filterValue" [ngModel]="filter.filterValue" *ngIf="currentFilterType === FilterType.IsNull">
+            <mat-radio-button [value]="true">True</mat-radio-button>
+            <mat-radio-button [value]="false">False</mat-radio-button>
+          </mat-radio-group>
+      </div>
+      <button mat-button (click)="state.addFilter(form.value)" disableRipple [disabled]="form.value.filterValue==undefined || !form.value.filterType">
+        Apply
+      </button>
+    
+    
+    <ng-template #String>
+    <mat-form-field class="my-filter" *ngIf="currentFilterType !== FilterType.IsNull && currentFilterType !== FilterType.In">
+      <input matInput name="filterValue" [ngModel]="filter.filterValue" />
+    </mat-form-field>
+    <ng-container *ngIf="currentFilterType === FilterType.In">
+      <lib-in-filter [type]="FieldType.String" name='filterValue' [(ngModel)]="filter.filterValue" ></lib-in-filter>
+    </ng-container>
+    </ng-template>
+    
+    <ng-template #Boolean >
+    <div class="switch" [ngSwitch]="currentFilterType">
+      <div class="switch" *ngSwitchCase="FilterType.BooleanEquals">
+        <mat-radio-group name="filterValue" [ngModel]="filter.filterValue" >
+          <mat-radio-button [value]="true" preventEnter>True</mat-radio-button>
+          <mat-radio-button [value]="false" preventEnter>False</mat-radio-button>
+        </mat-radio-group>
+      </div>
+    </div>
+    </ng-template>
+    <ng-template #Enum>
+      <ng-container *ngIf='currentFilterType === FilterType.In' >
+        <tb-in-list-filter [key]='filter.key' name='filterValue' [(ngModel)]='filter.filterValue' ></tb-in-list-filter>
+      </ng-container>
+    </ng-template>
+    </form>
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,92 @@
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.menu-icon{
+  font-size: 16px;
+  line-height: 16px;
+  vertical-align: top;
+  height: 16px;
+  width: 16px;
+}
+.search-icon{
+  margin-right: 16px;
+  vertical-align: middle;
+  height: 24px;
+  color: rgba(0,0,0,.54);
+  font-size: 21px;
+  line-height: 1.125
+}
+.font{
+  font-size: 14px;
+}
+.filter-radio-button:first-of-type{
+  padding-left: 0;
+}
+.filter-radio-button{
+  padding: 10px 40px;
+  min-width: 110px;
+}
+.auto-width {
+  width: 260px;
+  margin: 5px;
+  display: block;
+  height: 55px;
+}
+
+
+.open-menu-icon-button{
+  height: 28px;
+  width: 28px;
+  padding: 6px;
+}
+.header-filter-icon-button {
+  height: 18px;
+  width: 18px;
+  font-size: 18px;
+  padding: 0;
+  margin: 0 2px;
+
+  ::ng-deep * {
+    line-height: initial;
+    font-size: initial;
+    height: 18px;
+    width: 18px;
+    font-size: 18px;
+    bottom: initial;
+
+  }
+
+  &.chosen-icon,
+  &.chosen-icon ::ng-deep * {
+    height: 22px;
+    width: 22px;
+    font-size: 22px;
+    color: green;
+  }
+}
+mat-icon.mat-icon.suffix-icons.underline{
+  height: 20px;
+  text-decoration: underline 0.1px solid;
+  .chosen-icon &{
+    height: 24px;
+  }
+}
+::ng-deep.mat-mdc-form-field-icon-prefix:has(.tb-header-prefix), .tb-header-prefix{
+  padding: 0;
+  flex-basis: 36%;
+}
+.tb-header-filter ::ng-deep.mat-mdc-form-field-subscript-wrapper{
+  line-height: 0;
+  &::before{
+    height: 0;
+  }
+}
+.date-toggle ::ng-deep svg{
+  position: absolute;
+  left: 0;
+  top: 0;
+}

@@ -1,0 +1,26 @@
+.wide-menu {
+  width: 200px !important;
+}
+
+.header-wrapper{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width:100%;
+}
+
+
+.flx-row-end{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.flat-menu{
+  line-height: initial;
+  height: initial;
+}
+
+
+

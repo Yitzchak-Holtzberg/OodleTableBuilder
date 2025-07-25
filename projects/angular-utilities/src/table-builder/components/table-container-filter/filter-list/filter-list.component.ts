@@ -1,0 +1,39 @@
+import { Component } from '@angular/core';
+import { TableStore } from '../../../classes/table-store';
+import { CustomFilter, FilterInfo, isFilterInfo } from '../../../classes/filter-info';
+import { map } from 'rxjs/operators';
+import { WrapperFilterStore } from '../table-wrapper-filter-store';
+import { Observable } from 'rxjs';
+
+@Component({
+    selector: 'lib-filter-list',
+    templateUrl: './filter-list.component.html',
+    styleUrls: ['../gen-filter-displayer/gen-filter-displayer.component.css'],
+    standalone: false
+})
+export class FilterChipsComponent {
+
+  constructor( public tableState: TableStore, private filterStore : WrapperFilterStore) {
+  }
+
+    filters$: Observable<FilterInfo<any>[]> = this.tableState.filters$.pipe(
+      map( filters => Object.values(filters)
+                        .filter(isFilterInfo)
+                        .filter( f => !f._isExternalyManaged)
+      )
+    );
+
+    deleteByIndex(index: number) {
+      this.filterStore.deleteByIndex(index);
+    }
+
+    addFilter(filter:FilterInfo<any>){
+      this.filterStore.addFilter(filter);
+    }
+
+    clearAll() {
+        this.filterStore.clearAll();
+    }
+
+    currentFilters$ = this.filterStore.currentFilters$;
+}

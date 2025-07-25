@@ -1,0 +1,24 @@
+<ng-container *ngIf="CurrentFilterType !== FilterType.DateBetween && CurrentFilterType !== FilterType.IsNull">
+  <mat-form-field>
+      <input matInput name="filterValue" [ngModel]="info.filterValue" [matDatepicker]="cal"/>
+      <mat-datepicker-toggle class="small-button date-toggle" matSuffix [for]="cal" preventEnter></mat-datepicker-toggle>
+      <mat-datepicker #cal></mat-datepicker>
+  </mat-form-field>
+</ng-container>
+
+<ng-container *ngIf="CurrentFilterType === FilterType.DateBetween">
+  <ng-container ngModelGroup="filterValue">
+    <mat-form-field class="my-filter" >
+      <input matInput name="Start" [ngModel]="info.filterValue?.Start"  placeholder="From" [matDatepicker]="fromVal"
+          (click)="fromVal.open()"/>
+      <mat-datepicker-toggle matSuffix class="small-button date-toggle" [for]="fromVal" preventEnter></mat-datepicker-toggle>
+      <mat-datepicker #fromVal></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput name="End" [ngModel]="info.filterValue?.End"  placeholder="To" [matDatepicker]="toVal" (click)="toVal.open()"/>
+      <mat-datepicker-toggle matSuffix class="small-button date-toggle" [for]="toVal" preventEnter></mat-datepicker-toggle>
+      <mat-datepicker #toVal></mat-datepicker>
+    </mat-form-field>
+  </ng-container>
+</ng-container>
+

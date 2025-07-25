@@ -1,0 +1,37 @@
+.filter {
+    margin: 15px;
+    display: inline-block;
+}
+.filter-button {
+    color: cornflowerblue;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.cancel-button  {
+  margin-right: 30px;
+  font-weight: 700;
+}
+.filter-wrapper{
+  margin-top: 1em;
+  margin-bottom: 1em;
+  float: right;
+}
+.menu {
+    margin-bottom: 10px;
+    width: 109.1%;
+}
+
+.filter-labels {
+    color: cornflowerblue;
+    font-size: 17px;
+    font-weight: 600;
+}
+.float{
+  position: absolute;
+  width: fit-content;
+  z-index: 101;
+  top: 10px;
+  right: 180px;
+  max-width: 90vw;
+}

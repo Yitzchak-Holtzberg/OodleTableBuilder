@@ -1,0 +1,21 @@
+<ng-template #link  let-element='element' let-metaData='metaData' let-transform='transform'>
+  <tb-link-column [element]="element" [metaData]="metaData" [transform]="transform"></tb-link-column>
+</ng-template>
+
+<ng-template #imageUrl  let-element='element' let-metaData='metaData'>
+  <span>
+    <img src="{{element[metaData.key]}}" height="75px" width="75px" />
+  </span>
+</ng-template>
+
+<ng-template #array let-element='element' let-metaData='metaData'>
+  <tb-array-column [array]='element[metaData.key]' [metaData]='metaData'></tb-array-column>
+</ng-template>
+
+<ng-template #default let-element='element' let-metaData='metaData' let-transform='transform' >
+  <span>{{ transform | func : element }}</span>
+</ng-template>
+
+<ng-template #defaultWithIcon let-element='element' let-metaData='metaData' let-transform='transform' >
+  <mat-icon>{{ transform | func : element }}</mat-icon>
+</ng-template>
