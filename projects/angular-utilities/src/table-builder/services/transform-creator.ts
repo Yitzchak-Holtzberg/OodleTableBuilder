@@ -1,4 +1,4 @@
-import { PipeTransform, Inject, Injectable } from '@angular/core';
+import { PipeTransform, Injectable, inject } from '@angular/core';
 import { FieldType, MetaData } from '../interfaces/report-def';
 import { DatePipe, CurrencyPipe } from '@angular/common';
 import { PhoneNumberPipe } from '../../utilities/pipes/phone.pipe';
@@ -13,13 +13,12 @@ export function isPipe(o : any ): o is PipeTransform {
   providedIn:  'root',
 })
 export class TransformCreator {
-  constructor(
-    private datePipe: DatePipe,
-    private currencyPipe: CurrencyPipe,
-    private phonePipe: PhoneNumberPipe,
-    private casePipe: SpaceCasePipe,
-    @Inject(TableBuilderConfigToken) private config: TableBuilderConfig,
-  ) {}
+  private datePipe = inject(DatePipe);
+  private currencyPipe = inject(CurrencyPipe);
+  private phonePipe = inject(PhoneNumberPipe);
+  private casePipe = inject(SpaceCasePipe);
+  private config = inject<TableBuilderConfig>(TableBuilderConfigToken);
+
   createTransformer(metaData: MetaData): ((value: any, ...args: any[]) => any)  {
     const defaultFunc = (value: any) => get( value, metaData.key);
     if(metaData.transform) {

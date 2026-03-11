@@ -1,5 +1,5 @@
 <ng-template #link  let-element='element' let-metaData='metaData' let-transform='transform'>
-  <tb-link-column [element]="element" [metaData]="metaData" [transform]="transform"></tb-link-column>
+  <tb-link-column [element]="element" [metaData]="metaData" [transform]="transform" />
 </ng-template>
 
 <ng-template #imageUrl  let-element='element' let-metaData='metaData'>
@@ -9,7 +9,7 @@
 </ng-template>
 
 <ng-template #array let-element='element' let-metaData='metaData'>
-  <tb-array-column [array]='element[metaData.key]' [metaData]='metaData'></tb-array-column>
+  <tb-array-column [array]='element[metaData.key]' [metaData]='metaData' />
 </ng-template>
 
 <ng-template #default let-element='element' let-metaData='metaData' let-transform='transform' >

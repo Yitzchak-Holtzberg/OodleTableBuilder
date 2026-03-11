@@ -15,7 +15,7 @@ import { RequestStateOptions } from '../types';
         <ng-container *httpErrorState='let error' >error {{error}}</ng-container>
     </div>
     `,
-    standalone: false
+    imports: [HttpRequestModule]
 }) export class TestHttpRequestStateDirectiveComponent {
   constructor(public requestState: HttpRequestStateStore<any, any>) { }
 }
@@ -37,10 +37,9 @@ describe('Request State Directive', () => {
   beforeEach(() => {
     requestState = new MockHttpRequestState<string>();
     fixture = TestBed.configureTestingModule({
-      declarations: [TestHttpRequestStateDirectiveComponent],
-      providers: [{ provide: HttpRequestStateStore, useValue: requestState }],
-      imports: [HttpRequestModule]
-    }).createComponent(TestHttpRequestStateDirectiveComponent);
+    providers: [{ provide: HttpRequestStateStore, useValue: requestState }],
+    imports: [HttpRequestModule, TestHttpRequestStateDirectiveComponent]
+}).createComponent(TestHttpRequestStateDirectiveComponent);
   });
 
   it('should begin with the state of not started', () => {

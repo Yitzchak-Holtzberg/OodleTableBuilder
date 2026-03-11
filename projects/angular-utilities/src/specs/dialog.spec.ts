@@ -18,7 +18,7 @@ import { MatButtonHarness } from "@angular/material/button/testing";
       <button mat-button (click)='close()' >close</button>
     </ng-container>
     `,
-    standalone: false
+    imports: [MatDialogModule, MatButtonModule]
 }) export class TestComponent {
   subject = new Subject();
 }
@@ -32,14 +32,11 @@ let loader: HarnessLoader;
 beforeEach(
   waitForAsync(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatDialogModule, NoopAnimationsModule, MatButtonModule],
-      declarations: [
-        TestComponent,
-        DialogDirective,
-        DialogWrapper,
-    ],
-    providers: [ DialogService ]
-    }).compileComponents();
+    imports: [MatDialogModule, NoopAnimationsModule, MatButtonModule, TestComponent,
+        DialogDirective],
+    declarations: [DialogWrapper],
+    providers: [DialogService]
+}).compileComponents();
     fixture = TestBed.createComponent(TestComponent);
     fixture.detectChanges();
     loader = TestbedHarnessEnvironment.documentRootLoader(fixture);

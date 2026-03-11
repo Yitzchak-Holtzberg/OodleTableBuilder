@@ -1,15 +1,10 @@
-import { ContentChildren, Directive, Input, Output, QueryList } from "@angular/core";
+import { ContentChildren, Directive, Output, QueryList, input } from "@angular/core";
 import { MatSlideToggle } from "@angular/material/slide-toggle";
 import { merge, Observable, ReplaySubject, scan, startWith, switchMap } from "rxjs";
 
 
-@Directive(
-  {
-    selector: '[opMatSlideToggleGroup]',
-    standalone: false
-}
-) export class MatSlideToggleGroupDirective  {
-  @Input() allowMultiple = false;
+@Directive({ selector: '[opMatSlideToggleGroup]' }) export class MatSlideToggleGroupDirective  {
+  readonly allowMultiple = input(false);
 
   _toggles!: QueryList<MatSlideToggle>;
   @ContentChildren(MatSlideToggle) set toggles(val: QueryList<MatSlideToggle>) {
@@ -44,7 +39,7 @@ import { merge, Observable, ReplaySubject, scan, startWith, switchMap } from "rx
       scan( (prev,cur) => {
         const toggleName = cur.source.name!;
         const newVal = {...prev,[toggleName]:cur.checked};
-        if(cur.checked && !this.allowMultiple) {
+        if(cur.checked && !this.allowMultiple()) {
           Object.keys(prev)
             .filter( key => key !== toggleName && prev[key])
             .forEach( key => {

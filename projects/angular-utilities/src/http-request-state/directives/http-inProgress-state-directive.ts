@@ -3,10 +3,7 @@ import { HttpStateDirectiveBase } from './HttpStateDirectiveBase';
 import { HttpRequestState, HttpRequestStatus } from '../types'
 
 
-@Directive({
-    selector: '[httpInProgressState]',
-    standalone: false
-})
+@Directive({ selector: '[httpInProgressState]' })
 export class HttpInProgressStateDirective  extends HttpStateDirectiveBase {
     render = (state: HttpRequestState<any>) => {
         if(state.status === HttpRequestStatus.inProgress){

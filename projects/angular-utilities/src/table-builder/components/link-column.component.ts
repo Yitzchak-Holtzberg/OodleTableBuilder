@@ -1,34 +1,39 @@
-import { Component, Input } from "@angular/core";
+import { Component, input, inject } from "@angular/core";
 import { TableStore } from "../classes/table-store";
 import { MetaData } from "../interfaces/report-def";
+import { LetDirective } from "@ngrx/component";
+import { RouterLink } from "@angular/router";
+import { FunctionPipe } from "../../utilities/pipes/function.pipe";
 
 @Component({
     selector: "tb-link-column",
     template: `
-  <ng-container *ngrxLet="(link | func : (metaData)) as linkInfo">
-    <a *ngIf="$any(linkInfo).useRouterLink; else hrefLink" target="{{$any(linkInfo).target}}"
-      [routerLink]=" [($any(linkInfo).link | func : element)]"
-      [queryParams]="$any(linkInfo).routerLinkOptions.queryParams | func : element"
-      [fragment]="$any(linkInfo).routerLinkOptions.fragment"
-      [preserveFragment]="$any(linkInfo).routerLinkOptions.preserveFragment"
-      [queryParamsHandling]="$any(linkInfo).routerLinkOptions.queryParamsHandling"
-    >
-      {{transform | func : element}}
-    </a>
-    <ng-template #hrefLink>
+  <ng-container *ngrxLet="(link | func : (metaData())) as linkInfo">
+    @if ($any(linkInfo).useRouterLink) {
       <a target="{{$any(linkInfo).target}}"
-        href="{{($any(linkInfo).link | func : element)}}">
-        {{transform | func : element}}
+        [routerLink]=" [($any(linkInfo).link | func : element())]"
+        [queryParams]="$any(linkInfo).routerLinkOptions.queryParams | func : element()"
+        [fragment]="$any(linkInfo).routerLinkOptions.fragment"
+        [preserveFragment]="$any(linkInfo).routerLinkOptions.preserveFragment"
+        [queryParamsHandling]="$any(linkInfo).routerLinkOptions.queryParamsHandling"
+        >
+        {{transform() | func : element()}}
       </a>
-    </ng-template>
+    } @else {
+      <a target="{{$any(linkInfo).target}}"
+        href="{{($any(linkInfo).link | func : element())}}">
+        {{transform() | func : element()}}
+      </a>
+    }
   </ng-container>
   `,
-    standalone: false
+    imports: [LetDirective, RouterLink, FunctionPipe]
 })export class LinkColumnComponent {
-  @Input() metaData!: MetaData;
-  @Input() element!: any;
-  @Input() transform = (a:any)=>a;
-  constructor(protected store: TableStore) {  }
+  protected store = inject(TableStore);
+
+  readonly metaData = input.required<MetaData>();
+  readonly element = input.required<any>();
+  readonly transform = input((a: any) => a);
   link =  (metaData : MetaData) => this.store.getLinkMap(metaData);
 
 }

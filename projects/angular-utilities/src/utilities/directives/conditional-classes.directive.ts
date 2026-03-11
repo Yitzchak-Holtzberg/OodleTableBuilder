@@ -1,25 +1,23 @@
-import { Directive, ElementRef, Input, Renderer2, SimpleChanges } from '@angular/core';
+import { Directive, ElementRef, Renderer2, SimpleChanges, input, inject } from '@angular/core';
 import { Dictionary, Predicate } from '@ngrx/entity';
 
-@Directive({
-    selector: '[conditionalClasses]',
-    standalone: false
-})
+@Directive({ selector: '[conditionalClasses]' })
 export class ConditionalClassesDirective {
+  private el = inject(ElementRef);
+  private renderer = inject(Renderer2);
 
-  constructor(private el: ElementRef, private renderer: Renderer2) {
-  }
 
- @Input() element?: any;
- @Input('conditionalClasses') classes?: Dictionary<Predicate<any>>;
+ readonly element = input<any>();
+ readonly classes = input<Dictionary<Predicate<any>>>(undefined, { alias: "conditionalClasses" });
 
  classesApplied: string[] = [];
 
  ngOnChanges(changes: SimpleChanges) {
   let toApply: string [] = [];
-  if(this.classes) {
-    toApply = Object.keys(this.classes)
-    .filter( key => this.classes![key]!(this.element) );
+  const classes = this.classes();
+  if(classes) {
+    toApply = Object.keys(classes)
+    .filter( key => this.classes()![key]!(this.element()) );
   }
 
   var classesNotYetApplied = toApply.filter( c => !this.classesApplied.includes(c) );

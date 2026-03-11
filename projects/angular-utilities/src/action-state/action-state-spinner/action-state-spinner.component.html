@@ -1,3 +1,5 @@
-<div id="blocker" *ngIf="(serverActionStatus$ | async)?.status === serverStatusTypes.inProgress">
-  <mat-spinner class="spinner" [diameter]="200"></mat-spinner>
-</div>
+@if ((serverActionStatus$ | async)?.status === serverStatusTypes.inProgress) {
+  <div id="blocker">
+    <mat-spinner class="spinner" [diameter]="200"></mat-spinner>
+  </div>
+}

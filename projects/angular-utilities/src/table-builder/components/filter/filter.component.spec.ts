@@ -36,19 +36,19 @@ describe('filter component', () => {
   beforeEach(() => {
 
     TestBed.configureTestingModule({
-      declarations: [FilterComponent, DatePipe, SpaceCasePipe, DateFilterComponent],
-      providers: [
+    providers: [
         DatePipe,
-        { provide : TableBuilderConfigToken , useValue: {defaultTableState: { }}},
+        { provide: TableBuilderConfigToken, useValue: { defaultTableState: {} } },
         provideMockStore({ initialState: {} }),
-      ],
-      imports: [
+    ],
+    imports: [
         NoopAnimationsModule,
         MaterialModule,
         CommonModule,
         FormsModule,
-      ]
-    })
+        FilterComponent, SpaceCasePipe, DateFilterComponent,
+    ]
+})
       .compileComponents();
   });
 

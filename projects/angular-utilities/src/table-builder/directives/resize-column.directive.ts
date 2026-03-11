@@ -1,21 +1,21 @@
-import { Directive, OnInit, Renderer2, Input, ElementRef } from "@angular/core";
+import { Directive, OnInit, Renderer2, ElementRef, input, inject } from "@angular/core";
 import { fromEvent } from "rxjs";
 import { filter, map, switchMap, takeUntil } from "rxjs/operators";
 import { defaultShareReplay } from "../../rxjs";
 import { TableStore } from "../classes/table-store";
 
-@Directive({
-    selector: "[resizeColumn]",
-    standalone: false
-})
+@Directive({ selector: "[resizeColumn]" })
 export class ResizeColumnDirective implements OnInit{
-  @Input("resizeColumn") resizable!: boolean;
+  private renderer = inject(Renderer2);
+  private el = inject(ElementRef);
+  store = inject(TableStore);
 
-  @Input() key!: string;
-  constructor(private renderer: Renderer2, private el: ElementRef, public store: TableStore,) { }
+  readonly resizable = input.required<boolean>({ alias: "resizeColumn" });
+
+  readonly key = input.required<string>();
 
   ngOnInit(){
-    if (this.resizable){
+    if (this.resizable()){
       const {table, columnHead} = this.getTableAndColumnHeadHtmlElements();
       const resizer = this.createResizerSpanInColumnHead(columnHead);
 
@@ -26,7 +26,7 @@ export class ResizeColumnDirective implements OnInit{
         map( ({mouseDownData,mouseMove}) => {
             const {newTableWidth,newColumnWidth}  = this.calculateNewWidths(mouseDownData,mouseMove)
             return ({
-              key:this.key,
+              key:this.key(),
               widthInPixel:newColumnWidth,
               tableSize:newTableWidth,
             })
@@ -35,7 +35,7 @@ export class ResizeColumnDirective implements OnInit{
       );
 
       this.store.setUserDefinedWidth(resizeColsData$.pipe(
-        map(resizeData => ([{key: this.key, widthInPixel: resizeData.widthInPixel }]))
+        map(resizeData => ([{key: this.key(), widthInPixel: resizeData.widthInPixel }]))
       ));
 
       this.store.setTableWidth(resizeColsData$.pipe(

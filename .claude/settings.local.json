@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(npm run build:*)",
+      "Bash(npm test:*)",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "Bash(comm:*)",
+      "WebFetch(domain:angular.dev)",
+      "Bash(ng generate:*)",
+      "Bash(ng build:*)",
+      "Bash(git checkout:*)",
+      "Read(//c/Users/yholtzberg/Documents/angular-additions/projects/angular-utilities/src/table-builder/components/generic-table/**)"
+    ]
+  }
+}

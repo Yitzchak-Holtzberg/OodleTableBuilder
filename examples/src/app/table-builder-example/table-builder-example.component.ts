@@ -1,13 +1,23 @@
-import { Component, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, TemplateRef, ViewEncapsulation, viewChild, inject } from '@angular/core';
 import { Subject, Observable, of, ReplaySubject } from 'rxjs';
 import { scan, startWith, tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { MatCheckboxChange } from '@angular/material/checkbox';
-import { MatSelectChange } from '@angular/material/select';
-import { LowerCasePipe } from '@angular/common';
+import { MatCheckboxChange, MatCheckbox } from '@angular/material/checkbox';
+import { MatSelectChange, MatSelect } from '@angular/material/select';
+import { LowerCasePipe, NgClass, AsyncPipe, JsonPipe } from '@angular/common';
 import { ArrayAdditional, ArrayStyle, MetaData, FieldType, TableBuilder, TableContainerComponent, FilterType, GeneralTableSettings, Target, SortDirection, HttpRequestStateFactory } from '../../../../projects/angular-utilities/src/public-api';
 import { combineArrays } from '../../../../projects/angular-utilities/src/rxjs';
 import { FilterInfo } from '../../../../projects/angular-utilities/src/table-builder/classes/filter-info';
+import { MatFormField } from '@angular/material/form-field';
+import { MatOption } from '@angular/material/core';
+import { TableWrapperDirective } from '../../../../projects/angular-utilities/src/table-builder/directives/table-wrapper.directive';
+import { FormsModule } from '@angular/forms';
+import { TableFilterStringContainsDirective, MatOptionTbFilterDirective, MatCheckboxTbFilterDirective } from '../../../../projects/angular-utilities/src/table-builder/directives/tb-filter.directive';
+import { TableContainerComponent as TableContainerComponent_1 } from '../../../../projects/angular-utilities/src/table-builder/components/table-container/table-container';
+import { CustomCellDirective } from '../../../../projects/angular-utilities/src/table-builder/directives/custom-cell-directive';
+import { MatColumnDef, MatFooterCellDef, MatFooterCell, MatCellDef, MatCell, MatHeaderCellDef, MatHeaderCell, MatRowDef, MatRow } from '@angular/material/table';
+import { StylerDirective } from '../../../../projects/angular-utilities/src/utilities/directives/styler';
+import { ResizeColumnDirective } from '../../../../projects/angular-utilities/src/table-builder/directives/resize-column.directive';
 
 enum Weight {
   hi, loFlow, med,
@@ -116,9 +126,13 @@ const META_DATA: MetaData<PeriodicElement, ['expression']>[] = [
     styleUrls: ['./table-builder-example.component.css'],
     providers: [HttpRequestStateFactory],
     encapsulation: ViewEncapsulation.None,
-    standalone: false
+    imports: [MatCheckbox, MatFormField, MatSelect, MatOption, TableWrapperDirective, FormsModule, TableFilterStringContainsDirective, MatOptionTbFilterDirective, MatCheckboxTbFilterDirective, TableContainerComponent_1, NgClass, CustomCellDirective, MatColumnDef, MatFooterCellDef, MatFooterCell, StylerDirective, MatCellDef, MatCell, MatHeaderCellDef, MatHeaderCell, ResizeColumnDirective, MatRowDef, MatRow, AsyncPipe, JsonPipe]
 })
 export class TableBuilderExampleComponent {
+  private store = inject<Store<any>>(Store);
+  private lcp = inject(LowerCasePipe);
+  private reqfac = inject(HttpRequestStateFactory);
+
   req = this.reqfac.create(() => of([1,2,3]))
   FilterTypes = FilterType;
   FieldTypes = FieldType;
@@ -130,18 +144,12 @@ export class TableBuilderExampleComponent {
 
   myTestPredicate = (o) => o.name === 'Oxygen';
 
-  @ViewChild(TableContainerComponent) tableContainer!: TableContainerComponent;
+  readonly tableContainer = viewChild.required(TableContainerComponent);
 
-  @ViewChild('myTemplate')  t! : TemplateRef<any>;
+  readonly t = viewChild.required<TemplateRef<any>>('myTemplate');
 
   isFilterChecked!: Observable<FilterInfo>;
   runWhen = ()=>true;
-
-  constructor(private store: Store<any>, private lcp:  LowerCasePipe, private reqfac : HttpRequestStateFactory) {
-
-
-    // this.tableBuilder = new TableBuilder(all, of([{key:'date',fieldType: FieldType.Date , displayName: 'The Date'}]),{metaDataPlusRestOfFields:true});
-  }
 
 
   emitter(d)
@@ -219,9 +227,9 @@ export class TableBuilderExampleComponent {
         key: 'position',
         fieldType: FieldType.Number
       };
-      this.tableContainer.state.addFilter(fi);
+      this.tableContainer().state.addFilter(fi);
     } else {
-      this.tableContainer.state.removeFilter('test');
+      this.tableContainer().state.removeFilter('test');
     }
   }
 
@@ -236,7 +244,7 @@ export class TableBuilderExampleComponent {
       fieldType: FieldType.String
     }
 
-    this.tableContainer.state.addFilter(fi);
+    this.tableContainer().state.addFilter(fi);
   }
 
   selectionEvent(a){
@@ -244,6 +252,6 @@ export class TableBuilderExampleComponent {
   }
 
   clearAllFilters(){
-    this.tableContainer.state.clearFilters()
+    this.tableContainer().state.clearFilters()
   }
 }

@@ -2,12 +2,14 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ActionStatus, serverStatusTypes } from '../ngrx';
 import { delayOn } from '../../rxjs';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'lib-action-state-spinner',
     templateUrl: './action-state-spinner.component.html',
     styleUrls: ['./action-state-spinner.component.css'],
-    standalone: false
+    imports: [MatProgressSpinner, AsyncPipe]
 })
 export class ActionStateSpinnerComponent implements OnInit {
 

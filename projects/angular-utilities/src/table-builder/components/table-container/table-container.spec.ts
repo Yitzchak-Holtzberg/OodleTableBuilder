@@ -18,11 +18,12 @@ import { MultiSortDirective } from '../../directives/multi-sort.directive';
 import { TableBuilderConfigToken } from '../../classes/TableBuilderConfig';
 import { provideMockStore } from '@ngrx/store/testing';
 import { PaginatorComponent } from '../generic-table/paginator.component';
-import {  LetModule, LetDirective, PushModule, PushPipe } from '@ngrx/component';
+import { LetDirective, PushPipe } from '@ngrx/component';
 import { HarnessLoader, parallel } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import {MatTableHarness} from '@angular/material/table/testing';
 import { TransformCreator } from '../../services/transform-creator';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 const data = [
   {
@@ -77,7 +78,23 @@ describe('table container', () => {
   beforeEach(() => {
 
     TestBed.configureTestingModule({
-      declarations: [
+    providers: [
+        { provide: TableBuilderConfigToken, useValue: { defaultTableState: {} } },
+        provideMockStore({ initialState }),
+        DatePipe,
+        TransformCreator,
+        CurrencyPipe,
+        PhoneNumberPipe,
+        SpaceCasePipe,
+    ],
+    imports: [
+        NoopAnimationsModule,
+        MaterialModule,
+        CommonModule,
+        CurrencyPipe,
+        FormsModule,
+        LetDirective,
+        UtilitiesModule,
         TableContainerComponent,
         FilterComponent,
         GenFilterDisplayerComponent,
@@ -85,28 +102,12 @@ describe('table container', () => {
         PaginatorComponent,
         GenColDisplayerComponent,
         SpaceCasePipe,
-        CurrencyPipe,
         ColumnTotalPipe,
         DateFilterComponent,
         MultiSortDirective,
-      ],
-      providers: [
-       { provide : TableBuilderConfigToken , useValue: {defaultTableState: { }}},
-       provideMockStore({ initialState }),
-       DatePipe,
-       TransformCreator,
-       CurrencyPipe,
-       PhoneNumberPipe,
-      ],
-      imports: [
-        NoopAnimationsModule,
-        MaterialModule,
-        CommonModule,
-        FormsModule,
-        LetModule,
-        UtilitiesModule,
-      ]
-    })
+    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
+})
     .compileComponents();
     fixture = TestBed.createComponent(TableContainerComponent);
     component = fixture.componentInstance;

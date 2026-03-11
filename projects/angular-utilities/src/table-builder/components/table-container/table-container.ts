@@ -1,17 +1,4 @@
-import {
-  Component,
-  Input,
-  EventEmitter,
-  Output,
-  ContentChildren,
-  QueryList,
-  ChangeDetectionStrategy,
-  Inject,
-  Predicate,
-  Optional,
-  TemplateRef,
-  ViewChild,
-} from '@angular/core';
+import { Component, Input, Output, ChangeDetectionStrategy, Predicate, TemplateRef, input, output, viewChild, contentChildren, inject, computed, signal } from '@angular/core';
 import { BehaviorSubject, Observable, from, ReplaySubject, Subscription } from 'rxjs';
 import { ArrayAdditional, FieldType, MetaData } from '../../interfaces/report-def';
 import { first, last, map, switchMap, tap, withLatestFrom, mergeAll, scan } from 'rxjs/operators';
@@ -38,7 +25,24 @@ import { createFilterFunc, isCustomFilter, isFilterInfo } from '../../classes/fi
 import { Dictionary } from '../../interfaces/dictionary';
 import { TableWrapperDirective } from '../../directives/table-wrapper.directive';
 import { createLinkCreator } from '../../services/link-creator.service';
-import { GenericTableComponent } from '../generic-table/generic-table.component';
+import { GenericTableComponent, GenericTableVsComponent } from '../generic-table/generic-table.component';
+import { MultiSortDirective } from '../../directives/multi-sort.directive';
+import { LetDirective } from '@ngrx/component';
+import { GroupByListComponent } from '../group-by-list/group-by-list.component';
+import { FilterChipsComponent } from '../table-container-filter/filter-list/filter-list.component';
+import { NgTemplateOutlet, NgClass, AsyncPipe } from '@angular/common';
+import { MatIconButton, MatButton } from '@angular/material/button';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatIcon } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
+import { GenFilterDisplayerComponent } from '../table-container-filter/gen-filter-displayer/gen-filter-displayer.component';
+import { GenColDisplayerComponent } from '../gen-col-displayer/gen-col-displayer.component';
+import { SortMenuComponent } from '../sort-menu/sort-menu.component';
+import { ClickEmitterDirective } from '../../../utilities/directives/clickEmitterDirective';
+import { StopPropagationDirective } from '../../../utilities/directives/stop-propagation.directive';
+import { DialogDirective } from '../../../utilities/directives/dialog';
+import { MatFormField } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
 
 @Component({
     selector: 'tb-table-container',
@@ -46,20 +50,35 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
     styleUrls: ['./table-container.css', '../../styles/collapser.styles.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [TableStore, ExportToCsvService, WrapperFilterStore],
-    standalone: false
+    imports: [MultiSortDirective, LetDirective, GroupByListComponent, FilterChipsComponent, NgTemplateOutlet, MatIconButton, MatMenuTrigger, NgClass, MatIcon, MatMenu, MatTooltip, GenericTableComponent, GenericTableVsComponent, GenFilterDisplayerComponent, GenColDisplayerComponent, SortMenuComponent, MatMenuItem, ClickEmitterDirective, StopPropagationDirective, DialogDirective, MatFormField, MatInput, MatButton, AsyncPipe]
 }) export class TableContainerComponent<T = any> {
+  state = inject(TableStore);
+  exportToCsvService = inject<ExportToCsvService<T>>(ExportToCsvService);
+  private config = inject<TableBuilderConfig>(TableBuilderConfigToken);
+  private store = inject<Store<any>>(Store);
+  private wrapper = inject(TableWrapperDirective, { optional: true });
 
-  @ViewChild(GenericTableComponent) private genericTableComponent!: GenericTableComponent;
 
-  @ContentChildren(TableCustomFilterDirective, {descendants: true}) customFilters!: QueryList<TableCustomFilterDirective>;
-  @ContentChildren(TableFilterDirective, {descendants: true}) filters!: QueryList<TableFilterDirective>;
+  // ViewChild signals with $ prefix
+  readonly $genericTableComponent = viewChild.required(GenericTableComponent);
 
+  // ContentChildren signals with $ prefix
+  readonly $customFilters = contentChildren(TableCustomFilterDirective, { descendants: true });
+  readonly $filters = contentChildren(TableFilterDirective, { descendants: true });
+  readonly $customRows = contentChildren(MatRowDef);
+  readonly $customCells = contentChildren(CustomCellDirective);
+
+  // Input signals with $ prefix and aliases for backward compatibility
   @Input() tableId!: string;
   @Input() tableBuilder!: TableBuilder;
-  @Input() IndexColumn = false;
-  @Input() SelectionColumn = false;
-  @Input() trackBy!: string;
-  @Input() isSticky = true;
+  readonly $indexColumn = input(false, { alias: 'IndexColumn' });
+  readonly $selectionColumn = input(false, { alias: 'SelectionColumn' });
+  readonly $trackBy = input.required<string>({ alias: 'trackBy' });
+  readonly $isSticky = input(true, { alias: 'isSticky' });
+  readonly $inputFilters = input<Observable<Array<Predicate<T>>> | undefined>(undefined, { alias: 'inputFilters' });
+  readonly $groupHeaderTemplate = input<TemplateRef<any> | null>(null, { alias: 'groupHeaderTemplate' });
+  readonly $compareWithKey = input<string>('', { alias: 'compareWithKey' });
+
   @Input() set isVs(val: boolean | string) {
     if (val || val === '') {
       this._isVs = true;
@@ -71,24 +90,21 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
   @Input() set pageSize(value: number) {
     this.state.setPageSize(value);
   }
-  @Input() inputFilters?: Observable<Array<Predicate<T>>>;
-  @Input() groupHeaderTemplate!: TemplateRef<any>;
-  @Input() compareWithKey!: string;
-  @Output() selection$ = new EventEmitter();
+
+  // Output signals with $ suffix and aliases
+  readonly selection$ = output<any>({ alias: 'selection$' });
+  readonly paginatorChange$ = output<void>({ alias: 'paginatorChange' });
+  readonly onStateReset$ = output<void>({ alias: 'OnStateReset' });
+  readonly onSaveState$ = output<void>({ alias: 'OnSaveState' });
+
   dataSubject = new ReplaySubject<Observable<T[]>>(1);
   @Output() data = this.dataSubject.pipe(
     switchMap( d => d),
     defaultShareReplay(),
   );
-  @Output() paginatorChange = new EventEmitter<void>();
 
   _isVs!: boolean;
 
-  @ContentChildren(MatRowDef) customRows!: QueryList<MatRowDef<any>>;
-
-  @ContentChildren(CustomCellDirective) customCells!: QueryList<CustomCellDirective>;
-  @Output() OnStateReset = new EventEmitter();
-  @Output() OnSaveState = new EventEmitter();
   @Output() state$ : Observable<PersistedTableState>;
 
   myColumns$!: Observable<ColumnInfo[]>;
@@ -98,13 +114,7 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
 
   disableSort!: boolean;
 
-  constructor(
-    public state: TableStore,
-    public exportToCsvService: ExportToCsvService<T>,
-    @Inject(TableBuilderConfigToken) private config: TableBuilderConfig,
-    private store: Store<any>,
-    @Optional() private wrapper: TableWrapperDirective,
-  ) {
+  constructor() {
      this.state.on( this.state.getSavableState().pipe(last()), finalState => {
       if(this.tableId) {
         this.store.dispatch(setLocalProfile({key:this.tableId,value: finalState}));
@@ -117,18 +127,18 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
   }
 
   firstPage(): void {
-    this.genericTableComponent?.paginatorComponent?.paginator?.firstPage();
+    this.$genericTableComponent()?.$paginatorComponent()?.paginator()?.firstPage();
   }
 
   lastPage(): void {
-    this.genericTableComponent?.paginatorComponent?.paginator?.lastPage();
+    this.$genericTableComponent()?.$paginatorComponent()?.paginator()?.lastPage();
   }
 
   resetState() {
-    this.customFilters.forEach( cf => cf.reset());
-    this.filters.forEach( cf => cf.reset() );
+    this.$customFilters().forEach( cf => cf.reset());
+    this.$filters().forEach( cf => cf.reset() );
     this.state.resetState();
-    this.OnStateReset.next(null)
+    this.onStateReset$.emit()
   }
 
   initializeState() {
@@ -151,14 +161,15 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
       }
     });
   }
-  customFilters$ = new BehaviorSubject<Predicate<any>[]>([]);
+  customFiltersSubject$ = new BehaviorSubject<Predicate<any>[]>([]);
   initializeData() {
 
 
-    var allFilters = this.inputFilters ? combineArrays([
-      this.customFilters$,
-      this.inputFilters
-    ]) : this.customFilters$;
+    const inputFilters = this.$inputFilters();
+    var allFilters = inputFilters ? combineArrays([
+      this.customFiltersSubject$,
+      inputFilters
+    ]) : this.customFiltersSubject$;
 
     const filters$ = this.state.filters$.pipe(map( filters => Object.values(filters) ))
 
@@ -199,7 +210,7 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
     this.state.getSavableState().pipe(
       first()
     ).subscribe( tableState => {
-      this.OnSaveState.next(null);
+      this.onSaveState$.emit();
       this.store.dispatch(setLocalProfile({ key: this.tableId, value:tableState, persist: true} ));
     });
   }
@@ -218,9 +229,9 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
 
     this.state.runOnceWhen(stateIs(InitializationState.LoadedFromStore), state => {
 
-      var allFilters = [...this.filters, ...this.customFilters];
+      var allFilters = [...this.$filters(), ...this.$customFilters()];
       if(this.wrapper) {
-        allFilters = [...allFilters, ...this.wrapper.customFilters, ...this.wrapper.filters, ...this.wrapper.registerations];
+        allFilters = [...allFilters, ...this.wrapper.customFilters(), ...this.wrapper.filters(), ...this.wrapper.registerations];
       }
 
       var customFilters: (TableCustomFilterDirective|TableFilterDirective )[] = [];
@@ -259,7 +270,7 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
         map( f => Object.values(f))
       );
       this.state.on(filters$, (f) => {
-        this.customFilters$.next(f);
+        this.customFiltersSubject$.next(f);
       });
       this.state.updateState({initializationState: InitializationState.Ready});
     });
@@ -267,13 +278,13 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
   }
 
   InitializeColumns() {
-    const customCellMap = new Map(this.customCells.map(cc => [cc.customCell,cc]));
+    const customCellMap = new Map(this.$customCells().map(cc => [cc.customCell,cc]));
     this.state.setMetaData(this.tableBuilder.metaData$!.pipe(
       map((mds) => {
         mds = mds.map(this.mapMetaDatas);
         return [
           ...mds,
-          ...this.customCells.map( cc => cc.getMetaData(mds.find( item => item.key === cc.customCell )) )
+          ...this.$customCells().map( cc => cc.getMetaData(mds.find( item => item.key === cc.customCell )) )
         ]
       })
     ));

@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { first, map  } from 'rxjs/operators';
 import { combineLatest} from 'rxjs';
@@ -13,11 +13,10 @@ import { get } from 'lodash';
 
 @Injectable()
 export class ExportToCsvService<T> {
-  constructor(
-    public state: TableStore,
-    @Inject(TableBuilderConfigToken) private config: TableBuilderConfig,
-    private datePipe: DatePipe,
-  ){}
+  state = inject(TableStore);
+  private config = inject<TableBuilderConfig>(TableBuilderConfigToken);
+  private datePipe = inject(DatePipe);
+
 
   exportToCsv = (data: Observable<T[]>) => {
     const exportableFields$ = this.state.state$.pipe(

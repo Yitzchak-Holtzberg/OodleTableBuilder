@@ -8,7 +8,7 @@ import { FilterComponent } from './components/filter/filter.component';
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SpaceCasePipe } from '../utilities/pipes/space-case.pipes';
-import { MaterialModule } from './material.module';
+
 import { DateFilterComponent } from './components/date-filter/date-filter.component';
 import { TableContainerComponent } from './components/table-container/table-container';
 import { ColumnTotalPipe } from './pipes/column-total.pipe';
@@ -55,9 +55,8 @@ import { TableVirtualScrollModule } from 'ng-table-virtual-scroll';
 import { DateTimeFilterComponent } from './components/date-time-filter/date-time-filter.component';
 
 @NgModule({
-  imports: [
+    imports: [
     CommonModule,
-    MaterialModule,
     StoreModule.forFeature('globalStorageState', storageStateReducer),
     EffectsModule.forFeature([SaveTableEffects]),
     FormsModule,
@@ -67,7 +66,42 @@ import { DateTimeFilterComponent } from './components/date-time-filter/date-time
     UtilitiesModule,
     ScrollingModule,
     TableVirtualScrollModule,
-  ],
+    ColumnTotalPipe,
+    TableContainerComponent,
+    GenericTableComponent,
+    GenericTableVsComponent,
+    PaginatorComponent,
+    CustomCellDirective,
+    GenColDisplayerComponent,
+    GenFilterDisplayerComponent,
+    DateFilterComponent,
+    FilterComponent,
+    MultiSortDirective,
+    NumberFilterComponent,
+    ColumnBuilderComponent,
+    ArrayColumnComponent,
+    LinkColumnComponent,
+    HeaderMenuComponent,
+    KeyDisplayPipe,
+    FormatFilterValuePipe,
+    FormatFilterTypePipe,
+    ResizeColumnDirective,
+    InFilterComponent,
+    InitializationComponent,
+    InListFilterComponent,
+    SortMenuComponent,
+    FilterChipsComponent,
+    MatSlideToggleTbFilterDirective,
+    MatRadioButtonTbFilterDirective,
+    MatOptionTbFilterDirective,
+    MatCheckboxTbFilterDirective,
+    MatButtonToggleFilterDirective,
+    TableFilterDirective,
+    TableFilterStringContainsDirective,
+    TableWrapperDirective,
+    GroupByListComponent,
+    DateTimeFilterComponent,
+],
     exports: [
         GenericTableComponent,
         GenericTableVsComponent,
@@ -89,48 +123,11 @@ import { DateTimeFilterComponent } from './components/date-time-filter/date-time
         TableWrapperDirective,
         GroupByListComponent,
     ],
-    declarations: [
-        ColumnTotalPipe,
-        TableContainerComponent,
-        GenericTableComponent,
-        GenericTableVsComponent,
-        PaginatorComponent,
-        CustomCellDirective,
-        GenColDisplayerComponent,
-        GenFilterDisplayerComponent,
-        DateFilterComponent,
-        FilterComponent,
-        MultiSortDirective,
-        NumberFilterComponent,
-        ColumnBuilderComponent,
-        ArrayColumnComponent,
-        LinkColumnComponent,
-        HeaderMenuComponent,
-        KeyDisplayPipe,
-        FormatFilterValuePipe,
-        FormatFilterTypePipe,
-        ResizeColumnDirective,
-        InFilterComponent,
-        InitializationComponent,
-        InListFilterComponent,
-        SortMenuComponent,
-        FilterChipsComponent,
-        MatSlideToggleTbFilterDirective,
-        MatRadioButtonTbFilterDirective,
-        MatOptionTbFilterDirective,
-        MatCheckboxTbFilterDirective,
-        MatButtonToggleFilterDirective,
-        TableFilterDirective,
-        TableFilterStringContainsDirective,
-        TableWrapperDirective,
-        GroupByListComponent,
-        DateTimeFilterComponent,
-    ],
-    providers : [
-      SpaceCasePipe,
-      DatePipe,
-      CurrencyPipe,
-      PhoneNumberPipe
+    providers: [
+        SpaceCasePipe,
+        DatePipe,
+        CurrencyPipe,
+        PhoneNumberPipe
     ]
 })
 export class TableBuilderModule {

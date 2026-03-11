@@ -16,10 +16,7 @@ export interface HttpRequestStateViewContext<T> {
   };
 }
 
-@Directive({
-    selector: '[httpRequestState]',
-    standalone: false
-})
+@Directive({ selector: '[httpRequestState]' })
 export class HttpRequestStateDirective<TParam extends any[], T> {
 
   readonly ViewContext: HttpRequestStateViewContext<T> = {

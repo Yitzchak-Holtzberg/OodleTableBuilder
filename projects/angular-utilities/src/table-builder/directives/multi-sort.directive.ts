@@ -1,4 +1,4 @@
-import { Directive, OnInit, OnDestroy } from '@angular/core';
+import { Directive, OnInit, OnDestroy, inject } from '@angular/core';
 import { MatSort, Sort } from '@angular/material/sort';
 import { map } from 'rxjs/operators';
 import { TableStore } from '../classes/table-store';
@@ -9,13 +9,14 @@ import { TableStore } from '../classes/table-store';
     inputs: ['disabled: matSortDisabled'],
     providers: [
         { provide: MatSort, useExisting: MultiSortDirective }
-    ],
-    standalone: false
+    ]
 })
 export class MultiSortDirective extends MatSort implements OnInit, OnDestroy {
+  private state = inject(TableStore);
+
   rules: Sort[] = [];
 
-  constructor(private state: TableStore) {
+  constructor() {
     super();
     this.state.setSort(this.sortChange.pipe(map(sc => ({ key: sc.active, direction: sc.direction }))));
     this.state.on(

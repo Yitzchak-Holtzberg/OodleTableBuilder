@@ -1,94 +1,88 @@
-<mat-checkbox (change)="Checked($event)" [checked]="!!(isFilterChecked && (isFilterChecked | async))" ></mat-checkbox>
+<mat-checkbox (change)="Checked($event)" [checked]="!!(isFilterChecked && (isFilterChecked | async))"  />
 <button (click)="clearAllFilters()">Cleart All Filters</button>
 <button (click)="addColumn()">Add Column</button>
 <br/>
 <mat-form-field style="width: 25%;">
-    <mat-select multiple (selectionChange)="multipleValuesTest($event)">
-      <mat-option [value]="'Hydrogen'">Hydrogen</mat-option>
-      <mat-option [value]="'Lithium'">Lithium</mat-option>
-    </mat-select>
+  <mat-select multiple (selectionChange)="multipleValuesTest($event)">
+    <mat-option [value]="'Hydrogen'">Hydrogen</mat-option>
+    <mat-option [value]="'Lithium'">Lithium</mat-option>
+  </mat-select>
 </mat-form-field>
 
 <ng-container tbWrapper >
 
 
-<ng-container before>
-  <div>
-    <input  [tbFilterStringContains]="'name'" ngModel filterId="abcdef" />
-    <mat-form-field>
-      <mat-select>
-        <mat-option [tbCustomFilter]='myTestPredicate'  filterId="yid3" > Click me! </mat-option>
-        <mat-option  > Un-Click me! </mat-option>
-      </mat-select>
-    </mat-form-field>
-    <div  >
-      <mat-checkbox [tbCustomFilter]='myTestPredicate' filterId="yid" >The filterator</mat-checkbox>
+  <ng-container before>
+    <div>
+      <input  [tbFilterStringContains]="'name'" ngModel filterId="abcdef" />
+      <mat-form-field>
+        <mat-select>
+          <mat-option [tbCustomFilter]='myTestPredicate'  filterId="yid3" > Click me! </mat-option>
+          <mat-option  > Un-Click me! </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div  >
+        <mat-checkbox [tbCustomFilter]='myTestPredicate' filterId="yid" >The filterator</mat-checkbox>
+      </div>
+      <mat-checkbox [tbCustomFilter]='myTestPredicate' filterId="yid2" >The filterator 2</mat-checkbox>
     </div>
-    <mat-checkbox [tbCustomFilter]='myTestPredicate' filterId="yid2" >The filterator 2</mat-checkbox>
-  </div>
-  hello there
+    hello there
 
 
-</ng-container>
-
-<ng-template #groupHeaderTemplate let-element="element">
-  <div style="display: flex; flex-grow: 1; justify-content: space-between;">
-    <div style="display: flex; padding-left: 20px;">Hi From The Start</div>
-    <div style="display: flex">Hi From The Middle</div>
-    <div style="display: flex">Hi From The End: isGroupHeader: {{element.isGroupHeader}}</div>
-  </div>
-</ng-template>
-
-<tb-table-container
-  isVs
-  [isSticky]="true"
-  *ngIf='tableBuilder'
-  (data)='emitter($event)'
-  tableId='test-table-id-123'
-  #tb
-  [tableBuilder]='tableBuilder'
-  [inputFilters]='myFilter'
-  [pageSize]="50"
-  [SelectionColumn]='true'
-  (selection$)="selectionEvent($event)"
-  [IndexColumn]="true"
-  [groupHeaderTemplate]="groupHeaderTemplate"
->
-
-
-
-  <span [ngClass]="(tb.state$ | async)?.persistedTableSettings?.collapseHeader ? 'small-title' : 'big-title'"
-  class="tb-header-title">TRIAL TITLE</span>
-  <p *customCell="'testCell';let element = element; Width '10px'" [class.makeMeRed]="element?.name && element?.name[0] === 'H'" >Hi {{element.name}}!</p>
-
-  <ng-container customCell='date' matColumnDef="date"   >
-    <mat-footer-cell *matFooterCellDef="let styles=styles" [styler]="styles" >
-        date footer {{(styles | json) + 'a'}}
-    </mat-footer-cell>
   </ng-container>
 
-  <ng-container customCell="blue" matColumnDef="blue">
+  <ng-template #groupHeaderTemplate let-element="element">
+    <div style="display: flex; flex-grow: 1; justify-content: space-between;">
+      <div style="display: flex; padding-left: 20px;">Hi From The Start</div>
+      <div style="display: flex">Hi From The Middle</div>
+      <div style="display: flex">Hi From The End: isGroupHeader: {{element.isGroupHeader}}</div>
+    </div>
+  </ng-template>
+
+  @if (tableBuilder) {
+    <tb-table-container
+      isVs
+      [isSticky]="true"
+      (data)='emitter($event)'
+      tableId='test-table-id-123'
+      #tb
+      [tableBuilder]='tableBuilder'
+      [inputFilters]='myFilter'
+      [pageSize]="50"
+      [SelectionColumn]='true'
+      (selection$)="selectionEvent($event)"
+      [IndexColumn]="true"
+      [groupHeaderTemplate]="groupHeaderTemplate"
+      >
+      <span [ngClass]="(tb.state$ | async)?.persistedTableSettings?.collapseHeader ? 'small-title' : 'big-title'"
+      class="tb-header-title">TRIAL TITLE</span>
+      <p *customCell="'testCell';let element = element; Width '10px'" [class.makeMeRed]="element?.name && element?.name[0] === 'H'" >Hi {{element.name}}!</p>
+      <ng-container customCell='date' matColumnDef="date"   >
+        <mat-footer-cell *matFooterCellDef="let styles=styles" [styler]="styles" >
+          date footer {{(styles | json) + 'a'}}
+        </mat-footer-cell>
+      </ng-container>
+      <ng-container customCell="blue" matColumnDef="blue">
         <mat-cell *matCellDef="let element = element;let styles = styles;" [class.makeMeBlue]="element?.name && element?.name[0] === 'B'" [styler]="styles">
-            Hi {{element?.name}} !
+          Hi {{element?.name}} !
         </mat-cell>
-  </ng-container>
-
-  <ng-container customCell="green" matColumnDef="green"  >
-      <mat-header-cell *matHeaderCellDef="let styles=styles" style="color: green;" [styler]="styles" [resizeColumn]="true" [key]="'green'">Custom header</mat-header-cell >
-      <mat-cell *matCellDef="let element = element;let styles=styles;" [class.makeMeBlue]="element?.name && element?.name[0] === 'H'" [styler]="styles">
+      </ng-container>
+      <ng-container customCell="green" matColumnDef="green"  >
+        <mat-header-cell *matHeaderCellDef="let styles=styles" style="color: green;" [styler]="styles" [resizeColumn]="true" [key]="'green'">Custom header</mat-header-cell >
+        <mat-cell *matCellDef="let element = element;let styles=styles;" [class.makeMeBlue]="element?.name && element?.name[0] === 'H'" [styler]="styles">
           F {{element?.name}} !
-      </mat-cell>
-  </ng-container>
-  <mat-row *matRowDef="let row; let even = even; when: runWhen" [ngClass]="{'deleted': row.deletedAt!=null}">
-  </mat-row>
-</tb-table-container>
+        </mat-cell>
+      </ng-container>
+      <mat-row *matRowDef="let row; let even = even; when: runWhen" [ngClass]="{'deleted': row.deletedAt!=null}" />
+    </tb-table-container>
+  }
 
-<button (click)='addItem()'>Add Gold</button>
-<button (click)='emitFilter()'>Filter B</button>
-<button (click)='clearFilter()'>clear filter</button>
+  <button (click)='addItem()'>Add Gold</button>
+  <button (click)='emitFilter()'>Filter B</button>
+  <button (click)='clearFilter()'>clear filter</button>
 
-<ng-template #myTemplate let-element='element' let-metaData='metaData' >
-  from template: {{element[metaData.key]}}
-</ng-template>
+  <ng-template #myTemplate let-element='element' let-metaData='metaData' >
+    from template: {{element[metaData.key]}}
+  </ng-template>
 
 </ng-container>

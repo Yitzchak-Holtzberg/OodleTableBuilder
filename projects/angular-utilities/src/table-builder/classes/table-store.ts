@@ -2,7 +2,7 @@ import { FieldType, MetaData, SortDef } from '../interfaces/report-def';
 import { v4 as uuid } from 'uuid';
 import { Observable } from 'rxjs';
 import { defaultTableState, Group, InitializationState, keysToDelete, PersistedTableState, TableState } from './TableState';
-import { Injectable, Inject, Predicate } from '@angular/core';
+import { Injectable, Predicate, inject } from '@angular/core';
 import { TableBuilderConfig, TableBuilderConfigToken } from './TableBuilderConfig';
 import { CustomFilter, FilterInfo, isCustomFilter, isFilterInfo } from './filter-info';
 import { Sort, SortDirection }  from '@angular/material/sort' ;
@@ -24,7 +24,9 @@ export function stateIs(initializationState: InitializationState) {
 })
 export class TableStore extends ComponentStore<TableState> {
 
-  constructor(@Inject(TableBuilderConfigToken) config: TableBuilderConfig) {
+  constructor() {
+   const config = inject<TableBuilderConfig>(TableBuilderConfigToken);
+
    super( { ...defaultTableState, ...config.defaultTableState});
   }
 
