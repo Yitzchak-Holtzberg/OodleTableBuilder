@@ -21,7 +21,7 @@
       </mat-header-cell>
 
       <mat-cell *matCellDef="let row">
-        @if (!row.isGroupFooter) {
+        @if (!row.isGroupFooter && !row.isGroupHeader) {
           <mat-checkbox (click)="$event.stopPropagation()"
             (change)="$event ? selection.toggle(row) : null"
             [checked]="selection.isSelected(row)" />
@@ -35,35 +35,43 @@
 
     <ng-container matColumnDef="index">
       <mat-header-cell *matHeaderCellDef class="f-mat-header-cell" >#</mat-header-cell>
-      <mat-cell *matCellDef="let i = index;"> {{ (tbPaginator.paginator().pageIndex * tbPaginator.paginator().pageSize) +  i + 1 }} </mat-cell>
+      <mat-cell *matCellDef="let row; let i = index;">
+        @if (!row.isGroupHeader) {
+          {{ (tbPaginator.paginator().pageIndex * tbPaginator.paginator().pageSize) +  i + 1 }}
+        }
+      </mat-cell>
       <mat-footer-cell *matFooterCellDef />
     </ng-container>
 
     <ng-container matColumnDef="groupHeader">
+      <mat-header-cell *matHeaderCellDef style="display:none" />
+      <mat-footer-cell *matFooterCellDef style="display:none" />
       <mat-cell *matCellDef="let row">
-        <div [style.paddingLeft]="row.padding + 'px !important'" >
-          <button mat-icon-button (click)="updateGroup(row);">
-            @if (!row.isExpanded) {
-              <mat-icon>chevron_right</mat-icon>
-            }
-            @if (row.isExpanded) {
-              <mat-icon>expand_more</mat-icon>
-            }
-          </button>
-          {{row.groupHeaderName}}
-        </div>
-        <div style="flex-grow: 1">
-          <ng-container *ngTemplateOutlet="$groupHeaderTemplate(); context: { element: row }"></ng-container>
-        </div>
+        @if (row.isGroupHeader) {
+          <div [style.paddingLeft]="row.padding + 'px !important'" >
+            <button mat-icon-button (click)="updateGroup(row);">
+              @if (!row.isExpanded) {
+                <mat-icon>chevron_right</mat-icon>
+              }
+              @if (row.isExpanded) {
+                <mat-icon>expand_more</mat-icon>
+              }
+            </button>
+            {{row.groupHeaderName}}
+          </div>
+          <div style="flex-grow: 1">
+            <ng-container *ngTemplateOutlet="$groupHeaderTemplate(); context: { element: row }"></ng-container>
+          </div>
+        }
       </mat-cell>
     </ng-container>
 
     @if (showHeader$ | async) {
       <mat-header-row *matHeaderRowDef="keys; sticky: $isSticky()" />
     }
-    <mat-row *matRowDef="let row; columns: keys; let i = index" />
-    <mat-row *matRowDef="let row; columns: ['groupHeader']; when: isGroupHeader" style="background-color: white;" />
-    <mat-row *matRowDef="let row; columns: keys; when: isGroupFooter" style="background-color: whitesmoke;" />
+    <mat-row *matRowDef="let row; columns: keys; let i = index"
+      [class.group-header-row]="row.isGroupHeader"
+      [class.group-footer-row]="row.isGroupFooter" />
     <mat-footer-row *matFooterRowDef="keys" />
 
   </mat-table>

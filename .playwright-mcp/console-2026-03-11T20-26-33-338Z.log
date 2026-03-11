@@ -1,0 +1,284 @@
+[      66ms] [WARNING] [webpack-dev-server] Warnings while compiling. @ http://localhost:4200/polyfills.js:2118
+[      66ms] [WARNING] [webpack-dev-server] WARNING
+projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.html:12:22 - warning NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v21.angular.dev/extended-diagnostics/NG8107
+
+12     @if (customCell?.columnDef?.headerCell) {
+                        ~~~~~~~~~
+
+  projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.ts:39:18
+    39     templateUrl: './column-builder.component.html',
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Warning occurs in the template of component ColumnBuilderComponent.
+ @ http://localhost:4200/polyfills.js:2118
+[      66ms] [WARNING] [webpack-dev-server] WARNING
+projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.html:17:66 - warning NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v21.angular.dev/extended-diagnostics/NG8107
+
+17           @if (!metaData._internalNotUserDefined || !customCell?.columnDef?.cell) {
+                                                                    ~~~~~~~~~
+
+  projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.ts:39:18
+    39     templateUrl: './column-builder.component.html',
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Warning occurs in the template of component ColumnBuilderComponent.
+ @ http://localhost:4200/polyfills.js:2118
+[      67ms] [WARNING] [webpack-dev-server] WARNING
+projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.html:28:67 - warning NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v21.angular.dev/extended-diagnostics/NG8107
+
+28           @if ((!metaData._internalNotUserDefined || !customCell?.columnDef?.cell) && (showfilters$ | async)) {
+                                                                     ~~~~~~~~~
+
+  projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.ts:39:18
+    39     templateUrl: './column-builder.component.html',
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Warning occurs in the template of component ColumnBuilderComponent.
+ @ http://localhost:4200/polyfills.js:2118
+[      67ms] [WARNING] [webpack-dev-server] WARNING
+projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.html:44:22 - warning NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v21.angular.dev/extended-diagnostics/NG8107
+
+44     @if (customCell?.columnDef?.footerCell) {
+                        ~~~~~~~~~
+
+  projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.ts:39:18
+    39     templateUrl: './column-builder.component.html',
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Warning occurs in the template of component ColumnBuilderComponent.
+ @ http://localhost:4200/polyfills.js:2118
+[      67ms] [WARNING] [webpack-dev-server] WARNING
+C:\Users\yholtzberg\WebstormProjects\OodleTableBuilder\projects\angular-utilities\src\table-builder\classes\table-builder.ts depends on 'lodash'. CommonJS or AMD dependencies can cause optimization bailouts.
+For more info see: https://angular.dev/tools/cli/build#configuring-commonjs-dependencies @ http://localhost:4200/polyfills.js:2118
+[      67ms] [WARNING] [webpack-dev-server] WARNING
+C:\Users\yholtzberg\WebstormProjects\OodleTableBuilder\projects\angular-utilities\src\table-builder\classes\table-store.ts depends on 'immutability-helper'. CommonJS or AMD dependencies can cause optimization bailouts.
+For more info see: https://angular.dev/tools/cli/build#configuring-commonjs-dependencies @ http://localhost:4200/polyfills.js:2118
+[     402ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'template')
+    at MatHeaderRowDef.extractCellTemplate (http://localhost:4200/vendor.js:43669:32)
+    at http://localhost:4200/vendor.js:45037:21
+    at Function.from (<anonymous>)
+    at MatTable._getCellTemplates (http://localhost:4200/vendor.js:45032:18)
+    at MatTable._renderCellTemplateForItem (http://localhost:4200/vendor.js:45003:35)
+    at MatTable._renderRow (http://localhost:4200/vendor.js:44999:10)
+    at http://localhost:4200/vendor.js:44938:50
+    at Array.forEach (<anonymous>)
+    at MatTable._forceRenderHeaderRows (http://localhost:4200/vendor.js:44938:25)
+    at MatTable._render (http://localhost:4200/vendor.js:44791:12) @ http://localhost:4200/vendor.js:75806
+[     421ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'template')
+    at MatHeaderRowDef.extractCellTemplate (http://localhost:4200/vendor.js:43669:32)
+    at http://localhost:4200/vendor.js:45037:21
+    at Function.from (<anonymous>)
+    at MatTable._getCellTemplates (http://localhost:4200/vendor.js:45032:18)
+    at MatTable._renderCellTemplateForItem (http://localhost:4200/vendor.js:45003:35)
+    at MatTable._renderRow (http://localhost:4200/vendor.js:44999:10)
+    at http://localhost:4200/vendor.js:44938:50
+    at Array.forEach (<anonymous>)
+    at MatTable._forceRenderHeaderRows (http://localhost:4200/vendor.js:44938:25)
+    at MatTable._render (http://localhost:4200/vendor.js:44791:12) @ http://localhost:4200/vendor.js:75806
+[     436ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'template')
+    at MatHeaderRowDef.extractCellTemplate (http://localhost:4200/vendor.js:43669:32)
+    at http://localhost:4200/vendor.js:45037:21
+    at Function.from (<anonymous>)
+    at MatTable._getCellTemplates (http://localhost:4200/vendor.js:45032:18)
+    at MatTable._renderCellTemplateForItem (http://localhost:4200/vendor.js:45003:35)
+    at MatTable._renderRow (http://localhost:4200/vendor.js:44999:10)
+    at http://localhost:4200/vendor.js:44938:50
+    at Array.forEach (<anonymous>)
+    at MatTable._forceRenderHeaderRows (http://localhost:4200/vendor.js:44938:25)
+    at MatTable._render (http://localhost:4200/vendor.js:44791:12) @ http://localhost:4200/vendor.js:75806
+[     438ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'template')
+    at MatHeaderRowDef.extractCellTemplate (http://localhost:4200/vendor.js:43669:32)
+    at http://localhost:4200/vendor.js:45037:21
+    at Function.from (<anonymous>)
+    at MatTable._getCellTemplates (http://localhost:4200/vendor.js:45032:18)
+    at MatTable._renderCellTemplateForItem (http://localhost:4200/vendor.js:45003:35)
+    at MatTable._renderRow (http://localhost:4200/vendor.js:44999:10)
+    at http://localhost:4200/vendor.js:44938:50
+    at Array.forEach (<anonymous>)
+    at MatTable._forceRenderHeaderRows (http://localhost:4200/vendor.js:44938:25)
+    at MatTable._render (http://localhost:4200/vendor.js:44791:12) @ http://localhost:4200/vendor.js:75806
+[     440ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'template')
+    at MatHeaderRowDef.extractCellTemplate (http://localhost:4200/vendor.js:43669:32)
+    at http://localhost:4200/vendor.js:45037:21
+    at Function.from (<anonymous>)
+    at MatTable._getCellTemplates (http://localhost:4200/vendor.js:45032:18)
+    at MatTable._renderCellTemplateForItem (http://localhost:4200/vendor.js:45003:35)
+    at MatTable._renderRow (http://localhost:4200/vendor.js:44999:10)
+    at http://localhost:4200/vendor.js:44938:50
+    at Array.forEach (<anonymous>)
+    at MatTable._forceRenderHeaderRows (http://localhost:4200/vendor.js:44938:25)
+    at MatTable._render (http://localhost:4200/vendor.js:44791:12) @ http://localhost:4200/vendor.js:75806
+[     443ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'template')
+    at MatHeaderRowDef.extractCellTemplate (http://localhost:4200/vendor.js:43669:32)
+    at http://localhost:4200/vendor.js:45037:21
+    at Function.from (<anonymous>)
+    at MatTable._getCellTemplates (http://localhost:4200/vendor.js:45032:18)
+    at MatTable._renderCellTemplateForItem (http://localhost:4200/vendor.js:45003:35)
+    at MatTable._renderRow (http://localhost:4200/vendor.js:44999:10)
+    at http://localhost:4200/vendor.js:44938:50
+    at Array.forEach (<anonymous>)
+    at MatTable._forceRenderHeaderRows (http://localhost:4200/vendor.js:44938:25)
+    at MatTable._render (http://localhost:4200/vendor.js:44791:12) @ http://localhost:4200/vendor.js:75806
+[     446ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'template')
+    at MatHeaderRowDef.extractCellTemplate (http://localhost:4200/vendor.js:43669:32)
+    at http://localhost:4200/vendor.js:45037:21
+    at Function.from (<anonymous>)
+    at MatTable._getCellTemplates (http://localhost:4200/vendor.js:45032:18)
+    at MatTable._renderCellTemplateForItem (http://localhost:4200/vendor.js:45003:35)
+    at MatTable._renderRow (http://localhost:4200/vendor.js:44999:10)
+    at http://localhost:4200/vendor.js:44938:50
+    at Array.forEach (<anonymous>)
+    at MatTable._forceRenderHeaderRows (http://localhost:4200/vendor.js:44938:25)
+    at MatTable._render (http://localhost:4200/vendor.js:44791:12) @ http://localhost:4200/vendor.js:75806
+[     447ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'template')
+    at MatHeaderRowDef.extractCellTemplate (http://localhost:4200/vendor.js:43669:32)
+    at http://localhost:4200/vendor.js:45037:21
+    at Function.from (<anonymous>)
+    at MatTable._getCellTemplates (http://localhost:4200/vendor.js:45032:18)
+    at MatTable._renderCellTemplateForItem (http://localhost:4200/vendor.js:45003:35)
+    at MatTable._renderRow (http://localhost:4200/vendor.js:44999:10)
+    at http://localhost:4200/vendor.js:44938:50
+    at Array.forEach (<anonymous>)
+    at MatTable._forceRenderHeaderRows (http://localhost:4200/vendor.js:44938:25)
+    at MatTable._render (http://localhost:4200/vendor.js:44791:12) @ http://localhost:4200/vendor.js:75806
+[   28581ms] [WARNING] [webpack-dev-server] Warnings while compiling. @ http://localhost:4200/polyfills.js:2118
+[   28582ms] [WARNING] [webpack-dev-server] WARNING
+projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.html:12:22 - warning NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v21.angular.dev/extended-diagnostics/NG8107
+
+12     @if (customCell?.columnDef?.headerCell) {
+                        ~~~~~~~~~
+
+  projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.ts:39:18
+    39     templateUrl: './column-builder.component.html',
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Warning occurs in the template of component ColumnBuilderComponent.
+ @ http://localhost:4200/polyfills.js:2118
+[   28582ms] [WARNING] [webpack-dev-server] WARNING
+projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.html:17:66 - warning NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v21.angular.dev/extended-diagnostics/NG8107
+
+17           @if (!metaData._internalNotUserDefined || !customCell?.columnDef?.cell) {
+                                                                    ~~~~~~~~~
+
+  projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.ts:39:18
+    39     templateUrl: './column-builder.component.html',
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Warning occurs in the template of component ColumnBuilderComponent.
+ @ http://localhost:4200/polyfills.js:2118
+[   28582ms] [WARNING] [webpack-dev-server] WARNING
+projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.html:28:67 - warning NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v21.angular.dev/extended-diagnostics/NG8107
+
+28           @if ((!metaData._internalNotUserDefined || !customCell?.columnDef?.cell) && (showfilters$ | async)) {
+                                                                     ~~~~~~~~~
+
+  projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.ts:39:18
+    39     templateUrl: './column-builder.component.html',
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Warning occurs in the template of component ColumnBuilderComponent.
+ @ http://localhost:4200/polyfills.js:2118
+[   28582ms] [WARNING] [webpack-dev-server] WARNING
+projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.html:44:22 - warning NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v21.angular.dev/extended-diagnostics/NG8107
+
+44     @if (customCell?.columnDef?.footerCell) {
+                        ~~~~~~~~~
+
+  projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.ts:39:18
+    39     templateUrl: './column-builder.component.html',
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Warning occurs in the template of component ColumnBuilderComponent.
+ @ http://localhost:4200/polyfills.js:2118
+[   28668ms] [WARNING] [webpack-dev-server] Warnings while compiling. @ http://localhost:4200/polyfills.js:2118
+[   28668ms] [WARNING] [webpack-dev-server] WARNING
+projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.html:12:22 - warning NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v21.angular.dev/extended-diagnostics/NG8107
+
+12     @if (customCell?.columnDef?.headerCell) {
+                        ~~~~~~~~~
+
+  projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.ts:39:18
+    39     templateUrl: './column-builder.component.html',
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Warning occurs in the template of component ColumnBuilderComponent.
+ @ http://localhost:4200/polyfills.js:2118
+[   28668ms] [WARNING] [webpack-dev-server] WARNING
+projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.html:17:66 - warning NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v21.angular.dev/extended-diagnostics/NG8107
+
+17           @if (!metaData._internalNotUserDefined || !customCell?.columnDef?.cell) {
+                                                                    ~~~~~~~~~
+
+  projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.ts:39:18
+    39     templateUrl: './column-builder.component.html',
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Warning occurs in the template of component ColumnBuilderComponent.
+ @ http://localhost:4200/polyfills.js:2118
+[   28668ms] [WARNING] [webpack-dev-server] WARNING
+projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.html:28:67 - warning NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v21.angular.dev/extended-diagnostics/NG8107
+
+28           @if ((!metaData._internalNotUserDefined || !customCell?.columnDef?.cell) && (showfilters$ | async)) {
+                                                                     ~~~~~~~~~
+
+  projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.ts:39:18
+    39     templateUrl: './column-builder.component.html',
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Warning occurs in the template of component ColumnBuilderComponent.
+ @ http://localhost:4200/polyfills.js:2118
+[   28668ms] [WARNING] [webpack-dev-server] WARNING
+projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.html:44:22 - warning NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v21.angular.dev/extended-diagnostics/NG8107
+
+44     @if (customCell?.columnDef?.footerCell) {
+                        ~~~~~~~~~
+
+  projects/angular-utilities/src/table-builder/components/column-builder/column-builder.component.ts:39:18
+    39     templateUrl: './column-builder.component.html',
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Warning occurs in the template of component ColumnBuilderComponent.
+ @ http://localhost:4200/polyfills.js:2118
+[   28991ms] [ERROR] ERROR Error: MatDatepicker: No provider found for DateAdapter. You must add one of the following to your app config: provideNativeDateAdapter, provideDateFnsAdapter, provideLuxonDateAdapter, provideMomentDateAdapter, or provide a custom implementation.
+    at createMissingDateImplError (http://localhost:4200/vendor.js:95751:10)
+    at new MatDatepickerInputBase (http://localhost:4200/vendor.js:98969:15)
+    at new MatDatepickerInput (http://localhost:4200/vendor.js:99202:5)
+    at NodeInjectorFactory.MatDatepickerInput_Factory [as factory] (http://localhost:4200/vendor.js:99251:12)
+    at getNodeInjectable (http://localhost:4200/vendor.js:55045:38)
+    at searchTokensOnInjector (http://localhost:4200/vendor.js:54985:12)
+    at lookupTokenUsingNodeInjector (http://localhost:4200/vendor.js:54961:26)
+    at getOrCreateInjectable (http://localhost:4200/vendor.js:54909:19)
+    at ɵɵdirectiveInject (http://localhost:4200/vendor.js:61705:17)
+    at ɵɵinject (http://localhost:4200/vendor.js:73923:59) @ http://localhost:4200/vendor.js:75806
+[   29008ms] [ERROR] ERROR Error: MatDatepicker: No provider found for DateAdapter. You must add one of the following to your app config: provideNativeDateAdapter, provideDateFnsAdapter, provideLuxonDateAdapter, provideMomentDateAdapter, or provide a custom implementation.
+    at createMissingDateImplError (http://localhost:4200/vendor.js:95751:10)
+    at new MatDatepickerInputBase (http://localhost:4200/vendor.js:98969:15)
+    at new MatDatepickerInput (http://localhost:4200/vendor.js:99202:5)
+    at NodeInjectorFactory.MatDatepickerInput_Factory [as factory] (http://localhost:4200/vendor.js:99251:12)
+    at getNodeInjectable (http://localhost:4200/vendor.js:55045:38)
+    at searchTokensOnInjector (http://localhost:4200/vendor.js:54985:12)
+    at lookupTokenUsingNodeInjector (http://localhost:4200/vendor.js:54961:26)
+    at getOrCreateInjectable (http://localhost:4200/vendor.js:54909:19)
+    at ɵɵdirectiveInject (http://localhost:4200/vendor.js:61705:17)
+    at ɵɵinject (http://localhost:4200/vendor.js:73923:59) @ http://localhost:4200/vendor.js:75806
+[   29238ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'length')
+    at ArrayColumnComponent_Template (http://localhost:4200/main.js:3801:81)
+    at executeTemplate (http://localhost:4200/vendor.js:59046:5)
+    at refreshView (http://localhost:4200/vendor.js:59708:7)
+    at detectChangesInView (http://localhost:4200/vendor.js:59848:5)
+    at detectChangesInViewIfAttached (http://localhost:4200/vendor.js:59831:3)
+    at detectChangesInComponent (http://localhost:4200/vendor.js:59822:5)
+    at detectChangesInChildComponents (http://localhost:4200/vendor.js:59870:5)
+    at refreshView (http://localhost:4200/vendor.js:59750:7)
+    at detectChangesInView (http://localhost:4200/vendor.js:59848:5)
+    at detectChangesInViewIfAttached (http://localhost:4200/vendor.js:59831:3) @ http://localhost:4200/vendor.js:75806
+[   29241ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'length')
+    at ArrayColumnComponent_Template (http://localhost:4200/main.js:3801:81)
+    at executeTemplate (http://localhost:4200/vendor.js:59046:5)
+    at refreshView (http://localhost:4200/vendor.js:59708:7)
+    at detectChangesInView (http://localhost:4200/vendor.js:59848:5)
+    at detectChangesInViewIfAttached (http://localhost:4200/vendor.js:59831:3)
+    at detectChangesInComponent (http://localhost:4200/vendor.js:59822:5)
+    at detectChangesInChildComponents (http://localhost:4200/vendor.js:59870:5)
+    at refreshView (http://localhost:4200/vendor.js:59750:7)
+    at detectChangesInView (http://localhost:4200/vendor.js:59848:5)
+    at detectChangesInViewIfAttached (http://localhost:4200/vendor.js:59831:3) @ http://localhost:4200/vendor.js:75806
+[   29273ms] [ERROR] ERROR TypeError: Cannot read properties of undefined (reading 'length')
+    at ArrayColumnComponent_Template (http://localhost:4200/main.js:3801:81)
+    at executeTemplate (http://localhost:4200/vendor.js:59046:5)
+    at refreshView (http://localhost:4200/vendor.js:59708:7)
+    at detectChangesInView (http://localhost:4200/vendor.js:59848:5)
+    at detectChangesInViewIfAttached (http://localhost:4200/vendor.js:59831:3)
+    at detectChangesInComponent (http://localhost:4200/vendor.js:59822:5)
+    at detectChangesInChildComponents (http://localhost:4200/vendor.js:59870:5)
+    at refreshView (http://localhost:4200/vendor.js:59750:7)
+    at detectChangesInView (http://localhost:4200/vendor.js:59848:5)
+    at detectChangesInViewIfAttached (http://localhost:4200/vendor.js:59831:3) @ http://localhost:4200/vendor.js:75806

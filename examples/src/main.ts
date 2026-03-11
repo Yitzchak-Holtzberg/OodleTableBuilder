@@ -16,6 +16,7 @@ import { exampleFeature, ExampleEffects } from './app/table-builder-example/acti
 import { EffectsModule } from '@ngrx/effects';
 import { MatTableModule } from '@angular/material/table';
 import { FormsModule } from '@angular/forms';
+import { provideNativeDateAdapter } from '@angular/material/core';
 import { AppComponent } from './app/app.component';
 
 if (environment.production) {
@@ -42,7 +43,8 @@ bootstrapApplication(AppComponent, {
             const initializerFn = (setUpStoreFactory)(inject(Store));
             return initializerFn();
         }),
-        provideAnimations()
+        provideAnimations(),
+        provideNativeDateAdapter()
     ]
 })
   .catch(err => console.error(err));

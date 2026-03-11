@@ -257,4 +257,17 @@ export class GenericTableVsComponent extends GenericTableComponent {
       this.dataSource.sort = this.sort;
     }
   }
+
+  override ngOnInit() {
+    this.columns.push('groupHeader');
+
+    // Material v20+ does not support conditional row defs (when) with virtual scrolling.
+    // Wrap initializeRowDefs to filter out rows with `when` predicates before they reach the table.
+    const originalInit = this.initializeRowDefs;
+    this.initializeRowDefs = (defs: MatRowDef<any>[]) => {
+      originalInit(defs.filter(r => !r.when));
+    };
+
+    super.ngOnInit();
+  }
 }

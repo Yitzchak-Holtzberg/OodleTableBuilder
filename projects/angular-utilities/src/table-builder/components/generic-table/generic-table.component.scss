@@ -32,6 +32,14 @@
   display: flex;
 }
 
+.group-header-row {
+  background-color: white;
+}
+
+.group-footer-row {
+  background-color: whitesmoke;
+}
+
 :host::ng-deep .table-drag-list.cdk-drop-list-dragging  .drag-header:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
