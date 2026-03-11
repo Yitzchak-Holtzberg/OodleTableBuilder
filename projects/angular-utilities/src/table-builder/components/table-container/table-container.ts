@@ -73,7 +73,7 @@ import { MatInput } from '@angular/material/input';
   @Input() tableBuilder!: TableBuilder;
   readonly $indexColumn = input(false, { alias: 'IndexColumn' });
   readonly $selectionColumn = input(false, { alias: 'SelectionColumn' });
-  readonly $trackBy = input.required<string>({ alias: 'trackBy' });
+  readonly $trackBy = input('', { alias: 'trackBy' });
   readonly $isSticky = input(true, { alias: 'isSticky' });
   readonly $inputFilters = input<Observable<Array<Predicate<T>>> | undefined>(undefined, { alias: 'inputFilters' });
   readonly $groupHeaderTemplate = input<TemplateRef<any> | null>(null, { alias: 'groupHeaderTemplate' });

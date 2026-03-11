@@ -75,7 +75,7 @@ describe('MultiSortDirective', () => {
       .compileComponents();
 
       const store = TestBed.inject(TableStore);
-      directive = new MultiSortDirective(store);
+      directive = TestBed.runInInjectionContext(() => new MultiSortDirective());
 
         rules = [
             { active: 'a', direction: 'asc' },
