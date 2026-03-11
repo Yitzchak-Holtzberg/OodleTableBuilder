@@ -1,5 +1,5 @@
 
-import { enableProdMode, provideAppInitializer, inject, importProvidersFrom } from '@angular/core';
+import { enableProdMode, provideAppInitializer, inject, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 
@@ -24,7 +24,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
     providers: [
-        importProvidersFrom(BrowserModule, AppRoutingModule, MatCheckboxModule, MatSelectModule, HttpRequestModule, StoreModule.forRoot({ example: exampleFeature.reducer }, {
+        provideZoneChangeDetection(),importProvidersFrom(BrowserModule, AppRoutingModule, MatCheckboxModule, MatSelectModule, HttpRequestModule, StoreModule.forRoot({ example: exampleFeature.reducer }, {
             runtimeChecks: {
                 strictStateImmutability: false,
                 strictActionImmutability: false,
