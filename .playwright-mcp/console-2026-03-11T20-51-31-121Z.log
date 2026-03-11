@@ -80,3 +80,11 @@ projects/angular-utilities/src/table-builder/components/column-builder/column-bu
 [ 1670912ms] [ERROR] [webpack-dev-server] Event @ http://localhost:4200/polyfills.js:2122
 [ 1675313ms] [ERROR] WebSocket connection to 'ws://localhost:4200/ng-cli-ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/polyfills.js:724
 [ 1675314ms] [ERROR] [webpack-dev-server] Event @ http://localhost:4200/polyfills.js:2122
+[ 1681703ms] [ERROR] WebSocket connection to 'ws://localhost:4200/ng-cli-ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/polyfills.js:724
+[ 1681703ms] [ERROR] [webpack-dev-server] Event @ http://localhost:4200/polyfills.js:2122
+[ 1692159ms] [ERROR] WebSocket connection to 'ws://localhost:4200/ng-cli-ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/polyfills.js:724
+[ 1692159ms] [ERROR] [webpack-dev-server] Event @ http://localhost:4200/polyfills.js:2122
+[ 1710537ms] [ERROR] WebSocket connection to 'ws://localhost:4200/ng-cli-ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/polyfills.js:724
+[ 1710537ms] [ERROR] [webpack-dev-server] Event @ http://localhost:4200/polyfills.js:2122
+[ 1745012ms] [ERROR] WebSocket connection to 'ws://localhost:4200/ng-cli-ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/polyfills.js:724
+[ 1745013ms] [ERROR] [webpack-dev-server] Event @ http://localhost:4200/polyfills.js:2122

@@ -6,7 +6,7 @@ import { TableBuilderConfigToken, TableBuilderConfig } from '../classes/TableBui
 @Component({
     selector: 'tb-array-column',
     template: `
-  @if (array.length === 0) {
+  @if (!array || array.length === 0) {
     -
   } @else {
     @switch (additional.arrayStyle) {
