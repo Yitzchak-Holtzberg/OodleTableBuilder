@@ -1,6 +1,6 @@
 import { Directive, HostListener } from '@angular/core';
 
-@Directive({ selector: 'preventEnter' })
+@Directive({ selector: '[preventEnter]' })
 export class PreventEnterDirective {
 
   @HostListener('keydown.enter')

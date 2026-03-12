@@ -23,6 +23,7 @@ export class VirtualScrollViewportDirective {
 
   _isVs = false;
   private resizeFn!: () => void;
+  private resizeTimeout: any;
   destroyed$ = new Subject<void>();
 
   addListener(callback: () => void) {
@@ -35,95 +36,57 @@ export class VirtualScrollViewportDirective {
       removeEventListener('resize', this.resizeFn);
       this.resizeFn = null!;
     }
+    if (this.resizeTimeout) {
+      clearTimeout(this.resizeTimeout);
+    }
+  }
+
+  private adjustViewportHeight(): void {
+    const vsViewport: Element | undefined = this.el.nativeElement.children[1]?.children[0]?.children[0];
+    const vsContentWrapper: Element | undefined = vsViewport?.children[0];
+    if (!vsViewport || !vsContentWrapper) {
+      return;
+    }
+    const hasHorizontalScrollBar = vsViewport.scrollWidth > vsViewport.clientWidth;
+    const rect = vsContentWrapper.getBoundingClientRect();
+    let wrapperHeight = 0;
+    if (rect.top >= 0) {
+      wrapperHeight = rect.bottom;
+    } else {
+      wrapperHeight = rect.bottom + rect.top;
+    }
+    if (wrapperHeight < window.innerHeight) {
+      vsViewport.setAttribute('style', `height: ${vsContentWrapper.clientHeight + (hasHorizontalScrollBar ? 17 : 0)}px !important;`);
+    } else {
+      vsViewport.setAttribute('style', `height: ${window.innerHeight - this.el.nativeElement.offsetTop - (this.offset || 167)}px !important;`);
+    }
   }
 
   resize(): void {
     if (this._isVs) {
-      setTimeout(() => {
-        const vsViewport: Element = this.el.nativeElement.children[1]?.children[0]?.children[0];
-        const vsContentWrapper: Element = vsViewport?.children[0];
-        const hasHorizontalScrollBar = vsViewport?.scrollWidth > vsViewport?.clientWidth;
-        const rect = vsContentWrapper.getBoundingClientRect();
-        let wrapperHeight = 0;
-        if (rect.top >= 0) {
-          wrapperHeight = rect.bottom;
-        } else {
-          wrapperHeight = rect.bottom + rect.top;
-        }
-        if (wrapperHeight < window.innerHeight) {
-          vsViewport.setAttribute('style', `height: ${vsContentWrapper.clientHeight + (hasHorizontalScrollBar ? 17 : 0)}px !important;`);
-        } else {
-          vsViewport.setAttribute('style', `height: ${window.innerHeight - this.el.nativeElement.offsetTop - (this.offset || 167)}px !important;`);
-        }
-      }, 0)
+      setTimeout(() => this.adjustViewportHeight(), 0);
     }
-}
+  }
 
   ngOnInit(): void {
     if (this._isVs) {
       this.addListener(() => {
-        const vsViewport: Element = this.el.nativeElement.children[1]?.children[0]?.children[0];
-        const vsContentWrapper: Element = vsViewport?.children[0];
-        const hasHorizontalScrollBar = vsViewport?.scrollWidth > vsViewport?.clientWidth;
-        const rect = vsContentWrapper.getBoundingClientRect();
-        let wrapperHeight = 0;
-        if (rect.top >= 0) {
-          wrapperHeight = rect.bottom;
-        } else {
-          wrapperHeight = rect.bottom + rect.top;
-        }
-
-        if (wrapperHeight < window.innerHeight) {
-          vsViewport.setAttribute('style', `height: ${vsContentWrapper.clientHeight + (hasHorizontalScrollBar ? 17 : 0)}px !important;`);
-        } else {
-          vsViewport.setAttribute('style', `height: ${window.innerHeight - this.el.nativeElement.offsetTop - (this.offset || 167)}px !important;`);
-        }
-      })
+        clearTimeout(this.resizeTimeout);
+        this.resizeTimeout = setTimeout(() => this.adjustViewportHeight(), 100);
+      });
     }
   }
 
   ngAfterViewInit(): void {
     if (this._isVs) {
       setTimeout(() => {
-        const vsViewport: Element = this.el.nativeElement.children[1]?.children[0]?.children[0];
-        const vsContentWrapper: Element = vsViewport?.children[0];
-        const hasHorizontalScrollBar = vsViewport?.scrollWidth > vsViewport?.clientWidth;
-        const rect = vsContentWrapper.getBoundingClientRect();
-        let wrapperHeight = 0;
-        if (rect.top >= 0) {
-          wrapperHeight = rect.bottom;
-        } else {
-          wrapperHeight = rect.bottom + rect.top;
-        }
-
-        if (wrapperHeight < window.innerHeight) {
-          vsViewport.setAttribute('style', `height: ${vsContentWrapper.clientHeight + (hasHorizontalScrollBar ? 17 : 0)}px !important;`);
-        } else {
-          vsViewport.setAttribute('style', `height: ${window.innerHeight - this.el.nativeElement.offsetTop - (this.offset || 167)}px !important;`);
-        }
+        this.adjustViewportHeight();
 
         this.tbComponent?.data?.pipe(
           takeUntil(this.destroyed$),
           tap(() => {
-            setTimeout(() => {
-              const vsViewport: Element = this.el.nativeElement.children[1]?.children[0]?.children[0];
-              const vsContentWrapper: Element = vsViewport?.children[0];
-              const hasHorizontalScrollBar = vsViewport?.scrollWidth > vsViewport?.clientWidth;
-              const rect = vsContentWrapper.getBoundingClientRect();
-              let wrapperHeight = 0;
-              if (rect.top >= 0) {
-                wrapperHeight = rect.bottom;
-              } else {
-                wrapperHeight = rect.bottom + rect.top;
-              }
-
-              if (wrapperHeight < window.innerHeight) {
-                vsViewport.setAttribute('style', `height: ${vsContentWrapper.clientHeight + (hasHorizontalScrollBar ? 17 : 0)}px !important;`);
-              } else {
-                vsViewport.setAttribute('style', `height: ${window.innerHeight - this.el.nativeElement.offsetTop - (this.offset || 167)}px !important;`);
-              }
-                  }, 0)
-                })
+            setTimeout(() => this.adjustViewportHeight(), 0);
+          })
         ).subscribe();
       }, 0);
     }

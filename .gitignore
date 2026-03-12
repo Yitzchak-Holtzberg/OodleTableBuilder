@@ -52,3 +52,6 @@ projects/angular-utilities/node_modules/*
 /test-results/
 /playwright-report/
 /.playwright-mcp/
+
+# Claude Code local settings
+.claude/settings.local.json

@@ -93,11 +93,11 @@
             <span>Save to {{currentKey}}</span>
           </button>
         }
-        @if (tableId) {
-          <button mat-menu-item [matMenuTriggerFor]="savedNames">
-            <span>Choose Profile</span>
-          </button>
-        }
+      }
+      @if (tableId) {
+        <button mat-menu-item [matMenuTriggerFor]="savedNames">
+          <span>Choose Profile</span>
+        </button>
       }
 
       <mat-menu #savedNames='matMenu' panelClass='wide-menu'>
