@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: 22
 
-      - run: npm install
+      - run: npm install --legacy-peer-deps
 
       - name: Build library
         run: npx ng build AngularUtilities --configuration production
