@@ -1,0 +1,41 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [main, angular-modernization]
+  pull_request:
+    branches: [main]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm install --legacy-peer-deps
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Build library
+        run: npx ng build AngularUtilities --configuration production
+
+      - name: Build examples app
+        run: npx ng build AngularUrilitiesExamples
+
+      - name: Serve and run e2e tests
+        run: |
+          npx http-server dist/examples -p 4200 -s &
+          npx wait-on http://localhost:4200 --timeout 30000
+          npx playwright test
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
