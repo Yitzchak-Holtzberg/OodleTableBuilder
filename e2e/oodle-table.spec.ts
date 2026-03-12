@@ -142,7 +142,7 @@ test.describe('Oodle Table (Chargebacks)', () => {
 
   test.describe('Toggle Lines View', () => {
     test('should switch to lines view', async () => {
-      await tb.toggleLinesView();
+      await tb.switchToLinesView();
       await tb.waitForTableUpdate();
       await tb.page.waitForSelector('mat-row', { timeout: 5000 });
 
@@ -152,18 +152,133 @@ test.describe('Oodle Table (Chargebacks)', () => {
       expect(headerText).toContain('Quantity');
     });
 
-    test('should switch back to without-lines view', async () => {
-      await tb.toggleLinesView();
+    test('should switch back to summary view', async () => {
+      await tb.switchToLinesView();
       await tb.waitForTableUpdate();
       await tb.page.waitForSelector('mat-row', { timeout: 5000 });
 
-      await tb.toggleLinesView();
+      await tb.switchToSummaryView();
       await tb.waitForTableUpdate();
       await tb.page.waitForSelector('mat-row', { timeout: 5000 });
 
       const headers = await tb.getColumnHeaders();
       const headerText = headers.join(' ');
       expect(headerText).toContain('Notes');
+    });
+  });
+
+  test.describe('Pagination', () => {
+    test('should show correct initial paginator text', async () => {
+      const text = await tb.getPaginatorText();
+      // 144 total chargebacks (12 base × 12 repetitions)
+      expect(text).toContain('of 144');
+    });
+
+    test('should navigate to next page', async () => {
+      const textBefore = await tb.getPaginatorText();
+      await tb.navigateToNextPage();
+      await tb.waitForTableUpdate();
+
+      const textAfter = await tb.getPaginatorText();
+      expect(textAfter).not.toBe(textBefore);
+
+      const rows = await tb.getRowCount();
+      expect(rows).toBeGreaterThan(0);
+    });
+
+    test('should navigate back to previous page', async () => {
+      await tb.navigateToNextPage();
+      await tb.waitForTableUpdate();
+
+      await tb.navigateToPreviousPage();
+      await tb.waitForTableUpdate();
+
+      const text = await tb.getPaginatorText();
+      expect(text).toContain('1 -');
+    });
+
+    test('should update paginator after changing page size', async () => {
+      await tb.changePageSize(50);
+      await tb.waitForTableUpdate();
+
+      const text = await tb.getPaginatorText();
+      expect(text).toContain('1 - 50');
+    });
+  });
+
+  test.describe('Sorting', () => {
+    test('should sort by Status column', async () => {
+      await tb.sortByColumn('currentStatusValue');
+      await tb.waitForTableUpdate();
+
+      const first = await tb.getCellText(0, 'currentStatusValue');
+      expect(first.length).toBeGreaterThan(0);
+    });
+
+    test('should toggle sort direction on second click', async () => {
+      await tb.sortByColumn('departmentName');
+      await tb.waitForTableUpdate();
+      const firstAsc = await tb.getCellText(0, 'departmentName');
+
+      await tb.sortByColumn('departmentName');
+      await tb.waitForTableUpdate();
+      const firstDesc = await tb.getCellText(0, 'departmentName');
+
+      expect(firstAsc).not.toBe(firstDesc);
+    });
+  });
+
+  test.describe('Custom Cells', () => {
+    test('notes custom cell should show dash for empty notes', async () => {
+      const allText = await tb.table.textContent();
+      // Many chargebacks have undefined notes, the custom cell renders "-"
+      expect(allText).toContain('-');
+    });
+
+    test('notes custom cell should show text for non-empty notes', async () => {
+      const allText = await tb.table.textContent();
+      expect(allText).toContain('Notes here.');
+    });
+
+    test('Total Amount custom column should be present', async () => {
+      const header = tb.page.locator('mat-header-cell.mat-column-Total-Amount');
+      await expect(header).toBeVisible();
+      const text = await header.textContent();
+      expect(text).toContain('Total Amount');
+    });
+  });
+
+  test.describe('No Console Errors', () => {
+    test('should render without console errors', async ({ page }) => {
+      const errors: string[] = [];
+      page.on('pageerror', e => errors.push(e.message));
+
+      const localTb = new OodleTablePage(page);
+      await localTb.goto();
+
+      // Interact with the table to trigger potential errors
+      const maxScroll = await localTb.getMaxScrollTop();
+      await localTb.setScrollTop(maxScroll / 2);
+      await localTb.waitForTableUpdate();
+
+      expect(errors).toHaveLength(0);
+    });
+
+    test('should scroll without console errors', async ({ page }) => {
+      const errors: string[] = [];
+      page.on('pageerror', e => errors.push(e.message));
+
+      const localTb = new OodleTablePage(page);
+      await localTb.goto();
+
+      // Rapid scroll
+      for (let i = 0; i < 10; i++) {
+        await localTb.scrollByIncrement(100);
+        await page.waitForTimeout(30);
+      }
+      await localTb.waitForTableUpdate();
+
+      expect(errors).toHaveLength(0);
     });
   });
 

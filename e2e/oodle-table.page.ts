@@ -9,7 +9,6 @@ export class OodleTablePage {
   readonly footerRow: Locator;
   readonly paginator: Locator;
   readonly paginatorStatus: Locator;
-  readonly toggleButton: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -19,8 +18,7 @@ export class OodleTablePage {
     this.dataRows = page.locator('cdk-virtual-scroll-viewport mat-row');
     this.footerRow = page.locator('mat-footer-row');
     this.paginator = page.locator('mat-paginator');
-    this.paginatorStatus = page.getByRole('status');
-    this.toggleButton = page.locator('mat-button-toggle');
+    this.paginatorStatus = page.locator('.page-amounts');
   }
 
   async goto() {
@@ -85,8 +83,30 @@ export class OodleTablePage {
     return positions;
   }
 
-  async toggleLinesView() {
-    await this.toggleButton.click();
+  async switchToLinesView() {
+    await this.page.getByRole('radio', { name: 'Lines' }).click();
+  }
+
+  async switchToSummaryView() {
+    await this.page.getByRole('radio', { name: 'Summary' }).click();
+  }
+
+  async getCellText(rowIndex: number, columnClass: string): Promise<string> {
+    const cell = this.dataRows.nth(rowIndex).locator(`.mat-column-${columnClass}`);
+    return (await cell.textContent())?.trim() ?? '';
+  }
+
+  async sortByColumn(columnName: string) {
+    const sortHeader = this.page.locator(`mat-header-cell.mat-column-${columnName} [mat-sort-header]`);
+    await sortHeader.click();
+  }
+
+  async navigateToNextPage() {
+    await this.paginator.getByRole('button', { name: 'Next page' }).click();
+  }
+
+  async navigateToPreviousPage() {
+    await this.paginator.getByRole('button', { name: 'Previous page' }).click();
   }
 
   async waitForTableUpdate() {

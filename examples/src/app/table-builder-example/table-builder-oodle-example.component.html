@@ -1,6 +1,9 @@
 <div class="page rounded-card mat-elevation-z1">
   <div appearance="outlined" class="rounded-card search-card filters-container">
-    <mat-button-toggle [checked]="!isLinesView" (change)="isLinesView = !isLinesView">Without Lines</mat-button-toggle>
+    <mat-button-toggle-group [value]="isLinesView ? 'lines' : 'summary'" (change)="isLinesView = $event.value === 'lines'">
+      <mat-button-toggle value="summary">Summary</mat-button-toggle>
+      <mat-button-toggle value="lines">Lines</mat-button-toggle>
+    </mat-button-toggle-group>
 
     <!-- Without Lines View -->
     @if (!isLinesView) {
