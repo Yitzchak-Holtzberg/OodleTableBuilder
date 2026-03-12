@@ -1,5 +1,5 @@
 import { Component, Input, Output, ChangeDetectionStrategy, Predicate, TemplateRef, input, output, viewChild, contentChildren, inject, computed, signal } from '@angular/core';
-import { BehaviorSubject, Observable, from, ReplaySubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, from, of, ReplaySubject, Subscription } from 'rxjs';
 import { ArrayAdditional, FieldType, MetaData } from '../../interfaces/report-def';
 import { first, last, map, switchMap, tap, withLatestFrom, mergeAll, scan } from 'rxjs/operators';
 import { TableBuilder } from '../../classes/table-builder';
@@ -20,7 +20,6 @@ import { WrapperFilterStore } from '../table-container-filter/table-wrapper-filt
 import { cloneDeep, groupBy } from 'lodash';
 import { ColumnInfo } from '../../interfaces/ColumnInfo';
 import { defaultShareReplay } from '../../../rxjs';
-import { flattenDeep } from 'lodash';
 import { createFilterFunc, isCustomFilter, isFilterInfo } from '../../classes/filter-info';
 import { Dictionary } from '../../interfaces/dictionary';
 import { TableWrapperDirective } from '../../directives/table-wrapper.directive';
@@ -177,11 +176,15 @@ import { MatInput } from '@angular/material/input';
       .appendFilters(filters$)
       .filterData(this.tableBuilder.getData$()).pipe(
         switchMap(data => this.state.groupByKeys$.pipe(
-          map(groupBy => this.getData(data, groupBy)),
-        ).pipe(
-          switchMap(data => this.state.groups$.pipe(
-            map(groups => this.setDisplay(data, groups))
-          ))
+          switchMap(groupBy => {
+            const grouped = this.getData(data, groupBy);
+            if (!groupBy.length) {
+              return of(grouped);
+            }
+            return this.state.groups$.pipe(
+              map(groups => this.setDisplay(grouped, groups))
+            );
+          })
         ))
       );
 
@@ -323,36 +326,38 @@ import { MatInput } from '@angular/material/input';
   }
 
   tbGroupBy = (data: any[], groupByKeys: string[], parentGroupName?: any): any[] => {
-    let res = {};
-    res = groupBy(data, groupByKeys[0]);
+    const result: any[] = [];
+    const grouped = groupBy(data, groupByKeys[0]);
     const remainingGroupByKeys = groupByKeys.slice(1);
-    if (remainingGroupByKeys.length) {
-      Object.keys(res).forEach(key => res[key] = this.tbGroupBy(res[key], remainingGroupByKeys, key))
-    }
-    return flattenDeep(Object.keys(res).map(groupName => {
-      const uniqName = parentGroupName ? `${parentGroupName}-${groupName}` : `${groupName}`;
-      return [
-        {
-          isGroupHeader: true,
-          groupHeaderName: `${groupName} (${res[groupName]?.filter(row => !row.isGroupHeader)?.length})`,
-          data: res[groupName],
-          groupName: uniqName,
-          padding: 0
-        },
-        (res[groupName] as any[])?.map(d => ({ ...d, parentGroupName: d.parentGroupName || uniqName }))
-      ];
-    })).map(this.addIndentation);
-  }
 
-  addIndentation = (d: any) => {
-    if (d.isGroupHeader) {
-      if (d.padding) {
-        d.padding += 20;
+    for (const groupName of Object.keys(grouped)) {
+      const uniqName = parentGroupName ? `${parentGroupName}-${groupName}` : groupName;
+      let children: any[];
+
+      if (remainingGroupByKeys.length) {
+        children = this.tbGroupBy(grouped[groupName], remainingGroupByKeys, groupName);
       } else {
-        d.padding = 1;
+        children = grouped[groupName];
+      }
+
+      const dataCount = children.filter(row => !row.isGroupHeader).length;
+      result.push({
+        isGroupHeader: true,
+        groupHeaderName: `${groupName} (${dataCount})`,
+        data: children,
+        groupName: uniqName,
+        padding: parentGroupName ? 21 : 1
+      });
+
+      for (const d of children) {
+        if (!d.parentGroupName) {
+          d.parentGroupName = uniqName;
+        }
+        result.push(d);
       }
     }
-    return d;
+
+    return result;
   }
 
   setDisplay = (data: any[], groups: Group[]): any[] => data

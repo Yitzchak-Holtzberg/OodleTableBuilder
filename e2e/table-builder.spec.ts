@@ -17,7 +17,7 @@ test.describe('Table Builder', () => {
 
     test('should show correct paginator text', async () => {
       const text = await tb.getPaginatorText();
-      expect(text).toContain('1 – 8 of 8');
+      expect(text).toContain('1 - 8 of 8');
     });
 
     test('should have expected column headers', async () => {
@@ -269,7 +269,8 @@ test.describe('Table Builder', () => {
       await tb.waitForTableUpdate();
 
       await tb.cancelGroupBy();
-      await tb.waitForTableUpdate();
+      // Wait for rows to re-render after un-grouping
+      await expect(tb.dataRows).toHaveCount(8, { timeout: 5000 });
 
       const text = await tb.getPaginatorText();
       expect(text).toContain('of 8');
@@ -279,7 +280,7 @@ test.describe('Table Builder', () => {
   test.describe('Pagination', () => {
     test('should show correct initial pagination', async () => {
       const text = await tb.getPaginatorText();
-      expect(text).toContain('1 – 8 of 8');
+      expect(text).toContain('1 - 8 of 8');
     });
 
     test('should still render after adding rows', async () => {

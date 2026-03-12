@@ -9,7 +9,7 @@ import { NgClass, AsyncPipe } from '@angular/common';
     selector: 'tb-paginator',
     template: `
   @if (currentPageData$ | async; as pageData) {
-    <div [ngClass]="{'hide' : !(collapseFooter$ | async), 'page-amounts':true}">
+    <div role="status" [ngClass]="{'hide' : !(collapseFooter$ | async), 'page-amounts':true}">
       {{pageData.currentStart}} - {{pageData.currentEnd}} of {{pageData.total}}
     </div>
   }

@@ -317,10 +317,14 @@ export class TableStore extends ComponentStore<TableState> {
     groupByKeys: [...state.groupByKeys, groupByKey]
   }));
 
-  removeGroupByKey = this.updater((state, groupByKey: string) => ({
-    ...state,
-    groupByKeys: state.groupByKeys.filter(key => groupByKey != key)
-  }));
+  removeGroupByKey = this.updater((state, groupByKey: string) => {
+    const remaining = state.groupByKeys.filter(key => groupByKey != key);
+    return {
+      ...state,
+      groupByKeys: remaining,
+      groups: remaining.length ? state.groups : []
+    };
+  });
 
   updateGroups = this.updater((state, groups: Group[]) => {
     const groupNames = groups.map(g => g.groupName);

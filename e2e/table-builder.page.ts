@@ -23,7 +23,7 @@ export class TableBuilderPage {
     this.dataRows = page.locator('mat-row');
     this.footerRow = page.locator('mat-footer-row');
     this.paginator = page.locator('mat-paginator');
-    this.paginatorStatus = page.getByRole('status');
+    this.paginatorStatus = page.locator('.page-amounts');
     this.selectAllCheckbox = page.locator('mat-header-cell.mat-column-select mat-checkbox');
     this.addGoldButton = page.getByRole('button', { name: 'Add Gold' });
     this.filterBButton = page.getByRole('button', { name: 'Filter B' });
