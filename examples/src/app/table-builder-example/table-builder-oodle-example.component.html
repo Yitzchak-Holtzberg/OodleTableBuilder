@@ -1,0 +1,121 @@
+<div class="page rounded-card mat-elevation-z1">
+  <div appearance="outlined" class="rounded-card search-card filters-container">
+    <mat-button-toggle [checked]="!isLinesView" (change)="isLinesView = !isLinesView">Without Lines</mat-button-toggle>
+
+    <!-- Without Lines View -->
+    @if (!isLinesView) {
+      <div class="chargeback-table-container mat-elevation-z2 rounded-card">
+        <tb-table-container isVs [offset]="100" [tableBuilder]="tableBuilder" tableId="chargebacks" class="chargeback-table">
+          <ng-container customCell="notes" matColumnDef="notes">
+            <mat-cell *matCellDef="let element = element">
+              <span>{{ element.notes || "-" }}</span>
+            </mat-cell>
+          </ng-container>
+          @if (true)
+            {
+            <ng-container customCell="Total Amount" matColumnDef="Total Amount">
+              <mat-cell *matCellDef="let element = element">
+                {{ element.totalAmount | currency }}
+                <span class="flex-spacer"></span>
+                <span style="display: flex; justify-content: flex-end !important">
+                  <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-button-mover">
+                    <mat-icon color="primary">more_vert</mat-icon>
+                  </button>
+                </span>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item>
+                    <mat-icon color="primary">receipt_long</mat-icon>
+                    <span>Details</span>
+                  </button>
+                  <button mat-menu-item>
+                    <span>Approve</span>
+                  </button>
+                  <button mat-menu-item>
+                    <span>Approve and Send</span>
+                  </button>
+                  <button mat-menu-item>
+                    <mat-icon color="primary">send</mat-icon>
+                    <span>Mark as Sent to NetSuite</span>
+                  </button>
+                  <button mat-menu-item>
+                    <mat-icon color="primary">edit</mat-icon>
+                    <span>Edit</span>
+                  </button>
+                  <button mat-menu-item>
+                    <mat-icon color="warn">email</mat-icon>
+                    <span>Send Chargeback</span>
+                  </button>
+                  <!-- <history-button [id]="element.id" [displayNumber]="element.id" [topLevelTableId]="'Chargeback'"></history-button> -->
+                  <button mat-menu-item>
+                    <mat-icon color="warn">delete_forever</mat-icon>
+                    <span>Delete</span>
+                  </button>
+                  <button mat-menu-item>
+                    <mat-icon color="primary">picture_as_pdf</mat-icon>
+                    <span>View PDF</span>
+                  </button>
+                </mat-menu>
+              </mat-cell>
+            </ng-container>
+          }
+        </tb-table-container>
+      </div>
+    }
+
+    <!-- With Lines View -->
+    @if (isLinesView) {
+      <div class="chargeback-table-container mat-elevation-z2 rounded-card">
+        <tb-table-container isVs [offset]="100" [tableBuilder]="tableBuilderWithLines" tableId="chargebacksWithLines" class="chargeback-table">
+          <!-- <ng-container customCell="vendorName" matColumnDef="vendorName">
+          <mat-cell *matCellDef="let element = element">
+            <span fitContent>
+              <vendor-name-display [vendorId]="element.vendorId">
+                {{ element.vendorName }}
+              </vendor-name-display>
+            </span>
+          </mat-cell>
+        </ng-container> -->
+        <ng-container customCell="totalAmount" matColumnDef="totalAmount">
+          <mat-cell *matCellDef="let element = element">
+            {{ element.totalAmount | currency }}
+          </mat-cell>
+        </ng-container>
+        <ng-container customCell="quantity" matColumnDef="quantity">
+          <mat-cell *matCellDef="let element = element">
+            {{ element.quantity }}
+            <span class="flex-spacer"></span>
+            <button mat-icon-button style="display: flex; justify-content: flex-end !important" [matMenuTriggerFor]="menu"
+              class="menu-button-mover">
+              <mat-icon color="primary">more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item>
+                <mat-icon color="primary">receipt_long</mat-icon>
+                <span>Details</span>
+              </button>
+              <button mat-menu-item>
+                <span>Approve</span>
+              </button>
+              <button mat-menu-item>
+                <mat-icon color="primary">send</mat-icon>
+                <span>Mark as Sent to NetSuite</span>
+              </button>
+              <button mat-menu-item>
+                <mat-icon color="primary">edit</mat-icon>
+                <span>Edit</span>
+              </button>
+              <button mat-menu-item>
+                <mat-icon color="primary">picture_as_pdf</mat-icon>
+                <span>View PDF</span>
+              </button>
+              <button mat-menu-item>
+                <span>Delete</span>
+              </button>
+            </mat-menu>
+          </mat-cell>
+        </ng-container>
+      </tb-table-container>
+    </div>
+  }
+</div>
+</div>
