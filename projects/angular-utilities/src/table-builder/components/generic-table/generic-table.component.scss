@@ -32,8 +32,20 @@
   display: flex;
 }
 
-.group-header-row {
+:host ::ng-deep .mat-column-groupHeader {
+  display: none;
+}
+
+:host ::ng-deep .group-header-row {
   background-color: white;
+
+  .mat-mdc-cell:not(.mat-column-groupHeader) {
+    display: none;
+  }
+  .mat-column-groupHeader {
+    display: flex;
+    flex: 1;
+  }
 }
 
 .group-footer-row {
