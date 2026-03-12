@@ -1,5 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 
+html { overflow: hidden; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mat-mdc-header-cell{
   border-top: 1px solid rgba(0,0,0,.12)!important;
