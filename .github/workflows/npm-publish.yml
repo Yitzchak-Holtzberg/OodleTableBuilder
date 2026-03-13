@@ -1,21 +1,29 @@
 name: npm-publish
 on:
-  release:
-    types: [published]
+  push:
+    branches: [main]
 jobs:
   npm-publish:
     name: npm-publish
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
     - name: Checkout repository
-      uses: actions/checkout@master
+      uses: actions/checkout@v4
     - name: Set up Node.js
-      uses: actions/setup-node@master
+      uses: actions/setup-node@v4
       with:
-        node-version: '16.13'
-    - run: npm install
+        node-version: '22'
+        registry-url: 'https://registry.npmjs.org'
+    - run: npm ci --legacy-peer-deps
     - run: node node_modules/@angular/cli/bin/ng build AngularUtilities --configuration production
-    - run: echo '//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}' > .npmrc
-    - run: npm publish dist/angular-utilities --access public
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+    - name: Auto-increment patch version and publish
+      run: |
+        cd dist/angular-utilities
+        CURRENT=$(npm view @saydar/table-builder version 2>/dev/null || echo "0.0.0")
+        IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+        NEXT="${MAJOR}.${MINOR}.$((PATCH + 1))"
+        npm version "$NEXT" --no-git-tag-version
+        npm publish --access public --provenance

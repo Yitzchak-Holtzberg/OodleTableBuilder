@@ -23,6 +23,11 @@ export * from './table-builder/directives';
 
 export {FilterType} from './table-builder/enums/filterTypes';
 
+export * from './table-builder/classes/filter-info';
+
+export * from './table-builder/classes/table-store';
+
+export * from './table-builder/classes/TableState';
 
 export * from './rxjs'
 
