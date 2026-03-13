@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { TableStore } from '../../classes/table-store';
 import { LetDirective } from '@ngrx/component';
 import { MatChipSet, MatChip, MatChipRemove } from '@angular/material/chips';
@@ -11,11 +11,6 @@ import { SpaceCasePipe } from '../../../utilities/pipes/space-case.pipes';
     styleUrls: ['./group-by-list.component.css'],
     imports: [LetDirective, MatChipSet, MatIcon, MatChip, MatChipRemove, SpaceCasePipe]
 })
-export class GroupByListComponent implements OnInit {
+export class GroupByListComponent {
   tableStore = inject(TableStore);
-
-
-  ngOnInit(): void {
-  }
-
 }

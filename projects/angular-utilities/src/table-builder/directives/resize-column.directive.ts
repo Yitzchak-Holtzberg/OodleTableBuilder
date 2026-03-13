@@ -85,7 +85,7 @@ export class ResizeColumnDirective implements OnInit{
     );
   }
 
-  calculateNewWidths(mouseDownData:MouseDowmData,mouseMove:MouseEvent):{newTableWidth:number,newColumnWidth:number}{
+  calculateNewWidths(mouseDownData:MouseDownData,mouseMove:MouseEvent):{newTableWidth:number,newColumnWidth:number}{
     const change = (mouseMove.pageX - mouseDownData.startPageX );
     let newColumnWidth = mouseDownData.startColumnWidth + change;
     if(newColumnWidth < 1){
@@ -98,7 +98,7 @@ export class ResizeColumnDirective implements OnInit{
   getElementWidth = (elem:HTMLElement) => (+(globalThis.getComputedStyle(elem).getPropertyValue('width').replace('px','')))
 
 }
-interface MouseDowmData{
+interface MouseDownData{
   startPageX:number,
   startColumnWidth:number,
   startTableWidth:number,

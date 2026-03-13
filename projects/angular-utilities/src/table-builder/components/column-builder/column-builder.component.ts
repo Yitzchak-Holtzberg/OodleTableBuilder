@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy, TemplateRef, OnInit, HostBinding, ContentChild, ContentChildren, Predicate, Injector, viewChild, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, TemplateRef, OnInit, HostBinding, ContentChild, ContentChildren, Predicate, Injector, viewChild, inject } from '@angular/core';
 import { FieldType, MetaData } from '../../interfaces/report-def';
 import { MatColumnDef, MatTable, MatCell, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatFooterCellDef, MatFooterCell } from '@angular/material/table';
 import { Observable } from 'rxjs';
@@ -66,9 +66,11 @@ export class ColumnBuilderComponent implements OnInit {
   readonly bodyTemplate = viewChild.required<TemplateRef<any>>('body');
 
   getInnerTemplate() :TemplateRef<any> {
-    if(this.metaData.template) return this.metaData.template;
-    if (this.customCell?.TemplateRef)  return this.customCell.TemplateRef;
-    return this.templateService.getTemplate(this.metaData);
+    const metaData = this.metaData;
+    if(metaData.template) return metaData.template;
+    const TemplateRefValue = this.customCell?.TemplateRef;
+    if (TemplateRefValue)  return TemplateRefValue;
+    return this.templateService.getTemplate(metaData);
   }
   showfilters$!: Observable<boolean>;
   getOuterTemplate() {
@@ -77,26 +79,28 @@ export class ColumnBuilderComponent implements OnInit {
   classes?: Dictionary<Predicate<any>>;
 
   ngOnInit() {
-    if(this.metaData.fieldType === FieldType.Currency) {
+    const metaData = this.metaData;
+    if(metaData.fieldType === FieldType.Currency) {
       this.classes = {
         ['negative-currency']: (element) => element[this.metaData.key] < 0,
-        ...this.metaData.classes
+        ...metaData.classes
       }
     }
     else {
-      this.classes = this.metaData.classes;
+      this.classes = metaData.classes;
     }
-    this.filter = {key: this.metaData.key, fieldType: this.metaData.fieldType};
-    const width$ = this.state.getUserDefinedWidth$(this.metaData.key).pipe(
+    this.filter = {key: metaData.key, fieldType: metaData.fieldType};
+    const width$ = this.state.getUserDefinedWidth$(metaData.key).pipe(
       previousAndCurrent(0),
       map(this.mapWidth),
     );
-    const fullMetaStyles = this.metaData.additional?.styles ?? {};
+    const fullMetaStyles = metaData.additional?.styles ?? {};
     this.styles$ = width$.pipe(map(width => {
+      const metaDataValue = this.metaData;
       const styles: allStyles = {
-        header : {...fullMetaStyles,...this.metaData.additional?.columnPartStyles?.header, ...width},
-        footer: {...fullMetaStyles,...this.metaData.additional?.columnPartStyles?.footer, ...width},
-        body: {...fullMetaStyles,...this.metaData.additional?.columnPartStyles?.body, ...width},
+        header : {...fullMetaStyles,...metaDataValue.additional?.columnPartStyles?.header, ...width},
+        footer: {...fullMetaStyles,...metaDataValue.additional?.columnPartStyles?.footer, ...width},
+        body: {...fullMetaStyles,...metaDataValue.additional?.columnPartStyles?.body, ...width},
       };
       return styles;
     }));
@@ -111,13 +115,15 @@ export class ColumnBuilderComponent implements OnInit {
   }
 
   cellClicked(element: any, key: string) {
-    if(this.metaData.click) {
-      this.metaData.click(element,key);
+    const metaData = this.metaData;
+    if(metaData.click) {
+      metaData.click(element,key);
     }
   }
 
   mapWidth = ([previousUserDefinedWidth, currentUserDefinedWidth] : [number, number]) : widthStyle => {
-    const baseWidth = !!this.metaData.width ? {flex:`0 0 ${this.metaData.width}`, maxWidth:'none'} : {flex:'1'};
+    const metaData = this.metaData;
+    const baseWidth = !!metaData.width ? {flex:`0 0 ${metaData.width}`, maxWidth:'none'} : {flex:'1'};
     if( currentUserDefinedWidth ){
       return ({flex:`0 0 ${currentUserDefinedWidth}px`, maxWidth:'none'});
     } if( wasReset() ){

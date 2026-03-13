@@ -21,11 +21,4 @@ export class HttpNotStartedStateDirective<TParam extends any[],T> extends HttpSt
         super(injector,templateRef,viewContainer);
     }
 
-    ngOnInit() {
-        super.ngOnInit();
-    }
-
-    ngOnDestroy() {
-        super.ngOnDestroy();
-    }
 }

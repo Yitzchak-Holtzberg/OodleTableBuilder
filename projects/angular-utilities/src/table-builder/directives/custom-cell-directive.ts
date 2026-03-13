@@ -1,4 +1,4 @@
-import { Directive, TemplateRef, Input, AfterContentInit, Optional } from '@angular/core';
+import { Directive, Input, TemplateRef, AfterContentInit, Optional, input } from '@angular/core';
 import { CdkColumnDef } from '@angular/cdk/table';
 import { SortDef, MetaData, FieldType } from '../interfaces/report-def';
 
@@ -9,12 +9,12 @@ import { SortDef, MetaData, FieldType } from '../interfaces/report-def';
 // </generic-table>
 @Directive({ selector: '[customCell]' })
 export class CustomCellDirective implements AfterContentInit {
-    @Input() customCell!: string;
-    @Input() displayName?: string;
-    @Input() preSort?: SortDef;
-    @Input() TemplateRef: TemplateRef<any>;
-    @Input() customCellOrder?: number;
-    @Input() customCellWidth?: string;
+    readonly customCell = input.required<string>();
+    readonly displayName = input<string>();
+    readonly preSort = input<SortDef>();
+    @Input() TemplateRef!: TemplateRef<any>;
+    readonly customCellOrder = input<number>();
+    readonly customCellWidth = input<string>();
     constructor(
       @Optional()  private templateRef: TemplateRef<any>,
       @Optional() public columnDef: CdkColumnDef
@@ -29,13 +29,13 @@ export class CustomCellDirective implements AfterContentInit {
 
     getMetaData(metaData? : MetaData): MetaData {
       return {
-        key: this.customCell,
-        displayName: this.displayName ?? metaData?.displayName,
-        preSort: this.preSort ?? metaData?.preSort,
+        key: this.customCell(),
+        displayName: this.displayName() ?? metaData?.displayName,
+        preSort: this.preSort() ?? metaData?.preSort,
         fieldType: metaData?.fieldType ??  FieldType.Unknown,
-        order: this.customCellOrder ?? metaData?.order,
+        order: this.customCellOrder() ?? metaData?.order,
         _internalNotUserDefined: !(!!metaData),
-        width: this.customCellWidth ?? metaData?.width,
+        width: this.customCellWidth() ?? metaData?.width,
         customCell: true,
         noExport: !metaData
       };

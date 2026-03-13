@@ -38,18 +38,18 @@ export class TableColumnHeaderSettings {
   noHeader = false;
 }
 
-export class PesrsistedTableSettings {
-  constructor(tableSettings? :GeneralTableSettings | PesrsistedTableSettings){
+export class PersistedTableSettings {
+  constructor(tableSettings? :GeneralTableSettings | PersistedTableSettings){
     if (tableSettings){
-      this.collapseHeader = (tableSettings as GeneralTableSettings).headerSettings?.collapse ?? (tableSettings as PesrsistedTableSettings).collapseHeader;
-      this.collapseFooter = (tableSettings as GeneralTableSettings).footerSettings?.collapse ?? (tableSettings as PesrsistedTableSettings).collapseFooter;
+      this.collapseHeader = (tableSettings as GeneralTableSettings).headerSettings?.collapse ?? (tableSettings as PersistedTableSettings).collapseHeader;
+      this.collapseFooter = (tableSettings as GeneralTableSettings).footerSettings?.collapse ?? (tableSettings as PersistedTableSettings).collapseFooter;
     }
   }
   collapseHeader = false;
   collapseFooter = false;
 }
 
-export class NotPersisitedTableSettings {
+export class NotPersistedTableSettings {
   constructor(tableSettings? :GeneralTableSettings){
     if(tableSettings){
       this.hideExport = tableSettings.headerSettings.hideExport;
@@ -71,3 +71,8 @@ export class NotPersisitedTableSettings {
   hideColumnHeaderFilters = true;
   hideColumnHeader = true;
 }
+
+/** @deprecated Use PersistedTableSettings instead */
+export { PersistedTableSettings as PesrsistedTableSettings };
+/** @deprecated Use NotPersistedTableSettings instead */
+export { NotPersistedTableSettings as NotPersisitedTableSettings };

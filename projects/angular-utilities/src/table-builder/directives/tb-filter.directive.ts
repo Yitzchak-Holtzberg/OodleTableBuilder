@@ -63,7 +63,7 @@ export abstract class TableCustomFilterDirective<T = any> {
   @Input() key!: string;
   @Input() fieldType!: FieldType;
   @Input() filterId!: string;
-  @Input() active = true;
+  @Input() active: boolean = true;
   @Input() filterValue: any = null;
 
   setFilterValue(value: any) {
@@ -162,7 +162,7 @@ export abstract class TableCustomFilterDirectiveBase<T = any> extends TableCusto
 
   filter$! : Subject<CustomFilter>;
   filter!: CustomFilter;
-  @Input() filterId! : string;
+  @Input() filterId!: string;
 
   _predicate!: Predicate<T>;
   @Input('tbCustomFilter') set predicate( val: Predicate<T> ) {
@@ -191,7 +191,8 @@ export abstract class TableCustomFilterDirectiveBase<T = any> extends TableCusto
   }
 
   ngOnInit() {
-    if(!this.filterId) {
+    const filterId = this.filterId;
+    if(!filterId) {
       this.filterId = uuid();
     } else {
       this.savable = true;

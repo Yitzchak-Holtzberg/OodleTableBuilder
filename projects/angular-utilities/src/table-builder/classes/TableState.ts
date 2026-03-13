@@ -2,7 +2,7 @@ import { CustomFilter, FilterInfo } from './filter-info';
 import { Dictionary } from '../interfaces/dictionary';
 import { Sort } from '@angular/material/sort';
 import { MetaData, Target } from '../interfaces/report-def';
-import { NotPersisitedTableSettings, PesrsistedTableSettings } from './table-builder-general-settings';
+import { NotPersistedTableSettings, PersistedTableSettings } from './table-builder-general-settings';
 
 export interface Group {
   groupName?: string;
@@ -16,7 +16,7 @@ export interface PersistedTableState {
   filters: Dictionary<FilterInfo | CustomFilter>;
   sorted : Sort [];
   userDefined : {order:Dictionary<number>,widths:Dictionary<number>,table:{width?:number}};
-  persistedTableSettings : PesrsistedTableSettings;
+  persistedTableSettings : PersistedTableSettings;
   groupByKeys: string[];
   groups: Group[];
 }
@@ -24,7 +24,7 @@ export interface PersistedTableState {
 export interface TableState extends Required<PersistedTableState> {
   initializationState: InitializationState;
   metaData: Dictionary<MetaData>;
-  notPersisitedTableSettings : NotPersisitedTableSettings;
+  notPersistedTableSettings : NotPersistedTableSettings;
   linkMaps:{[key:string]:{
     link: (t:any)=>string,
     useRouterLink: boolean,
@@ -35,7 +35,7 @@ type RequireNull<T> = { [K in keyof T]: null };
 class KeysToDelete implements  RequireNull<Omit<TableState, keyof PersistedTableState>> {
   initializationState = null;
   metaData = null;
-  notPersisitedTableSettings = null;
+  notPersistedTableSettings = null;
   linkMaps = null;
 }
 export const keysToDelete = Object.keys(new KeysToDelete());
@@ -54,8 +54,8 @@ export const defaultTableState: TableState = {
   hiddenKeys: [],
   sorted: [],
   userDefined:{order:{},widths:{},table:{}},
-  persistedTableSettings : new PesrsistedTableSettings(),
-  notPersisitedTableSettings : new NotPersisitedTableSettings(),
+  persistedTableSettings : new PersistedTableSettings(),
+  notPersistedTableSettings : new NotPersistedTableSettings(),
   pageSize: 10,
   linkMaps:{},
   groupByKeys: [],

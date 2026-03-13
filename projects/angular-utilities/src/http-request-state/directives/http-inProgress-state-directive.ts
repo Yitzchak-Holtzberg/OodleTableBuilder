@@ -21,12 +21,4 @@ export class HttpInProgressStateDirective  extends HttpStateDirectiveBase {
         super(injector,templateRef,viewContainer);
     }
 
-    ngOnInit() {
-        super.ngOnInit();
-    }
-
-    ngOnDestroy() {
-        super.ngOnDestroy();
-    }
-
 }

@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Input, inject } from '@angular/core';
+import { Directive, ElementRef, Input, inject, input } from '@angular/core';
 import { TableContainerComponent } from '../components/table-container/table-container';
 import { Subject, takeUntil, tap } from 'rxjs';
 
@@ -12,7 +12,7 @@ export class VirtualScrollViewportDirective {
   private tbComponent = inject(TableContainerComponent);
 
 
-  @Input() offset!: number;
+  readonly offset = input.required<number>();
   @Input() set isVs(val: boolean | string) {
     if (val || val === '') {
       this._isVs = true;
@@ -58,7 +58,7 @@ export class VirtualScrollViewportDirective {
     if (wrapperHeight < window.innerHeight) {
       vsViewport.setAttribute('style', `height: ${vsContentWrapper.clientHeight + (hasHorizontalScrollBar ? 17 : 0)}px !important;`);
     } else {
-      vsViewport.setAttribute('style', `height: ${window.innerHeight - this.el.nativeElement.offsetTop - (this.offset || 167)}px !important;`);
+      vsViewport.setAttribute('style', `height: ${window.innerHeight - this.el.nativeElement.offsetTop - (this.offset() || 167)}px !important;`);
     }
   }
 

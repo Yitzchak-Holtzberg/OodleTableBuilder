@@ -87,14 +87,14 @@
         </button>
       }
       @if (currentStateKey$ | async; as currentKey) {
-        @if (tableId) {
+        @if (tableId()) {
           <button mat-menu-item (click)="saveState()">
             <mat-icon color="primary">save</mat-icon>
             <span>Save to {{currentKey}}</span>
           </button>
         }
       }
-      @if (tableId) {
+      @if (tableId()) {
         <button mat-menu-item [matMenuTriggerFor]="savedNames">
           <span>Choose Profile</span>
         </button>

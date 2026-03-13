@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 import { FilterType } from '../../enums/filterTypes';
 import { ControlContainer, NgForm, FormsModule } from '@angular/forms';
 import { PartialFilter } from '../../classes/filter-info';
@@ -19,5 +19,5 @@ import { InFilterComponent } from '../in-filter/in-filter.component';
 export class NumberFilterComponent {
   FilterType = FilterType; FieldType = FieldType;
   readonly CurrentFilterType = input.required<FilterType>();
-  @Input() info!:PartialFilter;
+  readonly info = input.required<PartialFilter>();
 }

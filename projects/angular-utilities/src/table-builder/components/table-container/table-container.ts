@@ -68,8 +68,8 @@ import { MatInput } from '@angular/material/input';
   readonly $customCells = contentChildren(CustomCellDirective);
 
   // Input signals with $ prefix and aliases for backward compatibility
-  @Input() tableId!: string;
-  @Input() tableBuilder!: TableBuilder;
+  readonly tableId = input.required<string>();
+  readonly tableBuilder = input.required<TableBuilder>();
   readonly $indexColumn = input(false, { alias: 'IndexColumn' });
   readonly $selectionColumn = input(false, { alias: 'SelectionColumn' });
   readonly $trackBy = input('', { alias: 'trackBy' });
@@ -115,8 +115,9 @@ import { MatInput } from '@angular/material/input';
 
   constructor() {
      this.state.on( this.state.getSavableState().pipe(last()), finalState => {
-      if(this.tableId) {
-        this.store.dispatch(setLocalProfile({key:this.tableId,value: finalState}));
+      const tableId = this.tableId();
+      if(tableId) {
+        this.store.dispatch(setLocalProfile({key:tableId,value: finalState}));
       }
     });
     this.state$ = this.state.getSavableState().pipe(
@@ -141,11 +142,12 @@ import { MatInput } from '@angular/material/input';
   }
 
   initializeState() {
-    this.state.setTableSettings(this.tableBuilder.settings);
+    this.state.setTableSettings(this.tableBuilder().settings);
     this.state.runOnceWhen(stateIs(InitializationState.MetaDataLoaded), state => {
-      if(this.tableId) {
+      const tableId = this.tableId();
+      if(tableId) {
         const persistedState$ = this.store.pipe(
-          select(selectors.selectLocalProfileState<any>(this.tableId) ),
+          select(selectors.selectLocalProfileState<any>(tableId) ),
           tap( persistedState => {
             if(!persistedState) {
               this.state.setIntializationState(InitializationState.LoadedFromStore);
@@ -165,7 +167,7 @@ import { MatInput } from '@angular/material/input';
 
 
     const inputFilters = this.$inputFilters();
-    var allFilters = inputFilters ? combineArrays([
+    const allFilters = inputFilters ? combineArrays([
       this.customFiltersSubject$,
       inputFilters
     ]) : this.customFiltersSubject$;
@@ -174,7 +176,7 @@ import { MatInput } from '@angular/material/input';
 
     const data = new DataFilter(allFilters)
       .appendFilters(filters$)
-      .filterData(this.tableBuilder.getData$()).pipe(
+      .filterData(this.tableBuilder().getData$()).pipe(
         switchMap(data => this.state.groupByKeys$.pipe(
           switchMap(groupBy => {
             const grouped = this.getData(data, groupBy);
@@ -195,9 +197,10 @@ import { MatInput } from '@angular/material/input';
     this.initializeState();
     this.initializeData();
 
-    if(this.tableId) {
-      this.stateKeys$ = this.store.select(selectors.selectLocalProfileKeys(this.tableId));
-      this.currentStateKey$ = this.store.select(selectors.selectLocalProfileCurrentKey(this.tableId));
+    const tableId = this.tableId();
+    if(tableId) {
+      this.stateKeys$ = this.store.select(selectors.selectLocalProfileKeys(tableId));
+      this.currentStateKey$ = this.store.select(selectors.selectLocalProfileCurrentKey(tableId));
     }
   }
 
@@ -214,16 +217,16 @@ import { MatInput } from '@angular/material/input';
       first()
     ).subscribe( tableState => {
       this.onSaveState$.emit();
-      this.store.dispatch(setLocalProfile({ key: this.tableId, value:tableState, persist: true} ));
+      this.store.dispatch(setLocalProfile({ key: this.tableId(), value:tableState, persist: true} ));
     });
   }
 
   setProfileState(val: string) {
-    this.store.dispatch(setLocalProfilesState({key:this.tableId, current: val}));
+    this.store.dispatch(setLocalProfilesState({key:this.tableId(), current: val}));
   }
 
   deleteProfileState(stateKey: string) {
-    this.store.dispatch(deleteLocalProfilesState({key:this.tableId, stateKey}));
+    this.store.dispatch(deleteLocalProfilesState({key:this.tableId(), stateKey}));
   }
 
 
@@ -232,17 +235,17 @@ import { MatInput } from '@angular/material/input';
 
     this.state.runOnceWhen(stateIs(InitializationState.LoadedFromStore), state => {
 
-      var allFilters = [...this.$filters(), ...this.$customFilters()];
+      let allFilters = [...this.$filters(), ...this.$customFilters()];
       if(this.wrapper) {
         allFilters = [...allFilters, ...this.wrapper.customFilters(), ...this.wrapper.filters(), ...this.wrapper.registerations];
       }
 
-      var customFilters: (TableCustomFilterDirective|TableFilterDirective )[] = [];
+      const customFilters: (TableCustomFilterDirective|TableFilterDirective )[] = [];
 
       allFilters.filter( f => !f.used).forEach( f => {
         f.used = true;
         if(f.savable) {
-          var filter = state.filters[f.filterId];
+          const filter = state.filters[f.filterId];
           if(isFilterInfo(filter)) {
             const filterDirective: TableFilterDirective = f as TableFilterDirective;
             filterDirective.fieldType = filter.fieldType;
@@ -281,17 +284,19 @@ import { MatInput } from '@angular/material/input';
   }
 
   InitializeColumns() {
-    const customCellMap = new Map(this.$customCells().map(cc => [cc.customCell,cc]));
-    this.state.setMetaData(this.tableBuilder.metaData$!.pipe(
+    const customCellMap = new Map(this.$customCells().map(cc => [cc.customCell(),cc]));
+    const tableBuilder = this.tableBuilder();
+    this.state.setMetaData(tableBuilder.metaData$!.pipe(
       map((mds) => {
         mds = mds.map(this.mapMetaDatas);
+        const mdsByKey = new Map(mds.map(md => [md.key, md]));
         return [
           ...mds,
-          ...this.$customCells().map( cc => cc.getMetaData(mds.find( item => item.key === cc.customCell )) )
+          ...this.$customCells().map( cc => cc.getMetaData(mdsByKey.get(cc.customCell())) )
         ]
       })
     ));
-    this.state.setLinkMaps(this.tableBuilder.metaData$!.pipe(
+    this.state.setLinkMaps(tableBuilder.metaData$!.pipe(
       map((mds) => {
         return mds.reduce((acc, md) => {
           if(md.fieldType === FieldType.Link){ acc[md.key]= createLinkCreator(md)}

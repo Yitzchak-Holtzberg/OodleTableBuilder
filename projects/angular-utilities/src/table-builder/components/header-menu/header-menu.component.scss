@@ -43,28 +43,31 @@ input[type=number]::-webkit-outer-spin-button {
   width: 28px;
   padding: 6px;
 }
+$icon-button-size: 18px;
+$icon-button-chosen-size: 22px;
+
 .header-filter-icon-button {
-  height: 18px;
-  width: 18px;
-  font-size: 18px;
+  height: $icon-button-size;
+  width: $icon-button-size;
+  font-size: $icon-button-size;
   padding: 0;
   margin: 0 2px;
 
   ::ng-deep * {
     line-height: initial;
     font-size: initial;
-    height: 18px;
-    width: 18px;
-    font-size: 18px;
+    height: $icon-button-size;
+    width: $icon-button-size;
+    font-size: $icon-button-size;
     bottom: initial;
 
   }
 
   &.chosen-icon,
   &.chosen-icon ::ng-deep * {
-    height: 22px;
-    width: 22px;
-    font-size: 22px;
+    height: $icon-button-chosen-size;
+    width: $icon-button-chosen-size;
+    font-size: $icon-button-chosen-size;
     color: green;
   }
 }

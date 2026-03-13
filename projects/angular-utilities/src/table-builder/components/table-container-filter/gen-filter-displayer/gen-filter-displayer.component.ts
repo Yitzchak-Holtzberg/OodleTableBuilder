@@ -25,9 +25,7 @@ export class GenFilterDisplayerComponent {
 
 
   constructor() {
-    const tableState = this.tableState;
-
-    this.filterCols$ =  tableState.metaDataArray$.pipe(
+    this.filterCols$ =  this.tableState.metaDataArray$.pipe(
       map(md => Object.values( md ).filter(m => (m.fieldType !== FieldType.Hidden) && (!m.noFilter))),
     );
   }

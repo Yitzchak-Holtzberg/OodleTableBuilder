@@ -37,18 +37,20 @@ mat-card.filter-card{
 .inline{
   display: inline-block;
 }
+$icon-button-size: 18px;
+
 .small-button {
-  height: 18px;
-  width: 18px;
-  font-size: 18px;
+  height: $icon-button-size;
+  width: $icon-button-size;
+  font-size: $icon-button-size;
   padding: 0;
   margin: 0;
   ::ng-deep * {
     line-height: initial;
     font-size: initial;
-    height: 18px;
-    width: 18px;
-    font-size: 18px;
+    height: $icon-button-size;
+    width: $icon-button-size;
+    font-size: $icon-button-size;
     bottom: initial;
 
   }

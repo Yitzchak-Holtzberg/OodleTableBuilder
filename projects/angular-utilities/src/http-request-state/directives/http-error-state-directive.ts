@@ -22,11 +22,4 @@ export class HttpErrorStateDirective<TParam extends any[], T> extends HttpStateD
     return false;
   };
 
-  ngOnInit() {
-    super.ngOnInit();
-  }
-
-  ngOnDestroy() {
-    super.ngOnDestroy();
-  }
 }

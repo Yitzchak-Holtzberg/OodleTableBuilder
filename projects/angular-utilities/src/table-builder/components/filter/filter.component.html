@@ -1,12 +1,12 @@
-@if (filter) {
+@if (filter()) {
   <mat-card appearance="outlined" class="filter-card">
     <mat-card-content>
       <form #form="ngForm" (keydown.enter)="onEnter(form.value,$event)" (keydown.escape)="close.emit()">
-        <input type="hidden" name="filterId" [ngModel]="filter.filterId"/>
-        <input type="hidden" name="key" [ngModel]="filter.key"/>
-        <input type="hidden" name="fieldType" [ngModel]="filter.fieldType"/>
+        <input type="hidden" name="filterId" [ngModel]="filter().filterId"/>
+        <input type="hidden" name="key" [ngModel]="filter().key"/>
+        <input type="hidden" name="fieldType" [ngModel]="filter().fieldType"/>
         <div class="head-row">
-          <h4 class="filter-name">{{ (filter.key | spaceCase) }} Filter</h4>
+          <h4 class="filter-name">{{ (filter().key | spaceCase) }} Filter</h4>
           <button class="cancel-button small-button" color="primary" mat-icon-button (click)="close.emit();"
                   type="button"
                   matTooltip="Close">
@@ -17,7 +17,7 @@
           <div class="inline">
             <mat-form-field class="my-filter">
               <mat-select placeholder="Select Filter Type" name="filterType" [(ngModel)]="currentFilterType">
-                @for (kvp of filterTypes[filter.fieldType] | keyvalue; track kvp.key) {
+                @for (kvp of filterTypes[filter().fieldType] | keyvalue; track kvp.key) {
                   <mat-option [value]="$any(kvp.value)[0]">
                     {{ kvp.key }}
                   </mat-option>
@@ -26,28 +26,28 @@
             </mat-form-field>
           </div>
           @switch (true) {
-            @case (filter.fieldType === FieldType.String || filter.fieldType === FieldType.Array || filter.fieldType === FieldType.Link ||
-            filter.fieldType === FieldType.Unknown || filter.fieldType === FieldType.PhoneNumber) {
+            @case (filter().fieldType === FieldType.String || filter().fieldType === FieldType.Array || filter().fieldType === FieldType.Link ||
+            filter().fieldType === FieldType.Unknown || filter().fieldType === FieldType.PhoneNumber) {
               <ng-container *ngTemplateOutlet="String"></ng-container>
             }
-            @case (filter.fieldType === FieldType.Number || filter.fieldType === FieldType.Currency) {
-              <tb-number-filter [info]="filter" [CurrentFilterType]="currentFilterType!"></tb-number-filter>
+            @case (filter().fieldType === FieldType.Number || filter().fieldType === FieldType.Currency) {
+              <tb-number-filter [info]="filter()" [CurrentFilterType]="currentFilterType!"></tb-number-filter>
             }
-            @case (filter.fieldType === FieldType.Boolean) {
+            @case (filter().fieldType === FieldType.Boolean) {
               <ng-container *ngTemplateOutlet="Boolean"></ng-container>
             }
-            @case (filter.fieldType === FieldType.Date) {
-              <tb-date-filter [info]="filter" [CurrentFilterType]="currentFilterType!"></tb-date-filter>
+            @case (filter().fieldType === FieldType.Date) {
+              <tb-date-filter [info]="filter()" [CurrentFilterType]="currentFilterType!"></tb-date-filter>
             }
-            @case (filter.fieldType === FieldType.DateTime) {
-              <tb-date-time-filter [info]="filter" [CurrentFilterType]="currentFilterType!"></tb-date-time-filter>
+            @case (filter().fieldType === FieldType.DateTime) {
+              <tb-date-time-filter [info]="filter()" [CurrentFilterType]="currentFilterType!"></tb-date-time-filter>
             }
-            @case (filter.fieldType === FieldType.Enum) {
+            @case (filter().fieldType === FieldType.Enum) {
               <ng-container *ngTemplateOutlet="Enum"></ng-container>
             }
           }
           @if (currentFilterType === FilterType.IsNull) {
-            <mat-radio-group name="filterValue" [ngModel]="filter.filterValue">
+            <mat-radio-group name="filterValue" [ngModel]="filter().filterValue">
               <mat-radio-button [value]="true">True</mat-radio-button>
               <mat-radio-button [value]="false">False</mat-radio-button>
             </mat-radio-group>
@@ -60,12 +60,12 @@
         <ng-template #String>
           @if (currentFilterType !== FilterType.IsNull && currentFilterType !== FilterType.In) {
             <mat-form-field class="my-filter">
-              <input matInput name="filterValue" [ngModel]="filter.filterValue"/>
+              <input matInput name="filterValue" [ngModel]="filter().filterValue"/>
             </mat-form-field>
           }
           @if (currentFilterType === FilterType.In) {
             <lib-in-filter [type]="FieldType.String" name='filterValue'
-                           [(ngModel)]="filter.filterValue"></lib-in-filter>
+                           [(ngModel)]="filter().filterValue"></lib-in-filter>
           }
         </ng-template>
         <ng-template #Boolean>
@@ -73,7 +73,7 @@
             @switch (currentFilterType) {
               @case (FilterType.BooleanEquals) {
                 <div class="switch">
-                  <mat-radio-group name="filterValue" [ngModel]="filter.filterValue">
+                  <mat-radio-group name="filterValue" [ngModel]="filter().filterValue">
                     <mat-radio-button [value]="true" preventEnter>True</mat-radio-button>
                     <mat-radio-button [value]="false" preventEnter>False</mat-radio-button>
                   </mat-radio-group>
@@ -84,8 +84,8 @@
         </ng-template>
         <ng-template #Enum>
           @if (currentFilterType === FilterType.In) {
-            <tb-in-list-filter [key]='filter.key' name='filterValue'
-                               [(ngModel)]='filter.filterValue'></tb-in-list-filter>
+            <tb-in-list-filter [key]='filter().key' name='filterValue'
+                               [(ngModel)]='filter().filterValue'></tb-in-list-filter>
           }
         </ng-template>
       </form>

@@ -1,4 +1,4 @@
-import { Directive, TemplateRef, Input, OnDestroy, Component, Output, EventEmitter, ViewContainerRef, Injector, ComponentFactoryResolver } from '@angular/core';
+import { Directive, TemplateRef, Input, OnDestroy, Component, ViewContainerRef, Injector, ComponentFactoryResolver, input, output } from '@angular/core';
 import { MatDialog, MatDialogRef, MatDialogConfig } from '@angular/material/dialog';
 import { Observable, Subscription, Subject } from 'rxjs';
 import { switchAll } from 'rxjs/operators';
@@ -50,9 +50,9 @@ const defaultDialogConfig: MatDialogConfig = {
 
 
 @Directive({ selector: '[opDialog]' }) export class DialogDirective<T> implements OnDestroy {
-  @Output() opDialogClosed: EventEmitter<boolean> = new EventEmitter();
+  readonly opDialogClosed = output<boolean>();
   _dialogConfig: MatDialogConfig<T> = defaultDialogConfig;
-  @Input() add_opDialog_Class = true;
+  readonly add_opDialog_Class = input(true);
   @Input() set opDialogConfig(config: MatDialogConfig<T>) {
     
     this._dialogConfig = { ...defaultDialogConfig, ...config };
@@ -64,7 +64,7 @@ const defaultDialogConfig: MatDialogConfig = {
   @Input('opDialog') set state(open_close: Observable<T>) {
     this._data.next(open_close);
   }
-  @Input('opDialogOrigin') nativeElement? : HTMLElement;
+  readonly nativeElement = input<HTMLElement>(undefined, { alias: "opDialogOrigin" });
   dialogRef?: MatDialogRef<any, boolean>;
   subscription: Subscription;
   componentWrapper?: DialogWrapper<T>;
@@ -92,12 +92,13 @@ const defaultDialogConfig: MatDialogConfig = {
   }
 
   initDialog() {
-    if(this.nativeElement){
-      const rect = this.nativeElement.getBoundingClientRect();
+    const nativeElement = this.nativeElement();
+    if(nativeElement){
+      const rect = nativeElement.getBoundingClientRect();
       const position = { left: `${rect.left}px`, top: `${rect.bottom - 50}px` };
       this.opDialogConfig = {...this.opDialogConfig , position};
     }
-    if (this.add_opDialog_Class) {
+    if (this.add_opDialog_Class()) {
       this.opDialogConfig.panelClass = [...(Array.isArray(this.opDialogConfig.panelClass) ? this.opDialogConfig.panelClass : this.opDialogConfig.panelClass ? [this.opDialogConfig.panelClass] : []), 'opDialog'];
     }
     this.dialogRef = this.dialog.open(DialogWrapper, this.opDialogConfig);

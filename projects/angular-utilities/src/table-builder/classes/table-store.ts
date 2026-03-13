@@ -12,7 +12,7 @@ import { Dictionary } from '../interfaces/dictionary';
 import { filter, last, map, tap } from 'rxjs/operators'
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { notNull, onceWhen } from '../../rxjs/rxjs-operators';
-import { GeneralTableSettings, NotPersisitedTableSettings, PesrsistedTableSettings } from './table-builder-general-settings';
+import { GeneralTableSettings, NotPersistedTableSettings, PersistedTableSettings } from './table-builder-general-settings';
 import * as _ from 'lodash';
 
 export function stateIs(initializationState: InitializationState) {
@@ -59,7 +59,6 @@ export class TableStore extends ComponentStore<TableState> {
 
   getMetaData$ = (key: string) : Observable<MetaData> => {
     return this.select( state => state.metaData[key]  ).pipe(
-      tap(meta => {if(!meta)console.warn(`Meta data with key ${key} not found`)}),
       notNull())
   }
 
@@ -94,7 +93,7 @@ export class TableStore extends ComponentStore<TableState> {
 
   readonly setHiddenColumns = this.updater((state, displayCols: {key: string, visible: boolean}[]) => {
 
-    var hiddenKeysSet= new Set<string>(
+    const hiddenKeysSet= new Set<string>(
       [
         ...displayCols.filter(col => !col.visible).map(col => col.key),
         ...Object.values(state.metaData).filter(md => md.fieldType === FieldType.Hidden).map(md => md.key)
@@ -142,12 +141,12 @@ export class TableStore extends ComponentStore<TableState> {
 
   private addFiltersToState = (state:TableState,filters:(FilterInfo | CustomFilter)[]) : TableState => {
 
-    var customFilters = filters.filter(  isCustomFilter );
+    const customFilters = filters.filter(  isCustomFilter );
 
-    var filterInfos = filters.filter(isFilterInfo);
+    const filterInfos = filters.filter(isFilterInfo);
 
     const filtersObj = filterInfos
-      .filter(fltr => Object.keys(state.metaData).some(key => key === fltr.key) || console.warn(`Meta data with key ${fltr.key} not found`))
+      .filter(fltr => fltr.key in state.metaData)
       .reduce((filtersObj: {[k: string]: any},filter)=>{
         if (!filter.filterId) {
           filter.filterId = uuid();
@@ -303,13 +302,13 @@ export class TableStore extends ComponentStore<TableState> {
   toggleCollapseHeader = this.updater((state)=>{
     const tableSettings = {...state.persistedTableSettings};
     tableSettings.collapseHeader = !tableSettings.collapseHeader;
-    return ({...state,persistedTableSettings : new PesrsistedTableSettings(tableSettings)});
+    return ({...state,persistedTableSettings : new PersistedTableSettings(tableSettings)});
   })
 
   toggleCollapseFooter = this.updater((state)=>{
     const tableSettings = {...state.persistedTableSettings};
     tableSettings.collapseFooter = !tableSettings.collapseFooter;
-    return ({...state,persistedTableSettings : new PesrsistedTableSettings(tableSettings)});
+    return ({...state,persistedTableSettings : new PersistedTableSettings(tableSettings)});
   })
 
   addGroupByKey = this.updater((state, groupByKey: string) => ({
@@ -340,15 +339,15 @@ export class TableStore extends ComponentStore<TableState> {
   setTableSettings = this.updater((state,settings:GeneralTableSettings)=>{
     const s:TableState = {
       ...state,
-      persistedTableSettings : new PesrsistedTableSettings(settings),
-      notPersisitedTableSettings : new NotPersisitedTableSettings(settings)
+      persistedTableSettings : new PersistedTableSettings(settings),
+      notPersistedTableSettings : new NotPersistedTableSettings(settings)
       };
     return s;
   });
 
   tableSettings$ = this.select(state => {
-    const ts : PesrsistedTableSettings & NotPersisitedTableSettings =
-      {...state.persistedTableSettings,...state.notPersisitedTableSettings};
+    const ts : PersistedTableSettings & NotPersistedTableSettings =
+      {...state.persistedTableSettings,...state.notPersistedTableSettings};
     return ts;
   })
 

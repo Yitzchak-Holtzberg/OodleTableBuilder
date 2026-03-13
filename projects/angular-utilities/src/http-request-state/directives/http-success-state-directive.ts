@@ -1,4 +1,4 @@
-import { Directive, Injector, Input, TemplateRef, ViewContainerRef } from '@angular/core';
+import { Directive, Injector, TemplateRef, ViewContainerRef, input } from '@angular/core';
 import { isSuccessState } from '../helpers';
 import { HttpStateDirectiveBase } from './HttpStateDirectiveBase';
 import { HttpRequestState } from '../types';
@@ -10,7 +10,7 @@ export interface HttpSuccessStateViewContext<T> {
 }
 @Directive({ selector: '[httpSuccessState]' })
 export class HttpSuccessStateDirective<T> extends HttpStateDirectiveBase {
-  @Input() httpSuccessStateTypeSafety?: HttpRequestStateStore<any, T> | Observable<HttpRequestState<T>>;
+  readonly httpSuccessStateTypeSafety = input<HttpRequestStateStore<any, T> | Observable<HttpRequestState<T>>>();
   render = (state: HttpRequestState<T>) => {
     if (isSuccessState(state)) {
       this.viewContainer.createEmbeddedView(this.templateRef, { $implicit: state.body });
@@ -24,14 +24,6 @@ export class HttpSuccessStateDirective<T> extends HttpStateDirectiveBase {
     viewContainer: ViewContainerRef,
   ) {
     super(injector, templateRef, viewContainer);
-  }
-
-  ngOnInit() {
-    super.ngOnInit();
-  }
-
-  ngOnDestroy() {
-    super.ngOnDestroy();
   }
 
   static ngTemplateContextGuard<T>(dir: HttpSuccessStateDirective<T>, ctx: any): ctx is HttpSuccessStateViewContext<T> {

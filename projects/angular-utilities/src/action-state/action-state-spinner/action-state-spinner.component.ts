@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ActionStatus, serverStatusTypes } from '../ngrx';
 import { delayOn } from '../../rxjs';
@@ -13,12 +13,12 @@ import { AsyncPipe } from '@angular/common';
 })
 export class ActionStateSpinnerComponent implements OnInit {
 
-  @Input() status$!: Observable<ActionStatus>;
+  readonly status$ = input.required<Observable<ActionStatus>>();
   serverActionStatus$!: Observable<ActionStatus>;
   serverStatusTypes = serverStatusTypes;
 
   ngOnInit() {
-    this.serverActionStatus$ = this.status$.pipe(
+    this.serverActionStatus$ = this.status$().pipe(
       delayOn( a => a.status === serverStatusTypes.inProgress , 500)
     );
   }

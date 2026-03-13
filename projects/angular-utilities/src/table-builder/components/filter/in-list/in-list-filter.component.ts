@@ -61,7 +61,7 @@ export class InListFilterComponent implements ControlValueAccessor {
   metaData!: MetaData;
 
   ngOnInit() {
-    this.keyValues$ = this.tableState.getMetaData$(this.key()).pipe(
+    this.keyValues$ = this.state.getMetaData$(this.key()).pipe(
       tap(metaData => this.metaData = metaData),
       map( metaData => {
         if(metaData.additional?.filterOptions?.filterableValues ) {

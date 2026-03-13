@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, Input, output, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, output, inject, input } from '@angular/core';
 import { filterTypeMap, FilterInfo, UnmappedTypes, mappedFieldTypes, PartialFilter } from '../../classes/filter-info';
 import { TableStore } from '../../classes/table-store';
 import { FilterType } from '../../enums/filterTypes';
@@ -37,12 +37,12 @@ export class FilterComponent<T extends mappedFieldTypes = any> {
   filterTypes = filterTypeMap;
   FilterType = FilterType;
   FieldType = FieldType;
-  @Input() filter!: PartialFilter;;
+  readonly filter = input.required<PartialFilter>();;
   readonly close = output();
   currentFilterType?: FilterType;
 
   ngOnInit() {
-    this.currentFilterType = this.filter.filterType;
+    this.currentFilterType = this.filter().filterType;
   }
   onEnter(filter: FilterInfo, event: any) {
     event.preventDefault();
