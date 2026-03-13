@@ -42,7 +42,7 @@ jobs:
 
       - name: Serve and run e2e tests
         run: |
-          npx http-server dist/examples -p 4200 -s &
+          npx http-server dist/examples -p 4200 --proxy http://localhost:4200? &
           npx wait-on http://localhost:4200 --timeout 30000
           npx playwright test
 
