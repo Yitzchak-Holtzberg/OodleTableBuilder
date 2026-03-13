@@ -5,9 +5,9 @@ import { HttpErrorStateDirective } from './directives/http-error-state-directive
 import { HttpInProgressStateDirective } from './directives/http-inProgress-state-directive';
 import { HttpNotStartedStateDirective } from './directives/http-notStarted-state-directive';
 
+/** @deprecated Import the standalone directives directly instead. */
 @NgModule({
-    providers:[],
-    declarations: [
+    imports: [
         HttpSuccessStateDirective,
         HttpRequestStateDirective,
         HttpErrorStateDirective,

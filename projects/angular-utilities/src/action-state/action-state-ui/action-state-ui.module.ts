@@ -1,16 +1,10 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ActionStateSpinnerComponent } from '../action-state-spinner/action-state-spinner.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-
+/** @deprecated Import ActionStateSpinnerComponent directly instead. */
 @NgModule({
-  declarations: [
-    ActionStateSpinnerComponent,
-  ],
   imports: [
-    CommonModule,
-    MatProgressSpinnerModule,
+    ActionStateSpinnerComponent,
   ],
   exports: [
     ActionStateSpinnerComponent,

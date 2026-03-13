@@ -7,8 +7,7 @@ import { Subject } from 'rxjs';
     exportAs: 'clickEmitter',
     host: {
         '(click)': 'next(true)'
-    },
-    standalone: false
+    }
 }) export class ClickEmitterDirective extends Subject<boolean> {
   constructor() {
     super();

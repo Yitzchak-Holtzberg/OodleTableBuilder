@@ -1,18 +1,21 @@
 import { Component } from "@angular/core";
-import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from "@angular/core/testing";
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from "@angular/core/testing";
 import { Subject } from "rxjs";
 import { ClickEmitterDirective, ClickSubjectDirective } from "../utilities";
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {HarnessLoader} from '@angular/cdk/testing';
 import { MatButtonModule } from "@angular/material/button";
 import { MatButtonHarness } from "@angular/material/button/testing";
+import { CommonModule } from "@angular/common";
 
 @Component({
     template: `
      <a mat-button clickEmitter  #subj='clickEmitter' >click me</a>
-     <div *ngIf='subj | async'>Hello World!</div>
-    `,
-    standalone: false
+     @if (subj | async) {
+       <div>Hello World!</div>
+     }
+     `,
+    imports: [MatButtonModule, CommonModule]
 }) export class TestComponent {
   subject = new Subject();
 }
@@ -20,9 +23,11 @@ import { MatButtonHarness } from "@angular/material/button/testing";
 @Component({
     template: `
    <a mat-button [clickSubject]='{content: "Hello World!" }' #subj='clickSubject' >click me</a>
-   <div *ngIf='subj | async as o'>{{o.content}}</div>
-  `,
-    standalone: false
+   @if (subj | async; as o) {
+     <div>{{o.content}}</div>
+   }
+   `,
+    imports: [MatButtonModule, CommonModule]
 }) export class TestContentComponent {
 subject = new Subject();
 }
@@ -33,13 +38,10 @@ let loader: HarnessLoader;
 
 const setupTest = (): void => {
   TestBed.configureTestingModule({
-      imports: [MatButtonModule],
-      declarations: [
-        TestComponent,
-        ClickEmitterDirective,
-    ],
-    providers: [  ]
-    });
+    imports: [MatButtonModule, CommonModule, TestComponent,
+        ClickEmitterDirective],
+    providers: []
+});
     fixture = TestBed.createComponent(TestComponent);
     fixture.detectChanges();
     loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
@@ -47,13 +49,10 @@ const setupTest = (): void => {
 
 const setupContentTest = (): void => {
   TestBed.configureTestingModule({
-      imports: [MatButtonModule],
-      declarations: [
-        TestContentComponent,
-        ClickSubjectDirective,
-    ],
-    providers: [  ]
-    });
+    imports: [MatButtonModule, CommonModule, TestContentComponent,
+        ClickSubjectDirective],
+    providers: []
+});
     fixture = TestBed.createComponent(TestContentComponent);
     fixture.detectChanges();
     loader = TestbedHarnessEnvironment.documentRootLoader(fixture);

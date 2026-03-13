@@ -1,79 +1,79 @@
-  <mat-table
-    cdkDropList
-    cdkDropListLockAxis='x'
-    cdkDropListOrientation="horizontal"
-    (cdkDropListDropped)="drop($event)"
-    class="table-drag-list"
-    #table
-    [dataSource]="dataSource"
-    [trackBy]='trackByFunction'
-    [styler]="tableWidth | async"
+<mat-table
+  cdkDropList
+  cdkDropListLockAxis='x'
+  cdkDropListOrientation="horizontal"
+  (cdkDropListDropped)="drop($event)"
+  class="table-drag-list"
+  #table
+  [dataSource]="dataSource"
+  [trackBy]='trackByFunction'
+  [styler]="tableWidth | async"
   >
 
-      <ng-container matColumnDef="select">
+  <ng-container matColumnDef="select">
 
-          <mat-header-cell *matHeaderCellDef class="f-mat-header-cell">
-            <mat-checkbox (change)="$event ? masterToggle() : null"
-                          [checked]="!!(masterToggleChecked$ | async)"
-                          [indeterminate]="masterToggleIndeterminate$ | async">
-            </mat-checkbox>
-          </mat-header-cell>
+    <mat-header-cell *matHeaderCellDef class="f-mat-header-cell">
+      <mat-checkbox (change)="$event ? masterToggle() : null"
+        [checked]="!!(masterToggleChecked$ | async)"
+        [indeterminate]="masterToggleIndeterminate$ | async" />
+    </mat-header-cell>
 
-          <mat-cell *matCellDef="let row">
-            <mat-checkbox *ngIf="!row.isGroupFooter"
-                          (click)="$event.stopPropagation()"
-                          (change)="$event ? selection.toggle(row) : null"
-                          [checked]="selection.isSelected(row)">
-            </mat-checkbox>
-          </mat-cell>
+    <mat-cell *matCellDef="let row">
+      @if (!row.isGroupFooter) {
+        <mat-checkbox (click)="$event.stopPropagation()"
+          (change)="$event ? selection.toggle(row) : null"
+          [checked]="selection.isSelected(row)" />
+      }
+    </mat-cell>
 
-          <mat-footer-cell *matFooterCellDef>
-            {{ selection.selected.length }}
-          </mat-footer-cell>
-        </ng-container>
+    <mat-footer-cell *matFooterCellDef>
+      {{ selection.selected.length }}
+    </mat-footer-cell>
+  </ng-container>
 
-        <ng-container matColumnDef="index">
-            <mat-header-cell *matHeaderCellDef class="f-mat-header-cell" >#</mat-header-cell>
-            <mat-cell *matCellDef="let i = index;"> {{ (tbPaginator.paginator.pageIndex * tbPaginator.paginator.pageSize) +  i + 1 }} </mat-cell>
-            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
-        </ng-container>
+  <ng-container matColumnDef="index">
+    <mat-header-cell *matHeaderCellDef class="f-mat-header-cell" >#</mat-header-cell>
+    <mat-cell *matCellDef="let i = index;"> {{ (tbPaginator.paginator().pageIndex * tbPaginator.paginator().pageSize) +  i + 1 }} </mat-cell>
+    <mat-footer-cell *matFooterCellDef />
+  </ng-container>
 
-        <ng-container matColumnDef="groupHeader">
-          <mat-cell *matCellDef="let row">
-            <div [style.paddingLeft]="row.padding + 'px !important'" >
-              <button mat-icon-button (click)="updateGroup(row);">
-                <mat-icon *ngIf="!row.isExpanded">chevron_right</mat-icon>
-                <mat-icon *ngIf="row.isExpanded">expand_more</mat-icon>
-              </button>
-              {{row.groupHeaderName}}
-            </div>
-            <div style="flex-grow: 1">
-              <ng-container *ngTemplateOutlet="groupHeaderTemplate; context: { element: row }"></ng-container>
-            </div>
-          </mat-cell>
-        </ng-container>
+  <ng-container matColumnDef="groupHeader">
+    <mat-cell *matCellDef="let row">
+      <div [style.paddingLeft]="row.padding + 'px !important'" >
+        <button mat-icon-button (click)="updateGroup(row);">
+          @if (!row.isExpanded) {
+            <mat-icon>chevron_right</mat-icon>
+          }
+          @if (row.isExpanded) {
+            <mat-icon>expand_more</mat-icon>
+          }
+        </button>
+        {{row.groupHeaderName}}
+      </div>
+      <div style="flex-grow: 1">
+        <ng-container *ngTemplateOutlet="$groupHeaderTemplate(); context: { element: row }"></ng-container>
+      </div>
+    </mat-cell>
+  </ng-container>
 
-        <ng-container *ngIf="showHeader$ | async">
-          <mat-header-row *matHeaderRowDef="keys; sticky: isSticky"></mat-header-row>
-        </ng-container>
-        <mat-row *matRowDef="let row; columns: keys; let i = index"></mat-row>
-        <mat-row *matRowDef="let row; columns: ['groupHeader']; when: isGroupHeader" style="background-color: white;"></mat-row>
-        <mat-row *matRowDef="let row; columns: keys; when: isGroupFooter" style="background-color: whitesmoke;"></mat-row>
-        <mat-footer-row *matFooterRowDef="keys"></mat-footer-row>
+  @if (showHeader$ | async) {
+    <mat-header-row *matHeaderRowDef="keys; sticky: $isSticky()" />
+  }
+  <mat-row *matRowDef="let row; columns: keys; let i = index" />
+  <mat-row *matRowDef="let row; columns: ['groupHeader']; when: isGroupHeader" style="background-color: white;" />
+  <mat-row *matRowDef="let row; columns: keys; when: isGroupFooter" style="background-color: whitesmoke;" />
+  <mat-footer-row *matFooterRowDef="keys" />
 
-    </mat-table>
+</mat-table>
 
-  <div class="flx-row-end sticky">
-    <tb-paginator #tbPaginator
-      [dataSource]="dataSource"
-      [tableElRef]="tableElRef"
-      [data$]="data$"
-      (paginatorChangeEmitter)="paginatorChange.emit()">
-    </tb-paginator>
+<div class="flx-row-end sticky">
+  <tb-paginator #tbPaginator
+    [dataSource]="dataSource"
+    [tableElRef]="$tableElRef()"
+    [data$]="$data()"
+    (paginatorChangeEmitter)="paginatorChange$.emit()" />
 
-    <mat-icon [matTooltip]="(collapseFooter$ | async) ? 'expand' : 'collapse'" class="collapse-icon footer" (click)="state.toggleCollapseFooter()">
-      {{(collapseFooter$ | async) ? 'expand_more' : 'expand_less'}}
-    </mat-icon>
-  </div>
-
-
+  <mat-icon [matTooltip]="(collapseFooter$ | async) ? 'expand' : 'collapse'" class="collapse-icon footer" (click)="state.toggleCollapseFooter()">
+    {{(collapseFooter$ | async) ? 'expand_more' : 'expand_less'}}
+  </mat-icon>
+</div>

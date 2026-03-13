@@ -1,4 +1,3 @@
-
 import { NgModule } from '@angular/core';
 
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -28,7 +27,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 
-
+/** @deprecated Import individual Material modules directly instead. */
 @NgModule({
   imports: [
     MatSlideToggleModule,
@@ -49,7 +48,6 @@ import { MatChipsModule } from '@angular/material/chips';
     MatSidenavModule,
     MatTabsModule,
     MatInputModule,
-    MatTabsModule,
     MatCheckboxModule,
     MatMenuModule,
     MatIconModule,
@@ -58,38 +56,34 @@ import { MatChipsModule } from '@angular/material/chips';
     MatAutocompleteModule,
     MatPaginatorModule,
     MatChipsModule,
-    MatDialogModule,
   ],
-    exports: [
-      MatSlideToggleModule,
-      MatTableModule,
-      MatSelectModule,
-      MatDialogModule,
-      MatDatepickerModule,
-      MatRadioModule,
-      MatButtonModule,
-      MatExpansionModule,
-      MatStepperModule,
-      MatToolbarModule,
-      MatTooltipModule,
-      MatNativeDateModule,
-      MatProgressSpinnerModule,
-      MatGridListModule,
-      MatCardModule,
-      MatSidenavModule,
-      MatTabsModule,
-      MatInputModule,
-      MatTabsModule,
-      MatCheckboxModule,
-      MatMenuModule,
-      MatIconModule,
-      MatBadgeModule,
-      MatSortModule,
-      MatAutocompleteModule,
-      MatPaginatorModule,
-      MatChipsModule,
-      MatDialogModule,
-    ]
-
+  exports: [
+    MatSlideToggleModule,
+    MatTableModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatDatepickerModule,
+    MatRadioModule,
+    MatButtonModule,
+    MatExpansionModule,
+    MatStepperModule,
+    MatToolbarModule,
+    MatTooltipModule,
+    MatNativeDateModule,
+    MatProgressSpinnerModule,
+    MatGridListModule,
+    MatCardModule,
+    MatSidenavModule,
+    MatTabsModule,
+    MatInputModule,
+    MatCheckboxModule,
+    MatMenuModule,
+    MatIconModule,
+    MatBadgeModule,
+    MatSortModule,
+    MatAutocompleteModule,
+    MatPaginatorModule,
+    MatChipsModule,
+  ]
 })
 export class MaterialModule { }

@@ -1,58 +1,51 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  ViewChild,
-  Input,
-  ElementRef,
-  AfterViewInit,
-  OnInit,
-  Output,
-  EventEmitter,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, ElementRef, AfterViewInit, OnInit, input, output, viewChild, inject } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { asyncScheduler, merge, Observable } from 'rxjs';
 import { delay, distinct, distinctUntilKeyChanged, map } from 'rxjs/operators';
 import { GenericTableDataSource } from '../../classes/GenericTableDataSource';
 import { TableStore } from '../../classes/table-store';
+import { NgClass, AsyncPipe } from '@angular/common';
 @Component({
     selector: 'tb-paginator',
     template: `
-  <div [ngClass]="{'hide' : !(collapseFooter$ | async), 'page-amounts':true}" *ngIf="currentPageData$ | async as pageData">
-    {{pageData.currentStart}} - {{pageData.currentEnd}} of {{pageData.total}}
-  </div>
+  @if (currentPageData$ | async; as pageData) {
+    <div role="status" [ngClass]="{'hide' : !(collapseFooter$ | async), 'page-amounts':true}">
+      {{pageData.currentStart}} - {{pageData.currentEnd}} of {{pageData.total}}
+    </div>
+  }
   <mat-paginator [pageSizeOptions]="[5, 10, 20, 50, 100, 500]" showFirstLastButtons (page)="paginatorChange()"
-    [ngClass]="{'hide' : (collapseFooter$ | async)}">
-  </mat-paginator>
+    [ngClass]="{'hide' : (collapseFooter$ | async)}" />
   `,
     styleUrls: ['./generic-table.component.scss', '../../styles/collapser.styles.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [NgClass, MatPaginator, AsyncPipe]
 })
 export class PaginatorComponent implements OnInit, AfterViewInit{
-  @Input() dataSource! : GenericTableDataSource<any>;
-  @Input() tableElRef! : ElementRef
-  @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
+  private state = inject(TableStore);
+
+  readonly dataSource = input.required<GenericTableDataSource<any>>();
+  readonly tableElRef = input.required<ElementRef>();
+  readonly paginator = viewChild.required(MatPaginator);
   currentPageData$!: Observable<CurrentPageDetails>;
   collapseFooter$!:Observable<boolean>;
-  @Input() data$!: Observable<any[]>;
-  @Output() paginatorChangeEmitter = new EventEmitter<void>();
-
-  constructor(private state : TableStore){}
+  readonly data$ = input.required<Observable<any[]>>();
+  readonly paginatorChangeEmitter = output<void>();
   ngOnInit(){
-    this.dataSource.paginator = this.paginator;
+    this.dataSource().paginator = this.paginator();
     this.ourPageEvent = true;
-    this.state.on(metaDataPageSizeChange(this.state), setPaginatorPageSize(this.paginator));
-    this.state.setPageSize(onPagiantorPageSizeChange(this.paginator));
+    const paginator = this.paginator();
+    this.state.on(metaDataPageSizeChange(this.state), setPaginatorPageSize(paginator));
+    this.state.setPageSize(onPagiantorPageSizeChange(paginator));
     this.collapseFooter$ = this.state.state$.pipe(map(state => state.persistedTableSettings.collapseFooter));
 
   }
   ngAfterViewInit(){
     this.currentPageData$ = merge(
-      this.paginator.page.pipe(map(mapPaginationEventToCurrentPageDetails)),
-      this.data$.pipe(
+      this.paginator().page.pipe(map(mapPaginationEventToCurrentPageDetails)),
+      this.data$().pipe(
         distinctUntilKeyChanged("length"),
         delayToAllowForProperUpdate,
-        map(updateCurrentPageDetailsOnDataLengthChange(this.paginator)))
+        map(updateCurrentPageDetailsOnDataLengthChange(this.paginator())))
     );
   }
 

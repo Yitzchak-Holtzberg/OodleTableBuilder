@@ -1,26 +1,36 @@
 <div style="display: flex; flex-direction: row;justify-content: flex-end;" *ngrxLet="currentFilters$ as currentFilters" >
 
-  <button class="cancel-button" *ngIf="currentFilters.length" mat-icon-button (click)="clearAll()"
-    matTooltip="Close all Filters Cards">
-    <mat-icon class="cancel-button" color="primary">close</mat-icon>
-  </button>
+  @if (currentFilters.length) {
+    <button class="cancel-button" mat-icon-button (click)="clearAll()"
+      matTooltip="Close all Filters Cards">
+      <mat-icon class="cancel-button" color="primary">close</mat-icon>
+    </button>
+  }
 
 
-  <div *ngIf="currentFilters.length" class="float">
-    <div class="filter" *ngFor="let filter of (currentFilters$ | async); index as i;">
-      <tb-filter [filter]="filter" (close)="deleteByIndex(i)" > </tb-filter>
+  @if (currentFilters.length) {
+    <div class="float">
+      @for (filter of (currentFilters$ | async); track filter.filterId; let i = $index) {
+        <div class="filter">
+          <tb-filter [filter]="filter" (close)="deleteByIndex(i)" > </tb-filter>
+        </div>
+      }
     </div>
-  </div>
+  }
 
   <mat-chip-set *ngrxLet="filters$ as filters">
-    <mat-chip *ngFor="let filter of filters" (dblclick)="addFilter(filter)"  (removed)="tableState.removeFilter(filter.filterId!)">
-      {{ filter.key | keyDisplay | async  }} {{filter.filterType | formatFilterType : filter.filterValue}} {{ filter.filterValue | formatFilterValue: filter.key : filter.filterType  | async }}
-      <mat-icon matChipRemove>cancel</mat-icon>
-    </mat-chip>
-    <mat-chip *ngIf="filters.length >= 2" (removed)="tableState.clearFilters()">
-      Clear All
-      <mat-icon matChipRemove>cancel</mat-icon>
-    </mat-chip>
+    @for (filter of filters; track filter.filterId) {
+      <mat-chip (dblclick)="addFilter(filter)"  (removed)="tableState.removeFilter(filter.filterId!)">
+        {{ filter.key | keyDisplay | async  }} {{filter.filterType | formatFilterType : filter.filterValue}} {{ filter.filterValue | formatFilterValue: filter.key : filter.filterType  | async }}
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+    }
+    @if (filters.length >= 2) {
+      <mat-chip (removed)="tableState.clearFilters()">
+        Clear All
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+    }
   </mat-chip-set>
 
 </div>

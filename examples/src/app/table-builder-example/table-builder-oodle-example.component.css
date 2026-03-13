@@ -1,0 +1,11 @@
+.tb-virtual-scroll-viewport {
+  height: 90vh !important;
+}
+
+.filters-container {
+  padding: 12px 16px;
+}
+
+.filters-container mat-button-toggle-group {
+  margin-bottom: 12px;
+}

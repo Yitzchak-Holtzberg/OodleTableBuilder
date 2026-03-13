@@ -60,13 +60,10 @@ let toggles: DebugElement[];
 const setupTest = (type) => async (): Promise<void> => {
 
   TestBed.configureTestingModule({
-      imports: [MatSlideToggleModule],
-      declarations: [
-        type,
-        MatSlideToggleGroupDirective,
-    ],
-    providers: [  ]
-    });
+    imports: [MatSlideToggleModule, type,
+        MatSlideToggleGroupDirective],
+    providers: []
+});
     fixture = TestBed.createComponent(type);
     fixture.detectChanges();
 

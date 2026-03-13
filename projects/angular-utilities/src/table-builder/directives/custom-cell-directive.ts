@@ -7,10 +7,7 @@ import { SortDef, MetaData, FieldType } from '../interfaces/report-def';
 //     <p *customCell="'column1'; let element = element" [class.makeMeRed]="element?.port">If Port, i will be red</p>
 //     <p *customCell="'column2'">I am custom cell two </p>
 // </generic-table>
-@Directive({
-    selector: '[customCell]',
-    standalone: false
-})
+@Directive({ selector: '[customCell]' })
 export class CustomCellDirective implements AfterContentInit {
     @Input() customCell!: string;
     @Input() displayName?: string;

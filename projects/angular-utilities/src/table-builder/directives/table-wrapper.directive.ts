@@ -1,13 +1,10 @@
-import { ContentChildren, Directive, QueryList } from "@angular/core";
+import { Directive, contentChildren } from "@angular/core";
 import { TableCustomFilterDirective, TableFilterDirective } from "./tb-filter.directive";
 
-@Directive({
-    selector: '[tbWrapper]',
-    standalone: false
-})
+@Directive({ selector: '[tbWrapper]' })
 export class TableWrapperDirective {
-  @ContentChildren(TableCustomFilterDirective, {descendants: true}) customFilters!: QueryList<TableCustomFilterDirective>;
-  @ContentChildren(TableFilterDirective, {descendants: true}) filters!: QueryList<TableFilterDirective>;
+  readonly customFilters = contentChildren(TableCustomFilterDirective, { descendants: true });
+  readonly filters = contentChildren(TableFilterDirective, { descendants: true });
 
   registerations : (TableCustomFilterDirective | TableFilterDirective) [] = [];
 

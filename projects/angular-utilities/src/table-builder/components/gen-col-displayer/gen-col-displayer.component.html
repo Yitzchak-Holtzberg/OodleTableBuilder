@@ -1,11 +1,10 @@
-<ng-container *ngIf="columns$ | async as displayCols">
+@if (columns$ | async; as displayCols) {
   <span matTooltip="Show/hide columns">
     <button mat-icon-button [matMenuTriggerFor]="menu">
       <mat-icon color="primary">visibility_off</mat-icon>
     </button>
   </span>
   <mat-menu #menu="matMenu" class="my-mat-menu">
-
     <button mat-menu-item>
       <span matTooltip="Close">
         <button class="filter-button" mat-icon-button>
@@ -13,40 +12,38 @@
         </button>
       </span>
     </button>
-
     <button mat-menu-item stop-propagation>
       <span matTooltip="Show all columns">
         <button mat-icon-button (click)="reset(displayCols)">
           <mat-icon color="primary">done_all</mat-icon>
         </button>
       </span>
-
       <span matTooltip="Hide all columns">
         <button mat-icon-button (click)="unset(displayCols)">
           <mat-icon color="primary">cancel</mat-icon>
         </button>
       </span>
     </button>
-
     <div cdkDropList (cdkDropListDropped)="drop($event)" stop-propagation cdkDropListLockAxis='y'>
-      <button [class.isHidden]="!col.isVisible" stop-propagation mat-menu-item cdkDrag [cdkDragData]="col"
-        *ngFor="let col of displayCols">
-        <div (click)="col.isVisible = !col.isVisible; emit(displayCols)" style="display: flex; align-items: center;" [matTooltip]="col.displayName || (col.key | spaceCase)">
-          <button mat-icon-button class="show-hide" *ngIf="col.isVisible; else hidden">
-            <mat-icon color="primary">check_box</mat-icon>
-          </button>
-          <p class="label">
-            {{col.displayName || (col.key | spaceCase) }}
-          </p>
-
-          <ng-template #hidden>
-            <button mat-icon-button matTooltip="Show Column" class="show-hide">
-              <mat-icon>indeterminate_check_box</mat-icon>
-            </button>
-          </ng-template>
-
-        </div>
-      </button>
+      @for (col of displayCols; track col.key) {
+        <button [class.isHidden]="!col.isVisible" stop-propagation mat-menu-item cdkDrag [cdkDragData]="col"
+          >
+          <div (click)="col.isVisible = !col.isVisible; emit(displayCols)" style="display: flex; align-items: center;" [matTooltip]="col.displayName || (col.key | spaceCase)">
+            @if (col.isVisible) {
+              <button mat-icon-button class="show-hide">
+                <mat-icon color="primary">check_box</mat-icon>
+              </button>
+            } @else {
+              <button mat-icon-button matTooltip="Show Column" class="show-hide">
+                <mat-icon>indeterminate_check_box</mat-icon>
+              </button>
+            }
+            <p class="label">
+              {{col.displayName || (col.key | spaceCase) }}
+            </p>
+          </div>
+        </button>
+      }
     </div>
   </mat-menu>
-</ng-container>
+}

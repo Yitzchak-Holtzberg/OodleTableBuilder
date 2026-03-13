@@ -45,5 +45,13 @@ testem.log
 .DS_Store
 Thumbs.db
 
-package-lock.json
+
 projects/angular-utilities/node_modules/*
+
+# Playwright
+/test-results/
+/playwright-report/
+/.playwright-mcp/
+
+# Claude Code local settings
+.claude/settings.local.json

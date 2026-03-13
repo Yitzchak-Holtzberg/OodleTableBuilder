@@ -3,10 +3,7 @@ import { isErrorState } from '../helpers';
 import { HttpRequestState } from '../types';
 import { HttpStateDirectiveBase } from './HttpStateDirectiveBase';
 
-@Directive({
-    selector: '[httpErrorState]',
-    standalone: false
-})
+@Directive({ selector: '[httpErrorState]' })
 export class HttpErrorStateDirective<TParam extends any[], T> extends HttpStateDirectiveBase {
 
   constructor(

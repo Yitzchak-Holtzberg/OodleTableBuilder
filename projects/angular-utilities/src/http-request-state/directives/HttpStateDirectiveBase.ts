@@ -19,7 +19,7 @@ export abstract class HttpStateDirectiveBase {
             throw new Error('You can only use an http state directive as a child of the httpRequestState directive.');
         }
         parent.hooks.push(this.baseRender);
-        this.baseRender(parent.ViewContext.state);
+        this.baseRender(parent.ViewContext.state as unknown as HttpRequestState);
     }
 
     ngOnDestroy() {

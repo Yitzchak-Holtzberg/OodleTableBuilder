@@ -1,10 +1,9 @@
-import { Directive,  Input, ElementRef } from '@angular/core';
+import { Directive, Input, ElementRef, inject } from '@angular/core';
 
 
-@Directive({
-    selector: '[styler]',
-    standalone: false
-}) export class StylerDirective {
+@Directive({ selector: '[styler]' }) export class StylerDirective {
+  private el = inject(ElementRef);
+
   @Input() set styler(styles){
     if(styles){
       Object.keys(styles).forEach( style => {
@@ -12,6 +11,4 @@ import { Directive,  Input, ElementRef } from '@angular/core';
       });
     }
   };
-  constructor(private el: ElementRef) {
- }
 }

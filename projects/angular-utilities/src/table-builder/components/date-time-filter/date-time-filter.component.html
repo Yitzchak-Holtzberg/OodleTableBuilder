@@ -1,8 +1,10 @@
-<ng-container *ngIf="CurrentFilterType !== FilterType.DateTimeBetween && CurrentFilterType !== FilterType.IsNull">
-  <input type="datetime-local" [ngModel]="info.filterValue" preventEnter name="filterValue" class="op-date-time-input"/>
-</ng-container>
+@if (CurrentFilterType() !== FilterType.DateTimeBetween && CurrentFilterType() !== FilterType.IsNull) {
+  <input type="datetime-local" [ngModel]="info().filterValue" preventEnter name="filterValue" class="op-date-time-input"/>
+}
 
-<ng-container *ngIf="CurrentFilterType === FilterType.DateTimeBetween" ngModelGroup="filterValue">
-  <input type="datetime-local" [ngModel]="info.filterValue?.Start" preventEnter name="Start" class="op-date-time-input"/>
-  <input type="datetime-local" [ngModel]="info.filterValue?.End" preventEnter name="End" class="op-date-time-input"/>
-</ng-container>
+@if (CurrentFilterType() === FilterType.DateTimeBetween) {
+  <ng-container ngModelGroup="filterValue">
+    <input type="datetime-local" [ngModel]="info().filterValue?.Start" preventEnter name="Start" class="op-date-time-input"/>
+    <input type="datetime-local" [ngModel]="info().filterValue?.End" preventEnter name="End" class="op-date-time-input"/>
+  </ng-container>
+}

@@ -8,10 +8,7 @@ import { Observable } from 'rxjs';
 export interface HttpSuccessStateViewContext<T> {
   $implicit: T;
 }
-@Directive({
-    selector: '[httpSuccessState]',
-    standalone: false
-})
+@Directive({ selector: '[httpSuccessState]' })
 export class HttpSuccessStateDirective<T> extends HttpStateDirectiveBase {
   @Input() httpSuccessStateTypeSafety?: HttpRequestStateStore<any, T> | Observable<HttpRequestState<T>>;
   render = (state: HttpRequestState<T>) => {

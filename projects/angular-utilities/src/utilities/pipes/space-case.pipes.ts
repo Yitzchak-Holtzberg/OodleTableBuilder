@@ -1,9 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({
-    name: 'spaceCase',
-    standalone: false
-})
+@Pipe({ name: 'spaceCase' })
 export class SpaceCasePipe implements PipeTransform {
   transform(value: string): string {
     return  spaceCase(value);
