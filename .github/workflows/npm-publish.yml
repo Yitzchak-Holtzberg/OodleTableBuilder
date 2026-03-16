@@ -31,7 +31,6 @@ jobs:
         else
           BETA=$(npm view @saydar/table-builder dist-tags.beta 2>/dev/null || echo "0.0.0-beta.0")
           BASE="${MAJOR}.${MINOR}.$((PATCH + 1))"
-          # increment beta prerelease number if same base version
           if [[ "$BETA" == "${BASE}-beta."* ]]; then
             N="${BETA##*-beta.}"
             NEXT="${BASE}-beta.$((N + 1))"
@@ -41,5 +40,3 @@ jobs:
           npm version "$NEXT" --no-git-tag-version
           npm publish --access public --provenance --tag beta
         fi
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
