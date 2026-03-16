@@ -9,8 +9,7 @@ import { TableStore } from '../classes/table-store';
     inputs: ['disabled: matSortDisabled'],
     providers: [
         { provide: MatSort, useExisting: MultiSortDirective }
-    ],
-    standalone: false
+    ]
 })
 export class MultiSortDirective extends MatSort implements OnInit, OnDestroy {
   rules: Sort[] = [];

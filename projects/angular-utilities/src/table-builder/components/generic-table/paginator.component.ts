@@ -14,19 +14,22 @@ import { asyncScheduler, merge, Observable } from 'rxjs';
 import { delay, distinct, distinctUntilKeyChanged, map } from 'rxjs/operators';
 import { GenericTableDataSource } from '../../classes/GenericTableDataSource';
 import { TableStore } from '../../classes/table-store';
+import { NgClass, AsyncPipe } from '@angular/common';
 @Component({
     selector: 'tb-paginator',
     template: `
-  <div [ngClass]="{'hide' : !(collapseFooter$ | async), 'page-amounts':true}" *ngIf="currentPageData$ | async as pageData">
-    {{pageData.currentStart}} - {{pageData.currentEnd}} of {{pageData.total}}
-  </div>
+  @if (currentPageData$ | async; as pageData) {
+    <div [ngClass]="{'hide' : !(collapseFooter$ | async), 'page-amounts':true}">
+      {{pageData.currentStart}} - {{pageData.currentEnd}} of {{pageData.total}}
+    </div>
+  }
   <mat-paginator [pageSizeOptions]="[5, 10, 20, 50, 100, 500]" showFirstLastButtons (page)="paginatorChange()"
     [ngClass]="{'hide' : (collapseFooter$ | async)}">
   </mat-paginator>
   `,
     styleUrls: ['./generic-table.component.scss', '../../styles/collapser.styles.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [NgClass, MatPaginator, AsyncPipe]
 })
 export class PaginatorComponent implements OnInit, AfterViewInit{
   @Input() dataSource! : GenericTableDataSource<any>;

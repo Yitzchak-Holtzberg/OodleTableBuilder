@@ -1,7 +1,11 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import { PartialFilter } from '../../classes/filter-info';
 import { FilterType } from '../../enums/filterTypes';
-import { ControlContainer, NgForm } from '@angular/forms';
+import { ControlContainer, NgForm, FormsModule } from '@angular/forms';
+
+import { MatFormField, MatSuffix } from '@angular/material/select';
+import { MatInput } from '@angular/material/input';
+import { MatDatepickerInput, MatDatepickerToggle, MatDatepicker } from '@angular/material/datepicker';
 
 @Component({
     selector: 'tb-date-filter',
@@ -9,7 +13,7 @@ import { ControlContainer, NgForm } from '@angular/forms';
     changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrls: ['../filter/filter.component.scss'],
     viewProviders: [{ provide: ControlContainer, useExisting: NgForm }],
-    standalone: false
+    imports: [MatFormField, MatInput, FormsModule, MatDatepickerInput, MatDatepickerToggle, MatSuffix, MatDatepicker]
 })
 export class DateFilterComponent {
     FilterType = FilterType;

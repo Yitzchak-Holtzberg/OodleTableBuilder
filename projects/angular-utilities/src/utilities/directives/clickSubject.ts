@@ -6,8 +6,7 @@ import { Subject } from 'rxjs';
     exportAs: 'clickSubject',
     host: {
         '(click)': 'next(this._val)'
-    },
-    standalone: false
+    }
 }) export class ClickSubjectDirective<T = boolean> extends Subject<T> {
   constructor( ) {
     super();

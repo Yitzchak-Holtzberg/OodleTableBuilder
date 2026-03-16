@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, Input, ChangeDetectorRef } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
 import { FilterInfo } from '../../classes/filter-info';
 import { FieldType } from '../../interfaces/report-def';
+
+import { AutoFocusDirective } from '../../../utilities/directives/auto-focus.directive';
 
 @Component({
     selector: 'lib-in-filter',
@@ -13,7 +15,7 @@ import { FieldType } from '../../interfaces/report-def';
             useExisting: InFilterComponent,
             multi: true
         }],
-    standalone: false
+    imports: [FormsModule, AutoFocusDirective]
 })
 export class InFilterComponent implements ControlValueAccessor {
   FieldType = FieldType;

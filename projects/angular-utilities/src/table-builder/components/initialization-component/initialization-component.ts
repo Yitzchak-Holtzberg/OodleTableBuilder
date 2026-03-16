@@ -1,8 +1,12 @@
 import { Component, TemplateRef, ViewChild } from "@angular/core";
+import { LinkColumnComponent } from "../link-column.component";
+import { ArrayColumnComponent } from "../array-column.component";
+import { MatIcon } from "@angular/material/icon";
+import { FunctionPipe } from "../../../utilities/pipes/function.pipe";
 
 @Component({
     templateUrl: './initialization-component.html',
-    standalone: false
+    imports: [LinkColumnComponent, ArrayColumnComponent, MatIcon, FunctionPipe]
 })
 export class InitializationComponent {
   @ViewChild('link', {static: true}) linkTemplate! : TemplateRef<any>;

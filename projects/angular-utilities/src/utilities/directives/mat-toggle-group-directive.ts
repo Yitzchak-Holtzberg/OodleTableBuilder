@@ -3,12 +3,7 @@ import { MatSlideToggle } from "@angular/material/slide-toggle";
 import { merge, Observable, ReplaySubject, scan, startWith, switchMap } from "rxjs";
 
 
-@Directive(
-  {
-    selector: '[opMatSlideToggleGroup]',
-    standalone: false
-}
-) export class MatSlideToggleGroupDirective  {
+@Directive({ selector: '[opMatSlideToggleGroup]' }) export class MatSlideToggleGroupDirective  {
   @Input() allowMultiple = false;
 
   _toggles!: QueryList<MatSlideToggle>;

@@ -3,14 +3,25 @@ import { FieldType, MetaData } from '../../interfaces/report-def';
 import { FilterType } from '../../enums/filterTypes';
 import { FilterInfo } from '../../classes/filter-info';
 import { TableStore } from '../../classes/table-store';
-import { MatMenuTrigger } from '@angular/material/menu';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatIconButton, MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
+import { NgSwitch, NgIf, NgSwitchCase, NgClass } from '@angular/common';
+import { InListFilterComponent } from '../filter/in-list/in-list-filter.component';
+import { MatFormField, MatPrefix, MatLabel, MatSuffix } from '@angular/material/select';
+import { StopPropagationDirective } from '../../../utilities/directives/stop-propagation.directive';
+import { MatInput } from '@angular/material/input';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatRadioGroup, MatRadioButton } from '@angular/material/radio';
+import { MatDatepickerInput, MatDatepickerToggle, MatDatepicker } from '@angular/material/datepicker';
 
 @Component({
     selector: 'tb-header-menu',
     templateUrl: './header-menu.component.html',
     styleUrls: ['./header-menu.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [MatIconButton, MatMenuTrigger, MatIcon, MatMenu, MatMenuItem, FormsModule, NgSwitch, NgIf, InListFilterComponent, NgSwitchCase, MatFormField, StopPropagationDirective, MatPrefix, MatLabel, MatInput, MatSuffix, MatTooltip, NgClass, MatRadioGroup, MatRadioButton, MatDatepickerInput, MatDatepickerToggle, MatDatepicker, MatButton]
 })
 export class HeaderMenuComponent {
   FieldType = FieldType;

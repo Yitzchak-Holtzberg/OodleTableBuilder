@@ -1,10 +1,7 @@
 import { Directive, ElementRef, Input, Renderer2, SimpleChanges } from '@angular/core';
 import { Dictionary, Predicate } from '@ngrx/entity';
 
-@Directive({
-    selector: '[conditionalClasses]',
-    standalone: false
-})
+@Directive({ selector: '[conditionalClasses]' })
 export class ConditionalClassesDirective {
 
   constructor(private el: ElementRef, private renderer: Renderer2) {

@@ -1,9 +1,6 @@
 import { Directive, ElementRef, HostListener } from '@angular/core';
 
-@Directive({
-    selector: 'input[trimWhitespace]',
-    standalone: false
-})
+@Directive({ selector: 'input[trimWhitespace]' })
 export class TrimWhitespaceDirective {
 
   constructor(private elem: ElementRef) { }

@@ -4,10 +4,7 @@ import { spaceCase } from '../../utilities/pipes/space-case.pipes';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-@Pipe({
-    name: 'keyDisplay',
-    standalone: false
-})
+@Pipe({ name: 'keyDisplay' })
 export class KeyDisplayPipe implements PipeTransform {
   constructor( public tableState: TableStore) {
   }

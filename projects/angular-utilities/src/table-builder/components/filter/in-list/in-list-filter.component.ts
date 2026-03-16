@@ -5,16 +5,22 @@ import { map, tap } from 'rxjs/operators';
 import { TableStore } from '../../../classes/table-store';
 import { Dictionary } from '../../../interfaces/dictionary';
 import { FieldType, MetaData } from '../../../interfaces/report-def';
+import { AsyncPipe, KeyValuePipe } from '@angular/common';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { StopPropagationDirective } from '../../../../utilities/directives/stop-propagation.directive';
+import { SpaceCasePipe } from '../../../../utilities/pipes/space-case.pipes';
 
 
 @Component({
     selector: 'tb-in-list-filter , [tb-in-list-filter]',
     template: `
-  <div *ngFor="let item of keyValues$ | async| keyvalue" >
-    <mat-checkbox [checked]='selectedKeys.includes(item.key)' stop-propagation (change)='selectFilterChanged($event, item.key)' >
-      {{metaData.fieldType === FieldType.Enum ? (item.value | spaceCase) : item.value}}
-    </mat-checkbox>
-  </div>
+  @for (item of keyValues$ | async| keyvalue; track item) {
+    <div >
+      <mat-checkbox [checked]='selectedKeys.includes(item.key)' stop-propagation (change)='selectFilterChanged($event, item.key)' >
+        {{metaData.fieldType === FieldType.Enum ? (item.value | spaceCase) : item.value}}
+      </mat-checkbox>
+    </div>
+  }
   `,
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{
@@ -22,7 +28,7 @@ import { FieldType, MetaData } from '../../../interfaces/report-def';
             useExisting: InListFilterComponent,
             multi: true
         }],
-    standalone: false
+    imports: [MatCheckbox, StopPropagationDirective, AsyncPipe, KeyValuePipe, SpaceCasePipe]
 })
 export class InListFilterComponent implements ControlValueAccessor {
 

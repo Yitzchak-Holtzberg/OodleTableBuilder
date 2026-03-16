@@ -1,6 +1,6 @@
 import { Component, Input, ChangeDetectionStrategy, TemplateRef, ViewChild, OnInit, HostBinding, ContentChild, ContentChildren, Predicate, Injector } from '@angular/core';
 import { FieldType, MetaData } from '../../interfaces/report-def';
-import { MatColumnDef, MatTable } from '@angular/material/table';
+import { MatColumnDef, MatTable, MatCell, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatFooterCellDef, MatFooterCell } from '@angular/material/table';
 import { Observable } from 'rxjs';
 import { CustomCellDirective } from '../../directives';
 import { FilterInfo } from '../../classes/filter-info';
@@ -9,8 +9,18 @@ import { TableStore } from '../../classes/table-store';
 import { map } from 'rxjs/operators';
 import { TableTemplateService } from '../../services/table-template-service';
 import { previousAndCurrent } from '../../../rxjs/rxjs-operators';
-import { CdkDropList, CDK_DROP_LIST } from '@angular/cdk/drag-drop';
+import { CdkDropList, CDK_DROP_LIST, CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { Dictionary } from '@ngrx/entity';
+import { LetDirective } from '@ngrx/component';
+import { MatTooltip } from '@angular/material/tooltip';
+import { ConditionalClassesDirective } from '../../../utilities/directives/conditional-classes.directive';
+import { StylerDirective } from '../../../utilities/directives/styler';
+import { NgTemplateOutlet, NgIf, NgSwitch, NgSwitchCase, AsyncPipe, DecimalPipe, CurrencyPipe } from '@angular/common';
+import { ResizeColumnDirective } from '../../directives/resize-column.directive';
+import { MatSortHeader } from '@angular/material/sort';
+import { HeaderMenuComponent } from '../header-menu/header-menu.component';
+import { SpaceCasePipe } from '../../../utilities/pipes/space-case.pipes';
+import { ColumnTotalPipe } from '../../pipes/column-total.pipe';
 
 
 interface widthStyle {
@@ -32,7 +42,7 @@ interface allStyles {
     viewProviders: [
         { provide: CDK_DROP_LIST, useExisting: CdkDropList },
     ],
-    standalone: false
+    imports: [LetDirective, MatColumnDef, MatCell, MatTooltip, ConditionalClassesDirective, StylerDirective, NgTemplateOutlet, MatHeaderCellDef, NgIf, MatHeaderCell, CdkDrag, ResizeColumnDirective, CdkDragHandle, MatSortHeader, HeaderMenuComponent, MatCellDef, MatFooterCellDef, MatFooterCell, NgSwitch, NgSwitchCase, AsyncPipe, DecimalPipe, CurrencyPipe, SpaceCasePipe, ColumnTotalPipe]
 })
 export class ColumnBuilderComponent implements OnInit {
   FieldType = FieldType;

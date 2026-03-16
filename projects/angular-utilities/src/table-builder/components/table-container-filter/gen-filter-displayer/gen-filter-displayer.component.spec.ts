@@ -51,24 +51,23 @@ describe('generic filter displayer', () => {
   beforeEach(() => {
 
     TestBed.configureTestingModule({
-      declarations: [
-        GenFilterDisplayerComponent,
-        SpaceCasePipe,
-        FilterComponent,
-        DateFilterComponent,
-      ],
-      providers: [TableStore, WrapperFilterStore,
-      { provide: ComponentFixtureAutoDetect, useValue: true }
-      ],
-      imports: [
+    providers: [TableStore, WrapperFilterStore,
+        { provide: ComponentFixtureAutoDetect, useValue: true }
+    ],
+    imports: [
         NoopAnimationsModule,
         MaterialModule,
         CommonModule,
         FormsModule,
-        TableBuilderModule.forRoot({ defaultTableState: { sorted: []} }),
+        TableBuilderModule.forRoot({ defaultTableState: { sorted: [] } }),
         StoreModule.forRoot({}),
-        EffectsModule.forRoot([])]
-    })
+        EffectsModule.forRoot([]),
+        GenFilterDisplayerComponent,
+        SpaceCasePipe,
+        FilterComponent,
+        DateFilterComponent
+    ]
+})
       .compileComponents();
     fixture = TestBed.createComponent(GenFilterDisplayerComponent);
     component = fixture.componentInstance;

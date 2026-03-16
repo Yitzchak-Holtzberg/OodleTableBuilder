@@ -1,4 +1,4 @@
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDropList, CdkDrag } from '@angular/cdk/drag-drop';
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Observable } from 'rxjs';
@@ -6,13 +6,21 @@ import { first, map, tap } from 'rxjs/operators';
 import { TableStore } from '../../classes/table-store';
 import { SortDirection } from '../../interfaces/report-def';
 import { SortMenuComponentStore, SortWithName } from './sort-menu.component-store'
+import { LetDirective } from '@ngrx/component';
+import { NgClass, AsyncPipe } from '@angular/common';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIconButton, MatButton } from '@angular/material/button';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatIcon } from '@angular/material/icon';
+import { StopPropagationDirective } from '../../../utilities/directives/stop-propagation.directive';
+import { SpaceCasePipe } from '../../../utilities/pipes/space-case.pipes';
 
 @Component({
     selector: 'tb-sort-menu',
     templateUrl: './sort-menu.component.html',
     styleUrls: ['./sort-menu.component.scss'],
     providers: [SortMenuComponentStore],
-    standalone: false
+    imports: [LetDirective, MatTooltip, MatIconButton, MatMenuTrigger, MatIcon, MatMenu, MatMenuItem, StopPropagationDirective, MatButton, CdkDropList, CdkDrag, NgClass, AsyncPipe, SpaceCasePipe]
 })
 export class SortMenuComponent implements OnInit{
 

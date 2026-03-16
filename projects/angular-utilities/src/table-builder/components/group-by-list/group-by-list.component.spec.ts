@@ -8,8 +8,8 @@ describe('GroupByListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ GroupByListComponent ]
-    })
+    imports: [GroupByListComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(GroupByListComponent);

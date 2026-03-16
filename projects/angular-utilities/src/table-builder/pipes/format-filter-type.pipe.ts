@@ -1,10 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { FilterType } from '../enums/filterTypes';
 
-@Pipe({
-    name: 'formatFilterType',
-    standalone: false
-})
+@Pipe({ name: 'formatFilterType' })
 export class FormatFilterTypePipe implements PipeTransform {
   transform(filterType: FilterType, value: any){
     if(filterType === FilterType.IsNull){

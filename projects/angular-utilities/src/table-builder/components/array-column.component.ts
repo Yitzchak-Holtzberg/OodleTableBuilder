@@ -3,23 +3,33 @@ import { ArrayStyle, ArrayAdditional, MetaData } from '../interfaces/report-def'
 import { TableBuilderConfigToken, TableBuilderConfig } from '../classes/TableBuilderConfig';
 
 
+
 @Component({
     selector: 'tb-array-column',
     template: `
-  <ng-container  *ngIf="array.length === 0; else hasVals">-</ng-container>
-  <ng-template #hasVals>
-    <ng-container [ngSwitch]="additional.arrayStyle">
-      <ng-container *ngSwitchCase="ArrayStyle.CommaDelimited">
-        <span *ngFor="let val of array; last as isLast">{{val}}<ng-container *ngIf="!isLast">, </ng-container> </span>
-      </ng-container>
-      <ng-container *ngSwitchCase="ArrayStyle.NewLine">
-        <span *ngFor="let val of array; last as isLast">{{val}}<ng-container *ngIf="!isLast"><br /></ng-container> </span>
-      </ng-container>
-    </ng-container>
-  </ng-template>
+  @if (array.length === 0) {
+    -
+  } @else {
+    @switch (additional.arrayStyle) {
+      @case (ArrayStyle.CommaDelimited) {
+        @for (val of array; track val; let isLast = $last) {
+          <span>{{val}}@if (!isLast) {
+            ,
+          } </span>
+        }
+      }
+      @case (ArrayStyle.NewLine) {
+        @for (val of array; track val; let isLast = $last) {
+          <span>{{val}}@if (!isLast) {
+            <br />
+          } </span>
+        }
+      }
+    }
+  }
   `,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: []
 })
 export class ArrayColumnComponent {
   ArrayStyle = ArrayStyle;

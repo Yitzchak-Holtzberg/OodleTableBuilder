@@ -4,10 +4,7 @@ import { filter, map, switchMap, takeUntil } from "rxjs/operators";
 import { defaultShareReplay } from "../../rxjs";
 import { TableStore } from "../classes/table-store";
 
-@Directive({
-    selector: "[resizeColumn]",
-    standalone: false
-})
+@Directive({ selector: "[resizeColumn]" })
 export class ResizeColumnDirective implements OnInit{
   @Input("resizeColumn") resizable!: boolean;
 

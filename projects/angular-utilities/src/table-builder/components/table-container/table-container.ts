@@ -38,7 +38,24 @@ import { createFilterFunc, isCustomFilter, isFilterInfo } from '../../classes/fi
 import { Dictionary } from '../../interfaces/dictionary';
 import { TableWrapperDirective } from '../../directives/table-wrapper.directive';
 import { createLinkCreator } from '../../services/link-creator.service';
-import { GenericTableComponent } from '../generic-table/generic-table.component';
+import { GenericTableComponent, GenericTableVsComponent } from '../generic-table/generic-table.component';
+import { MultiSortDirective } from '../../directives/multi-sort.directive';
+import { LetDirective } from '@ngrx/component';
+import { NgTemplateOutlet, NgClass, AsyncPipe } from '@angular/common';
+import { GroupByListComponent } from '../group-by-list/group-by-list.component';
+import { FilterChipsComponent } from '../table-container-filter/filter-list/filter-list.component';
+import { MatIconButton, MatButton } from '@angular/material/button';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatIcon } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
+import { GenFilterDisplayerComponent } from '../table-container-filter/gen-filter-displayer/gen-filter-displayer.component';
+import { GenColDisplayerComponent } from '../gen-col-displayer/gen-col-displayer.component';
+import { SortMenuComponent } from '../sort-menu/sort-menu.component';
+import { ClickEmitterDirective } from '../../../utilities/directives/clickEmitterDirective';
+import { StopPropagationDirective } from '../../../utilities/directives/stop-propagation.directive';
+import { DialogDirective } from '../../../utilities/directives/dialog';
+import { MatFormField } from '@angular/material/select';
+import { MatInput } from '@angular/material/input';
 
 @Component({
     selector: 'tb-table-container',
@@ -46,7 +63,7 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
     styleUrls: ['./table-container.css', '../../styles/collapser.styles.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [TableStore, ExportToCsvService, WrapperFilterStore],
-    standalone: false
+    imports: [MultiSortDirective, LetDirective, GroupByListComponent, FilterChipsComponent, NgTemplateOutlet, MatIconButton, MatMenuTrigger, NgClass, MatIcon, MatMenu, MatTooltip, GenericTableComponent, GenericTableVsComponent, GenFilterDisplayerComponent, GenColDisplayerComponent, SortMenuComponent, MatMenuItem, ClickEmitterDirective, StopPropagationDirective, DialogDirective, MatFormField, MatInput, MatButton, AsyncPipe]
 }) export class TableContainerComponent<T = any> {
 
   @ViewChild(GenericTableComponent) private genericTableComponent!: GenericTableComponent;

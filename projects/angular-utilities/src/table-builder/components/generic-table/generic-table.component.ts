@@ -14,7 +14,7 @@ import {
   EventEmitter,
 } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
-import { MatRowDef, MatTable } from '@angular/material/table';
+import { MatRowDef, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatFooterCellDef, MatFooterCell, MatHeaderRowDef, MatHeaderRow, MatRow, MatFooterRowDef, MatFooterRow } from '@angular/material/table';
 import { Observable } from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
 import { TableStore } from '../../classes/table-store';
@@ -29,13 +29,21 @@ import { CdkDragDrop, CdkDropList } from '@angular/cdk/drag-drop';
 import { Group } from '../../classes/TableState';
 import { PaginatorComponent } from './paginator.component';
 import * as _ from 'lodash';
+import { StylerDirective } from '../../../utilities/directives/styler';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { NgTemplateOutlet, AsyncPipe } from '@angular/common';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { TableVirtualScrollModule } from 'ng-table-virtual-scroll';
 
 @Component({
     selector: 'tb-generic-table',
     templateUrl: './generic-table.component.html',
     styleUrls: ['./generic-table.component.scss', '../../styles/collapser.styles.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [MatTable, CdkDropList, StylerDirective, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCheckbox, MatCellDef, MatCell, MatFooterCellDef, MatFooterCell, MatIconButton, MatIcon, NgTemplateOutlet, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatFooterRowDef, MatFooterRow, PaginatorComponent, MatTooltip, AsyncPipe]
 })
 export class GenericTableComponent implements OnInit {
 
@@ -240,7 +248,7 @@ export class GenericTableComponent implements OnInit {
     templateUrl: './generic-table-vs.component.html',
     styleUrls: ['./generic-table.component.scss', '../../styles/collapser.styles.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [CdkVirtualScrollViewport, TableVirtualScrollModule, MatTable, CdkDropList, StylerDirective, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCheckbox, MatCellDef, MatCell, MatFooterCellDef, MatFooterCell, MatIconButton, MatIcon, NgTemplateOutlet, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatFooterRowDef, MatFooterRow, PaginatorComponent, MatTooltip, AsyncPipe]
 })
 export class GenericTableVsComponent extends GenericTableComponent {
   createDataSource() {

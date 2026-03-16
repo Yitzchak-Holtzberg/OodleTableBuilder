@@ -42,8 +42,8 @@ export class VirtualScrollViewportDirective {
   }
 
   private adjustViewportHeight(): void {
-    const vsViewport: Element | undefined = this.el.nativeElement.children[1]?.children[0]?.children[0];
-    const vsContentWrapper: Element | undefined = vsViewport?.children[0];
+    const vsViewport: Element | undefined = this.el.nativeElement.querySelector('cdk-virtual-scroll-viewport') ?? undefined;
+    const vsContentWrapper: Element | undefined = vsViewport?.querySelector('.cdk-virtual-scroll-content-wrapper') ?? undefined;
     if (!vsViewport || !vsContentWrapper) {
       return;
     }

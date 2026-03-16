@@ -1,10 +1,7 @@
 import { Directive,  Input, ElementRef } from '@angular/core';
 
 
-@Directive({
-    selector: '[styler]',
-    standalone: false
-}) export class StylerDirective {
+@Directive({ selector: '[styler]' }) export class StylerDirective {
   @Input() set styler(styles){
     if(styles){
       Object.keys(styles).forEach( style => {

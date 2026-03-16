@@ -77,7 +77,21 @@ describe('table container', () => {
   beforeEach(() => {
 
     TestBed.configureTestingModule({
-      declarations: [
+    providers: [
+        { provide: TableBuilderConfigToken, useValue: { defaultTableState: {} } },
+        provideMockStore({ initialState }),
+        DatePipe,
+        TransformCreator,
+        CurrencyPipe,
+        PhoneNumberPipe,
+    ],
+    imports: [
+        NoopAnimationsModule,
+        MaterialModule,
+        CommonModule,
+        FormsModule,
+        LetModule,
+        UtilitiesModule,
         TableContainerComponent,
         FilterComponent,
         GenFilterDisplayerComponent,
@@ -89,24 +103,8 @@ describe('table container', () => {
         ColumnTotalPipe,
         DateFilterComponent,
         MultiSortDirective,
-      ],
-      providers: [
-       { provide : TableBuilderConfigToken , useValue: {defaultTableState: { }}},
-       provideMockStore({ initialState }),
-       DatePipe,
-       TransformCreator,
-       CurrencyPipe,
-       PhoneNumberPipe,
-      ],
-      imports: [
-        NoopAnimationsModule,
-        MaterialModule,
-        CommonModule,
-        FormsModule,
-        LetModule,
-        UtilitiesModule,
-      ]
-    })
+    ]
+})
     .compileComponents();
     fixture = TestBed.createComponent(TableContainerComponent);
     component = fixture.componentInstance;

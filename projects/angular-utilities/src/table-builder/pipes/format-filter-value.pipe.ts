@@ -9,10 +9,7 @@ import { spaceCase } from '../../utilities/pipes/space-case.pipes';
 import { DateTimeFilterFuncs } from '../functions/date-filter-function';
 
 
-@Pipe({
-    name: 'formatFilterValue',
-    standalone: false
-})
+@Pipe({ name: 'formatFilterValue' })
 export class FormatFilterValuePipe implements PipeTransform {
   constructor( public tableState: TableStore , private datePipe: DatePipe) {
   }

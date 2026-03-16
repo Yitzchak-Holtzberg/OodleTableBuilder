@@ -1,7 +1,8 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import { PartialFilter } from '../../classes/filter-info';
 import { FilterType } from '../../enums/filterTypes';
-import { ControlContainer, NgForm } from '@angular/forms';
+import { ControlContainer, NgForm, FormsModule } from '@angular/forms';
+
 
 @Component({
     selector: 'tb-date-time-filter',
@@ -9,7 +10,7 @@ import { ControlContainer, NgForm } from '@angular/forms';
     changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrls: ['../filter/filter.component.scss'],
     viewProviders: [{ provide: ControlContainer, useExisting: NgForm }],
-    standalone: false
+    imports: [FormsModule]
 })
 export class DateTimeFilterComponent {
   FilterType = FilterType;

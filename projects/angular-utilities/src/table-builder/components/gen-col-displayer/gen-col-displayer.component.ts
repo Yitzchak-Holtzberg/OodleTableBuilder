@@ -3,14 +3,21 @@ import { DisplayCol } from '../../classes/display-col';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { orderViewableMetaData, TableStore } from '../../classes/table-store';
-import {CdkDragDrop} from '@angular/cdk/drag-drop';
+import { CdkDragDrop, CdkDropList, CdkDrag } from '@angular/cdk/drag-drop';
+import { AsyncPipe } from '@angular/common';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIconButton } from '@angular/material/button';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatIcon } from '@angular/material/icon';
+import { StopPropagationDirective } from '../../../utilities/directives/stop-propagation.directive';
+import { SpaceCasePipe } from '../../../utilities/pipes/space-case.pipes';
 
 @Component({
     selector: 'tb-col-displayer',
     templateUrl: './gen-col-displayer.component.html',
     styleUrls: ['./gen-col-displayer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [MatTooltip, MatIconButton, MatMenuTrigger, MatIcon, MatMenu, MatMenuItem, StopPropagationDirective, CdkDropList, CdkDrag, AsyncPipe, SpaceCasePipe]
 })
 export class GenColDisplayerComponent {
   columns$: Observable< DisplayCol[]>;
