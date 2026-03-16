@@ -1,7 +1,7 @@
 name: npm-publish
 on:
   push:
-    branches: [main, restore-v18-source-angular-v21]
+    branches: [main, restore-v18-source-angular-v21, standalone-and-cf-migration]
 jobs:
   npm-publish:
     name: npm-publish
