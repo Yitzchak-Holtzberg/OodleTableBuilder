@@ -1,4 +1,4 @@
-import { Pipe, PipeTransform, inject } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 import { TableStore } from '../classes/table-store';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -9,11 +9,13 @@ import { spaceCase } from '../../utilities/pipes/space-case.pipes';
 import { DateTimeFilterFuncs } from '../functions/date-filter-function';
 
 
-@Pipe({ name: 'formatFilterValue' })
+@Pipe({
+    name: 'formatFilterValue',
+    standalone: false
+})
 export class FormatFilterValuePipe implements PipeTransform {
-  tableState = inject(TableStore);
-  private datePipe = inject(DatePipe);
-
+  constructor( public tableState: TableStore , private datePipe: DatePipe) {
+  }
   transform(value: any, key: string, filterType: FilterType): Observable<string> {
     return this.tableState.getMetaData$(key).pipe(
       map( md => {

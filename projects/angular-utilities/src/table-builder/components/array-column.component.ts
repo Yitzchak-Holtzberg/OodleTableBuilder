@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, input, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Inject } from '@angular/core';
 import { ArrayStyle, ArrayAdditional, MetaData } from '../interfaces/report-def';
 import { TableBuilderConfigToken, TableBuilderConfig } from '../classes/TableBuilderConfig';
 
@@ -6,39 +6,34 @@ import { TableBuilderConfigToken, TableBuilderConfig } from '../classes/TableBui
 @Component({
     selector: 'tb-array-column',
     template: `
-  @if (!array || array.length === 0) {
-    -
-  } @else {
-    @switch (additional.arrayStyle) {
-      @case (ArrayStyle.CommaDelimited) {
-        @for (val of array; track val; let isLast = $last) {
-          <span>{{val}}@if (!isLast) {
-            ,
-          } </span>
-        }
-      }
-      @case (ArrayStyle.NewLine) {
-        @for (val of array; track val; let isLast = $last) {
-          <span>{{val}}@if (!isLast) {
-            <br />
-          } </span>
-        }
-      }
-    }
-  }
+  <ng-container  *ngIf="array.length === 0; else hasVals">-</ng-container>
+  <ng-template #hasVals>
+    <ng-container [ngSwitch]="additional.arrayStyle">
+      <ng-container *ngSwitchCase="ArrayStyle.CommaDelimited">
+        <span *ngFor="let val of array; last as isLast">{{val}}<ng-container *ngIf="!isLast">, </ng-container> </span>
+      </ng-container>
+      <ng-container *ngSwitchCase="ArrayStyle.NewLine">
+        <span *ngFor="let val of array; last as isLast">{{val}}<ng-container *ngIf="!isLast"><br /></ng-container> </span>
+      </ng-container>
+    </ng-container>
+  </ng-template>
   `,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ArrayColumnComponent {
-  private config = inject<TableBuilderConfig>(TableBuilderConfigToken);
-
   ArrayStyle = ArrayStyle;
   additional!: ArrayAdditional;
   @Input() array!: any[];
-  readonly metaData = input.required<MetaData>();
+  @Input() metaData!: MetaData;
+
+  constructor( @Inject(TableBuilderConfigToken) private config: TableBuilderConfig
+    ) {
+
+  }
 
   ngOnInit() {
-    this.additional = this.metaData()?.additional ??  this.config.arrayInfo ?? { limit: 3, arrayStyle: ArrayStyle.NewLine } as ArrayAdditional;
+    this.additional = this.metaData?.additional ??  this.config.arrayInfo ?? { limit: 3, arrayStyle: ArrayStyle.NewLine } as ArrayAdditional;
     this.array = (this.array ?? []).slice(0, this.additional.limit );
 
   }

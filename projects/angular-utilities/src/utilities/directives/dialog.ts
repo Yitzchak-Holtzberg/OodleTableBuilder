@@ -49,7 +49,12 @@ const defaultDialogConfig: MatDialogConfig = {
 }
 
 
-@Directive({ selector: '[opDialog]' }) export class DialogDirective<T> implements OnDestroy {
+@Directive(
+  {
+    selector: '[opDialog]',
+    standalone: false
+}
+) export class DialogDirective<T> implements OnDestroy {
   @Output() opDialogClosed: EventEmitter<boolean> = new EventEmitter();
   _dialogConfig: MatDialogConfig<T> = defaultDialogConfig;
   @Input() add_opDialog_Class = true;

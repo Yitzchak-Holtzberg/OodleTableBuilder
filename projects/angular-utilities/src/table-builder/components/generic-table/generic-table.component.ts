@@ -1,6 +1,20 @@
-import { Component, Input, Output, ChangeDetectionStrategy, SimpleChanges, OnInit, QueryList, ViewContainerRef, ElementRef, Injector, TemplateRef, input, output, viewChild, inject, computed, signal } from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  Input,
+  ChangeDetectionStrategy,
+  Output,
+  SimpleChanges,
+  OnInit,
+  QueryList,
+  ViewContainerRef,
+  ElementRef,
+  Injector,
+  TemplateRef,
+  EventEmitter,
+} from '@angular/core';
 import { MatSort } from '@angular/material/sort';
-import { MatRowDef, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatFooterCellDef, MatFooterCell, MatHeaderRowDef, MatHeaderRow, MatRow, MatFooterRowDef, MatFooterRow } from '@angular/material/table';
+import { MatRowDef, MatTable } from '@angular/material/table';
 import { Observable } from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
 import { TableStore } from '../../classes/table-store';
@@ -15,48 +29,31 @@ import { CdkDragDrop, CdkDropList } from '@angular/cdk/drag-drop';
 import { Group } from '../../classes/TableState';
 import { PaginatorComponent } from './paginator.component';
 import * as _ from 'lodash';
-import { StylerDirective } from '../../../utilities/directives/styler';
-import { MatCheckbox } from '@angular/material/checkbox';
-import { MatIconButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
-import { NgTemplateOutlet, AsyncPipe } from '@angular/common';
-import { MatTooltip } from '@angular/material/tooltip';
-import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { TableVirtualScrollModule } from 'ng-table-virtual-scroll';
 
 @Component({
     selector: 'tb-generic-table',
     templateUrl: './generic-table.component.html',
     styleUrls: ['./generic-table.component.scss', '../../styles/collapser.styles.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [MatTable, CdkDropList, StylerDirective, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCheckbox, MatCellDef, MatCell, MatFooterCellDef, MatFooterCell, MatIconButton, MatIcon, NgTemplateOutlet, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatFooterRowDef, MatFooterRow, PaginatorComponent, MatTooltip, AsyncPipe]
+    standalone: false
 })
 export class GenericTableComponent implements OnInit {
-  protected sort = inject(MatSort);
-  state = inject(TableStore);
-  private viewContainer = inject(ViewContainerRef);
-
 
 
   drop(event: CdkDragDrop<string[]>) {
     this.state.setUserDefinedOrder({newOrder:event.currentIndex,oldOrder:event.previousIndex})
   }
 
-  // Signal inputs with $ prefix (angular-additions convention)
-  readonly $data = input.required<Observable<any[]>>({ alias: 'data$' });
-  readonly $indexColumn = input(false, { alias: 'IndexColumn' });
-  readonly $selectionColumn = input(false, { alias: 'SelectionColumn' });
-  readonly $trackBy = input.required<string>({ alias: 'trackBy' });
-  readonly $rows = input.required<readonly MatRowDef<any>[]>({ alias: 'rows' });
-  readonly $isSticky = input(false, { alias: 'isSticky' });
-  readonly $columnBuilders = input<ColumnBuilderComponent[]>([], { alias: 'columnBuilders' });
-  readonly $columnInfos = input.required<Observable<ColumnInfo[]>>({ alias: 'columnInfos' });
-  readonly $groupHeaderTemplate = input<TemplateRef<any> | null>(null, { alias: 'groupHeaderTemplate' });
-  readonly $compareWithKey = input<string>('', { alias: 'compareWithKey' });
-
-  // Computed signals
-  readonly $hasIndexColumn = computed(() => this.$indexColumn());
-  readonly $hasSelectionColumn = computed(() => this.$selectionColumn());
+  @Input() data$!: Observable<any[]>;
+  @Input() IndexColumn = false;
+  @Input() SelectionColumn = false;
+  @Input() trackBy!: string;
+  @Input() rows!: QueryList<MatRowDef<any>>;
+  @Input() isSticky = false;
+  @Input() columnBuilders!: ColumnBuilderComponent[];
+  @Input() columnInfos!: Observable<ColumnInfo[]>;
+  @Input() groupHeaderTemplate!: TemplateRef<any>;
+  @Input() compareWithKey!: string;
 
   private _disableSort!: boolean;
   @Input() set disableSort(val: boolean) {
@@ -73,14 +70,11 @@ export class GenericTableComponent implements OnInit {
   }
   get disableSort() { return this._disableSort; }
 
-  // ViewChild signals with $ prefix
-  readonly $table = viewChild.required(MatTable);
-  readonly $dropList = viewChild.required(CdkDropList);
-  readonly $tableElRef = viewChild.required('table', { read: ElementRef });
-  readonly $paginatorComponent = viewChild.required(PaginatorComponent);
-
-  // Output signals
-  readonly paginatorChange$ = output<void>({ alias: 'paginatorChange' });
+  @ViewChild(MatTable, { static: true }) table!: MatTable<any>;
+  @ViewChild(CdkDropList, { static: true }) dropList!: CdkDropList;
+  @ViewChild('table', {read: ElementRef}) tableElRef!: ElementRef;
+  @ViewChild(PaginatorComponent) paginatorComponent!: PaginatorComponent;
+  @Output() paginatorChange = new EventEmitter<void>();
   currentColumns!: string[];
   dataSource!: any;
   keys: string [] = [];
@@ -90,57 +84,59 @@ export class GenericTableComponent implements OnInit {
   myColumns: Dictionary<ColumnBuilderComponent> = {};
   showHeader$!: Observable<boolean>;
 
-  private _injector = inject(Injector);
+  constructor(
+    protected sort: MatSort,
+    public state: TableStore,
+    private viewContainer: ViewContainerRef,
+    injector: Injector,
+    ) {
 
-  constructor() {
     this.injector = Injector.create({ providers: [
-      {provide: MatTable, useFactory: ()=> this.$table() },
-      {provide: CdkDropList, useFactory: ()=> this.$dropList() },
-    ], parent: this._injector});
+      {provide: MatTable, useFactory: ()=> {return this.table} },
+      {provide: CdkDropList, useFactory: ()=> {return this.dropList} },
+    ], parent: injector});
   }
 
   trackByFunction = (index:number, item: any) => {
     if (!item) {
       return null;
     }
-    const trackBy = this.$trackBy();
-    if (trackBy) {
-      return item[trackBy];
+    if (this.trackBy) {
+      return item[this.trackBy];
     }
     return item;
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    const rows = this.$rows();
-    if (changes.rows && rows && this.myColumns.length) {
-      this.initializeRowDefs([...rows]);
+    if (changes.rows && this.rows && this.myColumns.length) {
+      this.initializeRowDefs([...this.rows]);
     }
   }
 
-  customCompare = (o1: any, o2: any) => o1[this.$compareWithKey()] == o2[this.$compareWithKey()];
+  customCompare = (o1: any, o2: any) => o1[this.compareWithKey] == o2[this.compareWithKey];
   updateSelection = (data: any[]) => {
-    if (this.$hasSelectionColumn()) {
-      this.selection.selected.forEach(s => !data.find(d => this.$compareWithKey() ? this.customCompare(d, s) : _.isEqual(s, d)) ? this.selection.deselect(s) : undefined);
+    if (this.SelectionColumn) {
+      this.selection.selected.forEach(s => !data.find(d => this.compareWithKey ? this.customCompare(d, s) : _.isEqual(s, d)) ? this.selection.deselect(s) : undefined);
     }
   }
 
   ngOnInit() {
-    if (this.$hasSelectionColumn()) {
+    if (this.SelectionColumn) {
       this.columns.push('select');
-      this.selection.compareWith = this.$compareWithKey() ? this.customCompare : _.isEqual;
+      this.selection.compareWith = this.compareWithKey ? this.customCompare : _.isEqual;
     }
 
-    if (this.$hasIndexColumn()) {
+    if (this.IndexColumn) {
      this.columns.push('index');
     }
 
     this.createDataSource();
 
-    this.state.on(this.$columnInfos(), columns => {
+    this.state.on(this.columnInfos, columns => {
       columns.forEach(ci => this.addMetaData(ci))
     });
 
-    this.initializeRowDefs([...this.$rows()]);
+    this.initializeRowDefs([...this.rows]);
 
     this.state.on(this.state.displayedColumns$, keys => {
       this.keys = [...this.columns, ...keys];
@@ -152,7 +148,7 @@ export class GenericTableComponent implements OnInit {
 
   createDataSource() {
     this.dataSource = new GenericTableDataSource(
-      this.$data().pipe(tap(this.updateSelection))
+      this.data$.pipe(tap(this.updateSelection))
     );
 
     if (!this.disableSort) {
@@ -186,19 +182,18 @@ export class GenericTableComponent implements OnInit {
       });
       component.instance.customCell = column.customCell;
       component.instance.metaData = column.metaData;
-      component.instance.data$ = this.$data();
+      component.instance.data$ = this.data$;
       this.myColumns[column.metaData.key] = component.instance;
     }
   }
 
   initializeRowDefs = (defs:MatRowDef<any>[])=>{
-    this.rowDefArr.forEach(r=>this.$table().removeRowDef(r));
+    this.rowDefArr.forEach(r=>this.table.removeRowDef(r));
     this.rowDefArr = defs;
     defs.forEach(r => {
       r.columns = this.columns.concat(Object.values(this.myColumns).filter(c => c.metaData.fieldType !== FieldType.Hidden).map(c => c.metaData.key));
-      const table = this.$table();
-      if (table) {
-        table.addRowDef(r);
+      if (this.table) {
+        this.table.addRowDef(r);
       }
     });
   }
@@ -245,29 +240,16 @@ export class GenericTableComponent implements OnInit {
     templateUrl: './generic-table-vs.component.html',
     styleUrls: ['./generic-table.component.scss', '../../styles/collapser.styles.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CdkVirtualScrollViewport, TableVirtualScrollModule, MatTable, CdkDropList, StylerDirective, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCheckbox, MatCellDef, MatCell, MatFooterCellDef, MatFooterCell, MatIconButton, MatIcon, NgTemplateOutlet, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatFooterRowDef, MatFooterRow, PaginatorComponent, MatTooltip, AsyncPipe]
+    standalone: false
 })
 export class GenericTableVsComponent extends GenericTableComponent {
-  override createDataSource() {
+  createDataSource() {
     this.dataSource = new GenericTableVirtualScrollDataSource(
-      this.$data().pipe(tap(this.updateSelection))
+      this.data$.pipe(tap(this.updateSelection))
     );
 
     if (!this.disableSort) {
       this.dataSource.sort = this.sort;
     }
-  }
-
-  override ngOnInit() {
-    this.columns.push('groupHeader');
-
-    // Material v20+ does not support conditional row defs (when) with virtual scrolling.
-    // Wrap initializeRowDefs to filter out rows with `when` predicates before they reach the table.
-    const originalInit = this.initializeRowDefs;
-    this.initializeRowDefs = (defs: MatRowDef<any>[]) => {
-      originalInit(defs.filter(r => !r.when));
-    };
-
-    super.ngOnInit();
   }
 }

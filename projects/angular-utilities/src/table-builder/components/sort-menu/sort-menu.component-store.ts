@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { ComponentStore } from '@ngrx/component-store';
 import { combineLatest } from 'rxjs';
@@ -8,9 +8,7 @@ import { notNull } from '../../../rxjs/rxjs-operators';
 
 @Injectable()
 export class SortMenuComponentStore extends ComponentStore<ComponenStoreState> {
-  private tableState = inject(TableStore);
-
-  constructor(){
+  constructor(private tableState: TableStore){
     super({notSorted:[],sorted:[]})
   }
   private set = this.updater((state,data:ComponenStoreState)=> ({...data}));

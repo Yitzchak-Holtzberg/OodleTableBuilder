@@ -36,7 +36,10 @@ export abstract class TableCustomFilterDirective<T = any> {
 
 
 
-@Directive({ selector: "[tbFilter]" }) export class TableFilterDirective extends ComponentStore<FilterInfo> {
+@Directive({
+    selector: "[tbFilter]",
+    standalone: false
+}) export class TableFilterDirective extends ComponentStore<FilterInfo> {
 
   constructor(@Optional() protected  model: NgControl, @Optional() wrapper: TableWrapperDirective) {
     super();
@@ -126,12 +129,21 @@ export abstract class TableCustomFilterDirective<T = any> {
         'filterValue:filterValue',
         'filterId: filterId',
         'active: active',
-    ]
+    ],
+    standalone: false
 }) export class TableFilterStringContainsDirective extends TableFilterDirective {
   constructor(@Optional()  model: NgControl, @Optional() wrapper: TableWrapperDirective) {
     super(model,wrapper);
     this.filterType = FilterType.StringContains;
     this.fieldType = FieldType.String;
+    this.effect( () => {
+      return model.valueChanges!.pipe(
+        tap( val => {
+          this.filterValue = val;
+          this.update();
+        })
+      )
+    })
   }
 
   override reset() {
@@ -243,7 +255,8 @@ export abstract class TbSelectedFilterDirective<T = any>  extends TableCustomFil
     inputs: [
         ...inputs
     ],
-    providers: [{ provide: TableCustomFilterDirective, useExisting: MatCheckboxTbFilterDirective }]
+    providers: [{ provide: TableCustomFilterDirective, useExisting: MatCheckboxTbFilterDirective }],
+    standalone: false
 })
 export class MatCheckboxTbFilterDirective extends TbSelectedFilterDirective {
 
@@ -262,7 +275,8 @@ export class MatCheckboxTbFilterDirective extends TbSelectedFilterDirective {
     inputs: [
         ...inputs
     ],
-    providers: [{ provide: TableCustomFilterDirective, useExisting: MatSlideToggleTbFilterDirective }]
+    providers: [{ provide: TableCustomFilterDirective, useExisting: MatSlideToggleTbFilterDirective }],
+    standalone: false
 })
 export class MatSlideToggleTbFilterDirective<T = any> extends TbSelectedFilterDirective<T> {
   override set active(val: boolean) {
@@ -282,7 +296,8 @@ export class MatSlideToggleTbFilterDirective<T = any> extends TbSelectedFilterDi
 @Directive({
     selector: 'mat-radio-button[tbCustomFilter]',
     inputs: ['predicate: tbCustomFilter'],
-    providers: [{ provide: TableCustomFilterDirective, useExisting: MatRadioButtonTbFilterDirective }]
+    providers: [{ provide: TableCustomFilterDirective, useExisting: MatRadioButtonTbFilterDirective }],
+    standalone: false
 })
 export class MatRadioButtonTbFilterDirective extends TbSelectedFilterDirective {
 
@@ -305,7 +320,8 @@ export class MatRadioButtonTbFilterDirective extends TbSelectedFilterDirective {
     inputs: [
         ...inputs
     ],
-    providers: [{ provide: TableCustomFilterDirective, useExisting: MatOptionTbFilterDirective }]
+    providers: [{ provide: TableCustomFilterDirective, useExisting: MatOptionTbFilterDirective }],
+    standalone: false
 })
 export class MatOptionTbFilterDirective extends TbSelectedFilterDirective {
 
@@ -338,7 +354,8 @@ export class MatOptionTbFilterDirective extends TbSelectedFilterDirective {
     inputs: [
         ...inputs
     ],
-    providers: [{ provide: TableCustomFilterDirective, useExisting: MatButtonToggleFilterDirective }]
+    providers: [{ provide: TableCustomFilterDirective, useExisting: MatButtonToggleFilterDirective }],
+    standalone: false
 })
 export class MatButtonToggleFilterDirective extends TbSelectedFilterDirective {
   override set active(val: boolean) {

@@ -1,14 +1,10 @@
 <mat-chip-set *ngrxLet="tableStore.groupByKeys$ as groupByKeys">
-  @if (groupByKeys?.length) {
-    <span class="tb-group-label">Group By:</span>
-  }
-  @for (groupByKey of groupByKeys; track groupByKey; let i = $index) {
-    @if (i > 0) {
-      <mat-icon class="nested-arrow">arrow_right</mat-icon>
-    }
+  <span *ngIf="groupByKeys?.length" class="tb-group-label">Group By:</span>
+  <ng-container *ngFor="let groupByKey of groupByKeys; let i = index;">
+    <mat-icon *ngIf="i > 0" class="nested-arrow">arrow_right</mat-icon>
     <mat-chip (removed)="tableStore.removeGroupByKey(groupByKey)">
       {{groupByKey | spaceCase}}
       <mat-icon matChipRemove>cancel</mat-icon>
     </mat-chip>
-  }
+  </ng-container>
 </mat-chip-set>

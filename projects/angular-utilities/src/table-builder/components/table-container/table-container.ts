@@ -1,5 +1,18 @@
-import { Component, Input, Output, ChangeDetectionStrategy, Predicate, TemplateRef, input, output, viewChild, contentChildren, inject, computed, signal } from '@angular/core';
-import { BehaviorSubject, Observable, from, of, ReplaySubject, Subscription } from 'rxjs';
+import {
+  Component,
+  Input,
+  EventEmitter,
+  Output,
+  ContentChildren,
+  QueryList,
+  ChangeDetectionStrategy,
+  Inject,
+  Predicate,
+  Optional,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
+import { BehaviorSubject, Observable, from, ReplaySubject, Subscription } from 'rxjs';
 import { ArrayAdditional, FieldType, MetaData } from '../../interfaces/report-def';
 import { first, last, map, switchMap, tap, withLatestFrom, mergeAll, scan } from 'rxjs/operators';
 import { TableBuilder } from '../../classes/table-builder';
@@ -20,28 +33,12 @@ import { WrapperFilterStore } from '../table-container-filter/table-wrapper-filt
 import { cloneDeep, groupBy } from 'lodash';
 import { ColumnInfo } from '../../interfaces/ColumnInfo';
 import { defaultShareReplay } from '../../../rxjs';
+import { flattenDeep } from 'lodash';
 import { createFilterFunc, isCustomFilter, isFilterInfo } from '../../classes/filter-info';
 import { Dictionary } from '../../interfaces/dictionary';
 import { TableWrapperDirective } from '../../directives/table-wrapper.directive';
 import { createLinkCreator } from '../../services/link-creator.service';
-import { GenericTableComponent, GenericTableVsComponent } from '../generic-table/generic-table.component';
-import { MultiSortDirective } from '../../directives/multi-sort.directive';
-import { LetDirective } from '@ngrx/component';
-import { GroupByListComponent } from '../group-by-list/group-by-list.component';
-import { FilterChipsComponent } from '../table-container-filter/filter-list/filter-list.component';
-import { NgTemplateOutlet, NgClass, AsyncPipe } from '@angular/common';
-import { MatIconButton, MatButton } from '@angular/material/button';
-import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
-import { MatIcon } from '@angular/material/icon';
-import { MatTooltip } from '@angular/material/tooltip';
-import { GenFilterDisplayerComponent } from '../table-container-filter/gen-filter-displayer/gen-filter-displayer.component';
-import { GenColDisplayerComponent } from '../gen-col-displayer/gen-col-displayer.component';
-import { SortMenuComponent } from '../sort-menu/sort-menu.component';
-import { ClickEmitterDirective } from '../../../utilities/directives/clickEmitterDirective';
-import { StopPropagationDirective } from '../../../utilities/directives/stop-propagation.directive';
-import { DialogDirective } from '../../../utilities/directives/dialog';
-import { MatFormField } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
+import { GenericTableComponent } from '../generic-table/generic-table.component';
 
 @Component({
     selector: 'tb-table-container',
@@ -49,35 +46,20 @@ import { MatInput } from '@angular/material/input';
     styleUrls: ['./table-container.css', '../../styles/collapser.styles.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [TableStore, ExportToCsvService, WrapperFilterStore],
-    imports: [MultiSortDirective, LetDirective, GroupByListComponent, FilterChipsComponent, NgTemplateOutlet, MatIconButton, MatMenuTrigger, NgClass, MatIcon, MatMenu, MatTooltip, GenericTableComponent, GenericTableVsComponent, GenFilterDisplayerComponent, GenColDisplayerComponent, SortMenuComponent, MatMenuItem, ClickEmitterDirective, StopPropagationDirective, DialogDirective, MatFormField, MatInput, MatButton, AsyncPipe]
+    standalone: false
 }) export class TableContainerComponent<T = any> {
-  state = inject(TableStore);
-  exportToCsvService = inject<ExportToCsvService<T>>(ExportToCsvService);
-  private config = inject<TableBuilderConfig>(TableBuilderConfigToken);
-  private store = inject<Store<any>>(Store);
-  private wrapper = inject(TableWrapperDirective, { optional: true });
 
+  @ViewChild(GenericTableComponent) private genericTableComponent!: GenericTableComponent;
 
-  // ViewChild signals with $ prefix
-  readonly $genericTableComponent = viewChild.required(GenericTableComponent);
+  @ContentChildren(TableCustomFilterDirective, {descendants: true}) customFilters!: QueryList<TableCustomFilterDirective>;
+  @ContentChildren(TableFilterDirective, {descendants: true}) filters!: QueryList<TableFilterDirective>;
 
-  // ContentChildren signals with $ prefix
-  readonly $customFilters = contentChildren(TableCustomFilterDirective, { descendants: true });
-  readonly $filters = contentChildren(TableFilterDirective, { descendants: true });
-  readonly $customRows = contentChildren(MatRowDef);
-  readonly $customCells = contentChildren(CustomCellDirective);
-
-  // Input signals with $ prefix and aliases for backward compatibility
   @Input() tableId!: string;
   @Input() tableBuilder!: TableBuilder;
-  readonly $indexColumn = input(false, { alias: 'IndexColumn' });
-  readonly $selectionColumn = input(false, { alias: 'SelectionColumn' });
-  readonly $trackBy = input('', { alias: 'trackBy' });
-  readonly $isSticky = input(true, { alias: 'isSticky' });
-  readonly $inputFilters = input<Observable<Array<Predicate<T>>> | undefined>(undefined, { alias: 'inputFilters' });
-  readonly $groupHeaderTemplate = input<TemplateRef<any> | null>(null, { alias: 'groupHeaderTemplate' });
-  readonly $compareWithKey = input<string>('', { alias: 'compareWithKey' });
-
+  @Input() IndexColumn = false;
+  @Input() SelectionColumn = false;
+  @Input() trackBy!: string;
+  @Input() isSticky = true;
   @Input() set isVs(val: boolean | string) {
     if (val || val === '') {
       this._isVs = true;
@@ -89,21 +71,24 @@ import { MatInput } from '@angular/material/input';
   @Input() set pageSize(value: number) {
     this.state.setPageSize(value);
   }
-
-  // Output signals with $ suffix and aliases
-  readonly selection$ = output<any>({ alias: 'selection$' });
-  readonly paginatorChange$ = output<void>({ alias: 'paginatorChange' });
-  readonly onStateReset$ = output<void>({ alias: 'OnStateReset' });
-  readonly onSaveState$ = output<void>({ alias: 'OnSaveState' });
-
+  @Input() inputFilters?: Observable<Array<Predicate<T>>>;
+  @Input() groupHeaderTemplate!: TemplateRef<any>;
+  @Input() compareWithKey!: string;
+  @Output() selection$ = new EventEmitter();
   dataSubject = new ReplaySubject<Observable<T[]>>(1);
   @Output() data = this.dataSubject.pipe(
     switchMap( d => d),
     defaultShareReplay(),
   );
+  @Output() paginatorChange = new EventEmitter<void>();
 
   _isVs!: boolean;
 
+  @ContentChildren(MatRowDef) customRows!: QueryList<MatRowDef<any>>;
+
+  @ContentChildren(CustomCellDirective) customCells!: QueryList<CustomCellDirective>;
+  @Output() OnStateReset = new EventEmitter();
+  @Output() OnSaveState = new EventEmitter();
   @Output() state$ : Observable<PersistedTableState>;
 
   myColumns$!: Observable<ColumnInfo[]>;
@@ -113,7 +98,13 @@ import { MatInput } from '@angular/material/input';
 
   disableSort!: boolean;
 
-  constructor() {
+  constructor(
+    public state: TableStore,
+    public exportToCsvService: ExportToCsvService<T>,
+    @Inject(TableBuilderConfigToken) private config: TableBuilderConfig,
+    private store: Store<any>,
+    @Optional() private wrapper: TableWrapperDirective,
+  ) {
      this.state.on( this.state.getSavableState().pipe(last()), finalState => {
       if(this.tableId) {
         this.store.dispatch(setLocalProfile({key:this.tableId,value: finalState}));
@@ -126,18 +117,18 @@ import { MatInput } from '@angular/material/input';
   }
 
   firstPage(): void {
-    this.$genericTableComponent()?.$paginatorComponent()?.paginator()?.firstPage();
+    this.genericTableComponent?.paginatorComponent?.paginator?.firstPage();
   }
 
   lastPage(): void {
-    this.$genericTableComponent()?.$paginatorComponent()?.paginator()?.lastPage();
+    this.genericTableComponent?.paginatorComponent?.paginator?.lastPage();
   }
 
   resetState() {
-    this.$customFilters().forEach( cf => cf.reset());
-    this.$filters().forEach( cf => cf.reset() );
+    this.customFilters.forEach( cf => cf.reset());
+    this.filters.forEach( cf => cf.reset() );
     this.state.resetState();
-    this.onStateReset$.emit()
+    this.OnStateReset.next(null)
   }
 
   initializeState() {
@@ -160,15 +151,14 @@ import { MatInput } from '@angular/material/input';
       }
     });
   }
-  customFiltersSubject$ = new BehaviorSubject<Predicate<any>[]>([]);
+  customFilters$ = new BehaviorSubject<Predicate<any>[]>([]);
   initializeData() {
 
 
-    const inputFilters = this.$inputFilters();
-    var allFilters = inputFilters ? combineArrays([
-      this.customFiltersSubject$,
-      inputFilters
-    ]) : this.customFiltersSubject$;
+    var allFilters = this.inputFilters ? combineArrays([
+      this.customFilters$,
+      this.inputFilters
+    ]) : this.customFilters$;
 
     const filters$ = this.state.filters$.pipe(map( filters => Object.values(filters) ))
 
@@ -176,15 +166,11 @@ import { MatInput } from '@angular/material/input';
       .appendFilters(filters$)
       .filterData(this.tableBuilder.getData$()).pipe(
         switchMap(data => this.state.groupByKeys$.pipe(
-          switchMap(groupBy => {
-            const grouped = this.getData(data, groupBy);
-            if (!groupBy.length) {
-              return of(grouped);
-            }
-            return this.state.groups$.pipe(
-              map(groups => this.setDisplay(grouped, groups))
-            );
-          })
+          map(groupBy => this.getData(data, groupBy)),
+        ).pipe(
+          switchMap(data => this.state.groups$.pipe(
+            map(groups => this.setDisplay(data, groups))
+          ))
         ))
       );
 
@@ -213,7 +199,7 @@ import { MatInput } from '@angular/material/input';
     this.state.getSavableState().pipe(
       first()
     ).subscribe( tableState => {
-      this.onSaveState$.emit();
+      this.OnSaveState.next(null);
       this.store.dispatch(setLocalProfile({ key: this.tableId, value:tableState, persist: true} ));
     });
   }
@@ -232,9 +218,9 @@ import { MatInput } from '@angular/material/input';
 
     this.state.runOnceWhen(stateIs(InitializationState.LoadedFromStore), state => {
 
-      var allFilters = [...this.$filters(), ...this.$customFilters()];
+      var allFilters = [...this.filters, ...this.customFilters];
       if(this.wrapper) {
-        allFilters = [...allFilters, ...this.wrapper.customFilters(), ...this.wrapper.filters(), ...this.wrapper.registerations];
+        allFilters = [...allFilters, ...this.wrapper.customFilters, ...this.wrapper.filters, ...this.wrapper.registerations];
       }
 
       var customFilters: (TableCustomFilterDirective|TableFilterDirective )[] = [];
@@ -273,7 +259,7 @@ import { MatInput } from '@angular/material/input';
         map( f => Object.values(f))
       );
       this.state.on(filters$, (f) => {
-        this.customFiltersSubject$.next(f);
+        this.customFilters$.next(f);
       });
       this.state.updateState({initializationState: InitializationState.Ready});
     });
@@ -281,13 +267,13 @@ import { MatInput } from '@angular/material/input';
   }
 
   InitializeColumns() {
-    const customCellMap = new Map(this.$customCells().map(cc => [cc.customCell,cc]));
+    const customCellMap = new Map(this.customCells.map(cc => [cc.customCell,cc]));
     this.state.setMetaData(this.tableBuilder.metaData$!.pipe(
       map((mds) => {
         mds = mds.map(this.mapMetaDatas);
         return [
           ...mds,
-          ...this.$customCells().map( cc => cc.getMetaData(mds.find( item => item.key === cc.customCell )) )
+          ...this.customCells.map( cc => cc.getMetaData(mds.find( item => item.key === cc.customCell )) )
         ]
       })
     ));
@@ -326,38 +312,36 @@ import { MatInput } from '@angular/material/input';
   }
 
   tbGroupBy = (data: any[], groupByKeys: string[], parentGroupName?: any): any[] => {
-    const result: any[] = [];
-    const grouped = groupBy(data, groupByKeys[0]);
+    let res = {};
+    res = groupBy(data, groupByKeys[0]);
     const remainingGroupByKeys = groupByKeys.slice(1);
+    if (remainingGroupByKeys.length) {
+      Object.keys(res).forEach(key => res[key] = this.tbGroupBy(res[key], remainingGroupByKeys, key))
+    }
+    return flattenDeep(Object.keys(res).map(groupName => {
+      const uniqName = parentGroupName ? `${parentGroupName}-${groupName}` : `${groupName}`;
+      return [
+        {
+          isGroupHeader: true,
+          groupHeaderName: `${groupName} (${res[groupName]?.filter(row => !row.isGroupHeader)?.length})`,
+          data: res[groupName],
+          groupName: uniqName,
+          padding: 0
+        },
+        (res[groupName] as any[])?.map(d => ({ ...d, parentGroupName: d.parentGroupName || uniqName }))
+      ];
+    })).map(this.addIndentation);
+  }
 
-    for (const groupName of Object.keys(grouped)) {
-      const uniqName = parentGroupName ? `${parentGroupName}-${groupName}` : groupName;
-      let children: any[];
-
-      if (remainingGroupByKeys.length) {
-        children = this.tbGroupBy(grouped[groupName], remainingGroupByKeys, groupName);
+  addIndentation = (d: any) => {
+    if (d.isGroupHeader) {
+      if (d.padding) {
+        d.padding += 20;
       } else {
-        children = grouped[groupName];
-      }
-
-      const dataCount = children.filter(row => !row.isGroupHeader).length;
-      result.push({
-        isGroupHeader: true,
-        groupHeaderName: `${groupName} (${dataCount})`,
-        data: children,
-        groupName: uniqName,
-        padding: parentGroupName ? 21 : 1
-      });
-
-      for (const d of children) {
-        if (!d.parentGroupName) {
-          d.parentGroupName = uniqName;
-        }
-        result.push(d);
+        d.padding = 1;
       }
     }
-
-    return result;
+    return d;
   }
 
   setDisplay = (data: any[], groups: Group[]): any[] => data

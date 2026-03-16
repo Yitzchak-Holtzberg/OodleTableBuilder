@@ -1,9 +1,12 @@
-import { Directive, ElementRef, HostListener, inject } from '@angular/core';
+import { Directive, ElementRef, HostListener } from '@angular/core';
 
-@Directive({ selector: 'input[trimWhitespace]' })
+@Directive({
+    selector: 'input[trimWhitespace]',
+    standalone: false
+})
 export class TrimWhitespaceDirective {
-  private elem = inject(ElementRef);
 
+  constructor(private elem: ElementRef) { }
 
   @HostListener('blur') onBlur() {
     const inputString = this.elem.nativeElement.value;

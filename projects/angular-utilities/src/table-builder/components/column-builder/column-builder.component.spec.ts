@@ -25,17 +25,17 @@ describe('ColumnBuilderComponent', () => {
 
   beforeEach(waitForAsync(() => {
      TestBed.configureTestingModule({
-    providers: [
-        { provide: TableBuilderConfigToken, useValue: { defaultTableState: {} } },
-        { provide: MatTable, useValue: { addColumnDef: (colDef) => { } } },
+      declarations: [ ColumnBuilderComponent, SpaceCasePipe ],
+      providers: [
+        { provide : TableBuilderConfigToken , useValue: {defaultTableState: { }}},
+        { provide: MatTable, useValue: {addColumnDef:(colDef) => {}}},
         provideMockStore({ initialState }),
         DatePipe,
         CurrencyPipe,
         PhoneNumberPipe,
-        SpaceCasePipe,
-    ],
-    imports: [MaterialModule, ColumnBuilderComponent, SpaceCasePipe]
-})
+      ],
+      imports: [MaterialModule]
+    })
     .compileComponents();
   }));
 

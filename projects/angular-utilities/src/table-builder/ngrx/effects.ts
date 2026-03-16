@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';import { concatLatestFrom } from '@ngrx/operators';
 
 import { defaultStorageState, GlobalStorageState} from './reducer';
@@ -10,9 +10,6 @@ import { selectLocalProfile } from './selectors';
 
 @Injectable()
 export class SaveTableEffects {
-  private actions$ = inject(Actions);
-  private store = inject<Store<any>>(Store);
-
 
   saveLocalProfile$ = createEffect(
     () => this.actions$.pipe(
@@ -53,4 +50,6 @@ export class SaveTableEffects {
       }),
     ), { dispatch: false }
   );
+
+  constructor( private actions$: Actions, private store: Store<any> ) {}
 }

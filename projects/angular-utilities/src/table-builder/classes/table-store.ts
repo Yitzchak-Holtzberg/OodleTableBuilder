@@ -2,7 +2,7 @@ import { FieldType, MetaData, SortDef } from '../interfaces/report-def';
 import { v4 as uuid } from 'uuid';
 import { Observable } from 'rxjs';
 import { defaultTableState, Group, InitializationState, keysToDelete, PersistedTableState, TableState } from './TableState';
-import { Injectable, Predicate, inject } from '@angular/core';
+import { Injectable, Inject, Predicate } from '@angular/core';
 import { TableBuilderConfig, TableBuilderConfigToken } from './TableBuilderConfig';
 import { CustomFilter, FilterInfo, isCustomFilter, isFilterInfo } from './filter-info';
 import { Sort, SortDirection }  from '@angular/material/sort' ;
@@ -24,9 +24,7 @@ export function stateIs(initializationState: InitializationState) {
 })
 export class TableStore extends ComponentStore<TableState> {
 
-  constructor() {
-   const config = inject<TableBuilderConfig>(TableBuilderConfigToken);
-
+  constructor(@Inject(TableBuilderConfigToken) config: TableBuilderConfig) {
    super( { ...defaultTableState, ...config.defaultTableState});
   }
 
@@ -317,14 +315,10 @@ export class TableStore extends ComponentStore<TableState> {
     groupByKeys: [...state.groupByKeys, groupByKey]
   }));
 
-  removeGroupByKey = this.updater((state, groupByKey: string) => {
-    const remaining = state.groupByKeys.filter(key => groupByKey != key);
-    return {
-      ...state,
-      groupByKeys: remaining,
-      groups: remaining.length ? state.groups : []
-    };
-  });
+  removeGroupByKey = this.updater((state, groupByKey: string) => ({
+    ...state,
+    groupByKeys: state.groupByKeys.filter(key => groupByKey != key)
+  }));
 
   updateGroups = this.updater((state, groups: Group[]) => {
     const groupNames = groups.map(g => g.groupName);

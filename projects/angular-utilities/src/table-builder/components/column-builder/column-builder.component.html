@@ -2,62 +2,65 @@
 
   <ng-template #body let-element='element' >
       <mat-cell  [matTooltip]="metaData.toolTip ?? ''"  [conditionalClasses]='metaData.classes' [element]='element' [styler]='styles.body' [class.group-footer]="element.isGroupFooter" (click)='cellClicked(element, metaData.key)' >
-        <ng-container *ngTemplateOutlet="innerTemplate;context: {metaData: metaData, element: element, transform: transform }; Injector: injector" />
+        <ng-container *ngTemplateOutlet="innerTemplate;context: {metaData: metaData, element: element, transform: transform }; Injector: injector">
+        </ng-container>
     </mat-cell>
 
   </ng-template>
 
   <ng-template matHeaderCellDef #myHeader>
 
-    @if (customCell?.columnDef?.headerCell) {
-      <ng-container *ngTemplateOutlet="customCell!.columnDef!.headerCell!.template; context: {metaData: metaData, styles:  styles.header} " />
-    } @else {
+    <ng-container *ngIf="customCell?.columnDef?.headerCell;else header;">
+      <ng-container *ngTemplateOutlet="customCell.columnDef.headerCell.template; context: {metaData: metaData, styles:  styles.header} ">
+      </ng-container>
+    </ng-container>
+
+    <ng-template #header>
+
       <mat-header-cell  cdkDrag [styler]='styles.header' [resizeColumn]="true" [key]="metaData.key"   class="column-head drag-header" #headref >
         <div class="header-container" cdkDragHandle>
-          @if (!metaData._internalNotUserDefined || !customCell?.columnDef?.cell) {
-            <div mat-sort-header style="width: 100%">
+          <div *ngIf="!metaData._internalNotUserDefined || !customCell?.columnDef?.cell ; else headerWithoutMenu" mat-sort-header style="width: 100%">
+            {{ metaData.displayName ?  metaData.displayName : ( metaData.key | spaceCase ) }}
+          </div>
+          <ng-template #headerWithoutMenu >
+            <div *ngIf="metaData._internalNotUserDefined;" style="width: 100%">
               {{ metaData.displayName ?  metaData.displayName : ( metaData.key | spaceCase ) }}
             </div>
-          } @else {
-            @if (metaData._internalNotUserDefined) {
-              <div style="width: 100%">
-                {{ metaData.displayName ?  metaData.displayName : ( metaData.key | spaceCase ) }}
-              </div>
-            }
-          }
-          @if ((!metaData._internalNotUserDefined || !customCell?.columnDef?.cell) && (showfilters$ | async)) {
-            <tb-header-menu #menu [metaData]='metaData' [filter]='filter' >
-            </tb-header-menu>
-          }
+          </ng-template>
+          <tb-header-menu
+            *ngIf="(!metaData._internalNotUserDefined || !customCell?.columnDef?.cell) && (showfilters$ | async);" #menu [metaData]='metaData' [filter]='filter' >
+          </tb-header-menu>
         </div>
       </mat-header-cell>
-    }
+
+    </ng-template>
 
   </ng-template>
 
 
   <ng-container *matCellDef="let element;">
-    <ng-container *ngTemplateOutlet="outerTemplate; context: {metaData: metaData, element: element , styles: styles.body }" />
+    <ng-container *ngTemplateOutlet="outerTemplate; context: {metaData: metaData, element: element , styles: styles.body }">
+    </ng-container>
   </ng-container>
 
   <ng-template matFooterCellDef>
-    @if (customCell?.columnDef?.footerCell) {
-      <ng-container *ngTemplateOutlet="customCell!.columnDef!.footerCell!.template;context: {metaData: metaData, data: data$, styles : styles.footer }" />
-    } @else {
+    <ng-container *ngIf="customCell?.columnDef?.footerCell;else footer">
+      <ng-container
+        *ngTemplateOutlet="customCell.columnDef.footerCell.template;context: {metaData: metaData, data: data$, styles : styles.footer }">
+      </ng-container>
+    </ng-container>
+
+    <ng-template #footer>
       <mat-footer-cell  [styler]='styles.footer' *ngrxLet="data$ as data">
-        @if (data?.length && metaData.additional?.footer) {
-          <span class="bold">
-            @switch (metaData.fieldType) {
-              @case (FieldType.Currency) {
-                {{ data | columnTotal: metaData | currency }}
-              }
-              @case (FieldType.Number) {
-                {{ data | columnTotal: metaData | number }}
-              }
-            }
+        <span *ngIf="data?.length && metaData.additional?.footer" [ngSwitch]="metaData.fieldType" class="bold">
+          <span *ngSwitchCase="FieldType.Currency">
+            {{ data | columnTotal: metaData | currency }}
           </span>
-        }
+          <span *ngSwitchCase="FieldType.Number">
+            {{ data | columnTotal: metaData | number }}
+          </span>
+        </span>
       </mat-footer-cell>
-    }
+    </ng-template>
   </ng-template>
 </ng-container>

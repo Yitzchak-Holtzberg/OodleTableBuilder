@@ -1,6 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({ name: 'phone' })
+@Pipe({
+    name: 'phone',
+    standalone: false
+})
 export class PhoneNumberPipe implements PipeTransform {
 
   transform(phoneNum: string): any {

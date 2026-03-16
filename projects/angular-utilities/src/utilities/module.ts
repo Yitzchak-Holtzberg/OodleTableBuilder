@@ -15,21 +15,9 @@ import { PhoneNumberPipe } from "./pipes/phone.pipe";
 import { SpaceCasePipe } from "./pipes/space-case.pipes";
 
 @NgModule({
-    imports: [
-        SpaceCasePipe,
-        PhoneNumberPipe,
-        FunctionPipe,
-        StopPropagationDirective,
-        StylerDirective,
-        PreventEnterDirective,
-        AutoFocusDirective,
-        TrimWhitespaceDirective,
-        ClickSubjectDirective,
-        ClickEmitterDirective,
-        DialogDirective,
-        MatSlideToggleGroupDirective,
-        ConditionalClassesDirective
-    ],
+  imports: [
+
+  ],
     exports: [
         StopPropagationDirective,
         PreventEnterDirective,
@@ -47,8 +35,23 @@ import { SpaceCasePipe } from "./pipes/space-case.pipes";
         MatSlideToggleGroupDirective,
         ConditionalClassesDirective,
     ],
-    providers: [
-        DialogService
+    declarations: [
+        SpaceCasePipe,
+        PhoneNumberPipe,
+        FunctionPipe,
+        StopPropagationDirective,
+        StylerDirective,
+        PreventEnterDirective,
+        AutoFocusDirective,
+        TrimWhitespaceDirective,
+        ClickSubjectDirective,
+        ClickEmitterDirective,
+        DialogDirective,
+        MatSlideToggleGroupDirective,
+        ConditionalClassesDirective,
+    ],
+    providers : [
+      DialogService
     ]
 })
 export class UtilitiesModule {

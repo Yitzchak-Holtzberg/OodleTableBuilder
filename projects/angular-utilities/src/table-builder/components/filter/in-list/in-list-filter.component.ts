@@ -1,26 +1,20 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewContainerRef, input, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewContainerRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { TableStore } from '../../../classes/table-store';
 import { Dictionary } from '../../../interfaces/dictionary';
 import { FieldType, MetaData } from '../../../interfaces/report-def';
-import { MatCheckbox } from '@angular/material/checkbox';
-import { StopPropagationDirective } from '../../../../utilities/directives/stop-propagation.directive';
-import { AsyncPipe, KeyValuePipe } from '@angular/common';
-import { SpaceCasePipe } from '../../../../utilities/pipes/space-case.pipes';
 
 
 @Component({
     selector: 'tb-in-list-filter , [tb-in-list-filter]',
     template: `
-  @for (item of keyValues$ | async| keyvalue; track item.key) {
-    <div >
-      <mat-checkbox [checked]='selectedKeys.includes(item.key)' stop-propagation (change)='selectFilterChanged($event, item.key)' >
-        {{metaData.fieldType === FieldType.Enum ? (item.value | spaceCase) : item.value}}
-      </mat-checkbox>
-    </div>
-  }
+  <div *ngFor="let item of keyValues$ | async| keyvalue" >
+    <mat-checkbox [checked]='selectedKeys.includes(item.key)' stop-propagation (change)='selectFilterChanged($event, item.key)' >
+      {{metaData.fieldType === FieldType.Enum ? (item.value | spaceCase) : item.value}}
+    </mat-checkbox>
+  </div>
   `,
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{
@@ -28,12 +22,11 @@ import { SpaceCasePipe } from '../../../../utilities/pipes/space-case.pipes';
             useExisting: InListFilterComponent,
             multi: true
         }],
-    imports: [MatCheckbox, StopPropagationDirective, AsyncPipe, KeyValuePipe, SpaceCasePipe]
+    standalone: false
 })
 export class InListFilterComponent implements ControlValueAccessor {
-  private ref = inject(ChangeDetectorRef);
-  private tableState = inject(TableStore);
 
+  constructor(private ref: ChangeDetectorRef, private tableState: TableStore ) {}
   value: string[] = [];
   FieldType = FieldType;
   writeValue(obj: string[]): void {
@@ -54,14 +47,14 @@ export class InListFilterComponent implements ControlValueAccessor {
   registerOnTouched(fn: any): void {
     this.onTouched = fn;
   }
-  readonly key = input.required<string>();
+  @Input() key!: string;
 
   keyValues$! : Observable<Dictionary<string>>;
   selectedKeys : string[] = [];
   metaData!: MetaData;
 
   ngOnInit() {
-    this.keyValues$ = this.tableState.getMetaData$(this.key()).pipe(
+    this.keyValues$ = this.tableState.getMetaData$(this.key).pipe(
       tap(metaData => this.metaData = metaData),
       map( metaData => {
         if(metaData.additional?.filterOptions?.filterableValues ) {

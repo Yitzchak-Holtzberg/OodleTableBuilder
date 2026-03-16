@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, ChangeDetectorRef, input, inject } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, Input, ChangeDetectorRef } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { FilterInfo } from '../../classes/filter-info';
 import { FieldType } from '../../interfaces/report-def';
-import { AutoFocusDirective } from '../../../utilities/directives/auto-focus.directive';
 
 @Component({
     selector: 'lib-in-filter',
@@ -14,16 +13,14 @@ import { AutoFocusDirective } from '../../../utilities/directives/auto-focus.dir
             useExisting: InFilterComponent,
             multi: true
         }],
-    imports: [FormsModule, AutoFocusDirective]
+    standalone: false
 })
 export class InFilterComponent implements ControlValueAccessor {
-  private ref = inject(ChangeDetectorRef);
-
   FieldType = FieldType;
-  readonly type = input.required<FieldType>();
+  @Input() type! : FieldType;
   value: any[] = [undefined];
 
-  constructor() {
+  constructor(private ref: ChangeDetectorRef) {
     this.value = [undefined];
   }
   writeValue(obj: any[]): void {

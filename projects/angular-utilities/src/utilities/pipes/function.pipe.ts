@@ -1,6 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({ name: 'func' })
+@Pipe({
+    name: 'func',
+    standalone: false
+})
 export class FunctionPipe implements PipeTransform {
   transform(func: ( (...args: any[])=> any ) | string, ...args: any[]): any {
     if(typeof func === 'string') {
