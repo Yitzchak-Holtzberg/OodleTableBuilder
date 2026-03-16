@@ -1,7 +1,7 @@
 name: npm-publish
 on:
   push:
-    branches: [main]
+    branches: [main, restore-v18-source-angular-v21]
 jobs:
   npm-publish:
     name: npm-publish
@@ -24,6 +24,22 @@ jobs:
         cd dist/angular-utilities
         CURRENT=$(npm view @saydar/table-builder version 2>/dev/null || echo "0.0.0")
         IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
-        NEXT="${MAJOR}.${MINOR}.$((PATCH + 1))"
-        npm version "$NEXT" --no-git-tag-version
-        npm publish --access public --provenance
+        if [ "${{ github.ref_name }}" = "main" ]; then
+          NEXT="${MAJOR}.${MINOR}.$((PATCH + 1))"
+          npm version "$NEXT" --no-git-tag-version
+          npm publish --access public --provenance
+        else
+          BETA=$(npm view @saydar/table-builder dist-tags.beta 2>/dev/null || echo "0.0.0-beta.0")
+          BASE="${MAJOR}.${MINOR}.$((PATCH + 1))"
+          # increment beta prerelease number if same base version
+          if [[ "$BETA" == "${BASE}-beta."* ]]; then
+            N="${BETA##*-beta.}"
+            NEXT="${BASE}-beta.$((N + 1))"
+          else
+            NEXT="${BASE}-beta.0"
+          fi
+          npm version "$NEXT" --no-git-tag-version
+          npm publish --access public --provenance --tag beta
+        fi
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
