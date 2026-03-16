@@ -40,3 +40,5 @@ jobs:
           npm version "$NEXT" --no-git-tag-version
           npm publish --access public --provenance --tag beta
         fi
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
