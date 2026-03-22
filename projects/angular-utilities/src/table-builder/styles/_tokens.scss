@@ -1,0 +1,10 @@
+// Default brand tokens - consumers can override these via CSS custom properties
+:root {
+  --tb-primary-color: #3f51b5;
+  --tb-primary-dark: #224e9c;
+  --tb-primary-light: rgb(147 177 234 / 47%);
+  --tb-row-stripe-bg: #cdeefe;
+  --tb-filter-name-color: cornflowerblue;
+  --tb-drag-handle-color: lightblue;
+  --tb-chosen-icon-color: green;
+}

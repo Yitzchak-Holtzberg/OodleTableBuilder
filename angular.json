@@ -55,6 +55,7 @@
             ],
             "styles": [
               "examples/src/custom-theme.scss",
+              "projects/angular-utilities/src/table-builder/styles/_tokens.scss",
               "examples/src/styles.css"
             ],
             "scripts": [],
