@@ -1,6 +1,6 @@
 
 .mat-mdc-row:nth-child(odd) {
-  background-color: #cdeefe
+  background-color: var(--tb-row-stripe-bg, #cdeefe)
 }
 
 .sticky {
@@ -21,9 +21,12 @@
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
-  background-color: white;
+  background-color: var(--mat-menu-container-color, white);
 }
 
+:host::ng-deep mat-paginator {
+  background-color: inherit;
+}
 :host::ng-deep.mat-mdc-paginator-container {
   min-height: initial !important;
 }
