@@ -1,9 +1,8 @@
 // --- Checkbox icon ---
 .show-hide {
+  --mdc-icon-button-state-layer-size: 24px;
+  --mdc-icon-button-icon-size: 20px;
   margin-right: 12px;
-  height: 24px;
-  width: 24px;
-  padding: 4px;
 }
 
 // --- Column labels ---

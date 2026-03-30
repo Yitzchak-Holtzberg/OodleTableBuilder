@@ -70,7 +70,8 @@
         "serve":{
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "buildTarget": "AngularUrilitiesExamples:build"
+            "buildTarget": "AngularUrilitiesExamples:build",
+            "port": 4201
           }
         }
       }

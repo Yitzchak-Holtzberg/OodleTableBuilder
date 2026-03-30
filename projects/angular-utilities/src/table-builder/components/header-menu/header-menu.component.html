@@ -1,5 +1,5 @@
 <button mat-icon-button class="open-menu-icon-button" disableRipple [matMenuTriggerFor]="menu" [matMenuTriggerRestoreFocus]="false">
-  <mat-icon class="menu-icon">more_vert</mat-icon>
+  <mat-icon>more_vert</mat-icon>
 </button>
 <mat-menu #menu="matMenu" >
   <button mat-menu-item (click)="tableState.addGroupByKey(metaData.key)">

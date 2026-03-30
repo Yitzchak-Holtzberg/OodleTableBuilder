@@ -1,4 +1,3 @@
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Observable } from 'rxjs';
@@ -34,37 +33,30 @@ export class SortMenuComponent implements OnInit{
     this.store.reset();
   }
 
-  dropIntoSorted(event: CdkDragDrop<SortWithName[]>) {
+  addSort(sort: SortWithName) {
     this.dirty$.next(true);
-    if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-      this.store.setSorted(event.container.data);
-    } else {
-
-      transferArrayItem(event.previousContainer.data,
-                        event.container.data,
-                        event.previousIndex,
-                        event.currentIndex);
-      event.container.data[event.currentIndex] = {...event.container.data[event.currentIndex],direction:SortDirection.asc};
-      this.store.setSorted(event.container.data);
-      this.store.setNotSorted(event.previousContainer.data);
-    }
+    this.store.sorted$.pipe(first()).subscribe(sorted => {
+      this.store.setSorted([...sorted, { ...sort, direction: SortDirection.asc }]);
+    });
+    this.store.notSorted$.pipe(first()).subscribe(notSorted => {
+      this.store.setNotSorted(notSorted.filter(s => s.active !== sort.active));
+    });
   }
 
-  dropIntoNotSorted(event: CdkDragDrop<SortWithName[]>){
-    if (event.previousContainer === event.container) {
-      return;
-    } else {
-      this.dirty$.next(true);
-      transferArrayItem(event.previousContainer.data,
-                        event.container.data,
-                        event.previousIndex,
-                        event.currentIndex);
-      event.container.data[event.currentIndex] = {...event.container.data[event.currentIndex]};
+  removeSort(sort: SortWithName) {
+    this.dirty$.next(true);
+    this.store.sorted$.pipe(first()).subscribe(sorted => {
+      this.store.setSorted(sorted.filter(s => s.active !== sort.active));
+    });
+    this.store.notSorted$.pipe(first()).subscribe(notSorted => {
+      this.store.setNotSorted([...notSorted, sort]);
+    });
+  }
 
-      this.store.setNotSorted(event.container.data);
-      this.store.setSorted(event.previousContainer.data);
-    }
+  toggleDirection(sort: SortWithName) {
+    this.dirty$.next(true);
+    const newDirection = sort.direction === SortDirection.asc ? SortDirection.desc : SortDirection.asc;
+    this.store.setDirection({ ...sort, direction: newDirection });
   }
 
   apply = this.store.effect((obs:Observable<null>)=>
@@ -79,5 +71,3 @@ export class SortMenuComponent implements OnInit{
   }
 
 }
-
-

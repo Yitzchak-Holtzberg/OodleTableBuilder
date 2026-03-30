@@ -6,18 +6,9 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 // --- Menu trigger icon ---
-.menu-icon {
-  font-size: 16px;
-  line-height: 16px;
-  vertical-align: top;
-  height: 16px;
-  width: 16px;
-}
-
 .open-menu-icon-button {
-  height: 28px;
-  width: 28px;
-  padding: 6px;
+  --mdc-icon-button-state-layer-size: 28px;
+  --mdc-icon-button-icon-size: 16px;
 }
 
 // --- Search icon in filter fields ---
@@ -54,43 +45,19 @@ input[type=number]::-webkit-outer-spin-button {
 
 // --- Icon buttons inside filters ---
 .header-filter-icon-button {
-  height: 24px;
-  width: 24px;
-  padding: 0;
+  --mdc-icon-button-state-layer-size: 24px;
+  --mdc-icon-button-icon-size: 18px;
   margin: 0 2px;
-  border-radius: 6px;
-  transition: background-color 150ms;
 
-  &:hover {
-    background-color: var(--tb-menu-item-hover-bg, rgba(103, 80, 164, 0.08));
-  }
-
-  ::ng-deep * {
-    line-height: initial;
-    font-size: initial;
-    height: 24px;
-    width: 24px;
-    font-size: 18px;
-    bottom: initial;
-  }
-
-  &.chosen-icon,
-  &.chosen-icon ::ng-deep * {
-    height: 24px;
-    width: 24px;
-    font-size: 20px;
+  &.chosen-icon {
+    --mdc-icon-button-icon-size: 20px;
     color: var(--tb-menu-accent-color, #6750a4);
   }
 }
 
 // --- Date/number suffix icons ---
 mat-icon.mat-icon.suffix-icons.underline {
-  height: 20px;
   text-decoration: underline 0.1px solid;
-
-  .chosen-icon & {
-    height: 24px;
-  }
 }
 
 ::ng-deep.mat-mdc-form-field-icon-prefix:has(.tb-header-prefix), .tb-header-prefix {

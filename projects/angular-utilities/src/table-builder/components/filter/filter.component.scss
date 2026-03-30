@@ -53,25 +53,9 @@ mat-card.filter-card {
 }
 
 .small-button {
-  height: 24px;
-  width: 24px;
-  padding: 0;
+  --mdc-icon-button-state-layer-size: 24px;
+  --mdc-icon-button-icon-size: 18px;
   margin: 0;
-  border-radius: 6px;
-  transition: background-color 150ms;
-
-  &:hover {
-    background-color: var(--tb-menu-item-hover-bg, rgba(103, 80, 164, 0.08));
-  }
-
-  ::ng-deep * {
-    line-height: initial;
-    font-size: initial;
-    height: 24px;
-    width: 24px;
-    font-size: 18px;
-    bottom: initial;
-  }
 }
 
 .date-toggle ::ng-deep svg {
