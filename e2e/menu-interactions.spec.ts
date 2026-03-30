@@ -171,7 +171,8 @@ test.describe('Menu Interactions - Table Builder', () => {
       let menuPanel = tb.page.locator('.mat-mdc-menu-panel');
       await menuPanel.locator('[mat-menu-item]', { hasText: 'Phone' }).click();
       await tb.waitForTableUpdate();
-      await tb.page.keyboard.press('Escape');
+      // Close menu by clicking the backdrop
+      await tb.page.locator('.cdk-overlay-backdrop').click();
       await tb.waitForTableUpdate();
 
       // Verify hidden
@@ -184,7 +185,7 @@ test.describe('Menu Interactions - Table Builder', () => {
       await expect(menuPanel).toBeVisible();
       await menuPanel.locator('[mat-menu-item]', { hasText: 'Phone' }).click();
       await tb.waitForTableUpdate();
-      await tb.page.keyboard.press('Escape');
+      await tb.page.locator('.cdk-overlay-backdrop').click();
       await tb.waitForTableUpdate();
 
       headers = await tb.getColumnHeaders();
