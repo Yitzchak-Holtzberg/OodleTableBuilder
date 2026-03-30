@@ -1,46 +1,62 @@
+// --- Checkbox icon ---
 .show-hide {
-  margin-right: 15px;
+  margin-right: 12px;
   height: 24px;
   width: 24px;
   padding: 4px;
 }
 
+// --- Column labels ---
 .label {
-    color: var(--tb-filter-name-color, cornflowerblue);
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    text-align: left;
-    margin: 0;
-    font-size: 17px;
-    font-weight: 700;
-    display: inline-block;
-    width: 66%;
+  color: var(--tb-menu-accent-color, #6750a4);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: left;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-block;
+  width: 66%;
+  letter-spacing: 0.01em;
 }
 
 .row {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
+// --- Hidden column appearance ---
 .isHidden {
-    background-color: lightgrey;
-    color: darkgray;
-    font-weight: 700;
-    font-size: 17px;
-    white-space: nowrap;
+  background-color: rgba(0, 0, 0, 0.04);
+  font-weight: 500;
+  font-size: 14px;
+  white-space: nowrap;
+
+  .label {
+    color: var(--tb-menu-label-secondary, #79747e);
+  }
 }
 
-.filter-button {
-    margin-top: 10px;
+// --- Toolbar row (close/show-all/hide-all) ---
+.menu-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-bottom: var(--tb-menu-section-divider, 1px solid rgba(0, 0, 0, 0.08));
+  margin-bottom: 4px;
 }
 
+.toolbar-spacer {
+  flex: 1;
+}
+
+// --- Drag & Drop ---
 .cdk-drag-preview {
   box-sizing: border-box;
-  border-radius: 4px;
-  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
-              0 8px 10px 1px rgba(0, 0, 0, 0.14),
-              0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  border-radius: var(--tb-menu-item-border-radius, 8px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  background: var(--tb-menu-surface-bg, #fff);
 }
 
 .cdk-drag-placeholder {
@@ -48,10 +64,18 @@
 }
 
 .cdk-drag-animating {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
 }
-.mdc-list-item__primary-text{
+
+.mdc-list-item__primary-text {
   display: inline-block;
   width: 100%;
 }
 
+// --- Panel styling (overlay is outside component scope) ---
+::ng-deep .my-mat-menu.mat-mdc-menu-panel {
+  border-radius: var(--tb-menu-border-radius, 12px);
+  padding: 4px;
+  min-width: 220px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+}

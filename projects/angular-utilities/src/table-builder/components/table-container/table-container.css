@@ -2,26 +2,31 @@
   width: 200px !important;
 }
 
-.header-wrapper{
+.header-wrapper {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width:100%;
+  width: 100%;
   background-color: var(--mat-menu-container-color, white);
 }
 
-
-.flx-row-end{
+.flx-row-end {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
 }
 
-.flat-menu{
+.flat-menu {
   line-height: initial;
   height: initial;
 }
 
-
+/* Flex layout for collapsed header menu items */
+.flex-column {
+  display: flex;
+  flex-direction: row;
+  padding: 4px 8px;
+  gap: 4px;
+}
 

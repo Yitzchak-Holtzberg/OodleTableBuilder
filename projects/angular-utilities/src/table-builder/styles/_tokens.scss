@@ -7,4 +7,35 @@
   --tb-filter-name-color: cornflowerblue;
   --tb-drag-handle-color: lightblue;
   --tb-chosen-icon-color: green;
+
+  // Menu tokens
+  --tb-menu-border-radius: 12px;
+  --tb-menu-section-divider: 1px solid rgba(0, 0, 0, 0.08);
+  --tb-menu-item-hover-bg: rgba(103, 80, 164, 0.08);
+  --tb-menu-item-border-radius: 8px;
+  --tb-menu-section-gap: 4px;
+  --tb-menu-label-color: #49454f;
+  --tb-menu-label-secondary: #79747e;
+  --tb-menu-accent-color: #6750a4;
+  --tb-menu-surface-bg: var(--mat-app-background-color, #fff);
+}
+
+// Global menu panel overrides (CDK overlay lives outside component scope)
+.mat-mdc-menu-panel {
+  border-radius: var(--tb-menu-border-radius, 12px) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  padding: 4px;
+
+  .mat-mdc-menu-item {
+    border-radius: var(--tb-menu-item-border-radius, 8px);
+    transition: background-color 150ms;
+
+    &:hover {
+      background-color: var(--tb-menu-item-hover-bg, rgba(103, 80, 164, 0.08));
+    }
+
+    .mat-icon {
+      margin-right: 12px;
+    }
+  }
 }
