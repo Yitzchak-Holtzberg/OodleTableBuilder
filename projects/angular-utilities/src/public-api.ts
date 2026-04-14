@@ -21,6 +21,8 @@ export * from './table-builder/components';
 
 export * from './table-builder/directives';
 
+export * from './table-builder/directives/virtual-scroll-viewport.directive';
+
 export {FilterType} from './table-builder/enums/filterTypes';
 
 export * from './table-builder/classes/filter-info';
