@@ -5,14 +5,14 @@ import { FilterType } from '../../enums/filterTypes';
 import { FieldType } from '../../interfaces/report-def';
 
 
-type thingy = Omit<FieldType,UnmappedTypes>
+type thingy = Omit<FieldType, UnmappedTypes>
 
 @Component({
-    selector: 'tb-filter',
-    templateUrl: './filter.component.html',
-    styleUrls: ['./filter.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'tb-filter',
+  templateUrl: './filter.component.html',
+  styleUrls: ['./filter.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class FilterComponent<T extends mappedFieldTypes = any> {
   filterTypes = filterTypeMap;
@@ -21,7 +21,7 @@ export class FilterComponent<T extends mappedFieldTypes = any> {
   @Input() filter!: PartialFilter;;
   @Output() close = new EventEmitter();
   currentFilterType?: FilterType;
-  constructor( public state: TableStore) { }
+  constructor(public state: TableStore) { }
 
   ngOnInit() {
     this.currentFilterType = this.filter.filterType;

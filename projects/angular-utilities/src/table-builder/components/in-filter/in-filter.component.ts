@@ -53,7 +53,12 @@ export class InFilterComponent implements ControlValueAccessor {
 
   onValueChange(i:number,value: number | string){
     this.value = [...this.value];
-    this.value[i] = value;
+    if (typeof value === 'string' && value.includes(',')) {
+      const parts = value.split(',').map(s => s.trim()).filter(s => s);
+      this.value.splice(i, 1, ...parts);
+    } else {
+      this.value[i] = value;
+    }
     this.ref.markForCheck();
     this.onChange(this.value);
   }

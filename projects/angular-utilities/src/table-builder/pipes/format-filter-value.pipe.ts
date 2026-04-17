@@ -37,6 +37,9 @@ export class FormatFilterValuePipe implements PipeTransform {
         if(md.fieldType === FieldType.DateTime){
           return !!DateTimeFilterFuncs[filterType] ? this.datePipe.transform(value, 'short') : this.datePipe.transform(value, 'MM/dd/yy');
         }
+        if (Array.isArray(value)) {
+          return value.join(', ');
+        }
         return value
       })
     );

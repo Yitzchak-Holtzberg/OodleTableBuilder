@@ -18,7 +18,7 @@ import { MultiSortDirective } from '../../directives/multi-sort.directive';
 import { TableBuilderConfigToken } from '../../classes/TableBuilderConfig';
 import { provideMockStore } from '@ngrx/store/testing';
 import { PaginatorComponent } from '../generic-table/paginator.component';
-import {  LetModule, LetDirective, PushModule, PushPipe } from '@ngrx/component';
+import { LetDirective, PushPipe } from '@ngrx/component';
 import { HarnessLoader, parallel } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import {MatTableHarness} from '@angular/material/table/testing';
@@ -103,7 +103,7 @@ describe('table container', () => {
         MaterialModule,
         CommonModule,
         FormsModule,
-        LetModule,
+        LetDirective,
         UtilitiesModule,
       ]
     })

@@ -20,7 +20,7 @@ import { TableStore } from '../../classes/table-store';
   <div [ngClass]="{'hide' : !(collapseFooter$ | async), 'page-amounts':true}" *ngIf="currentPageData$ | async as pageData">
     {{pageData.currentStart}} - {{pageData.currentEnd}} of {{pageData.total}}
   </div>
-  <mat-paginator [pageSizeOptions]="[5, 10, 20, 50, 100, 500]" showFirstLastButtons (page)="paginatorChange()"
+  <mat-paginator [pageSizeOptions]="[5, 10, 20, 50, 100, 250, 500]" showFirstLastButtons (page)="paginatorChange()"
     [ngClass]="{'hide' : (collapseFooter$ | async)}">
   </mat-paginator>
   `,
