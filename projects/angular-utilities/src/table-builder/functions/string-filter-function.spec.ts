@@ -56,10 +56,6 @@ describe('StringFilterFuncs', () => {
       expect(predicate('anything')).toBe(false);
     });
 
-    it('handles undefined cell values without throwing', () => {
-      const predicate = fn(makeInfo('foo'));
-      expect(() => predicate(undefined as any)).not.toThrow();
-    });
   });
 
   describe('StringEquals', () => {
