@@ -2,18 +2,12 @@ import { FilterFunc, FilterInfo } from '../classes/filter-info';
 import { FilterType } from '../enums/filterTypes';
 import { Dictionary } from '../interfaces/dictionary';
 import { isNull } from './null-filter-function';
+import { splitCommaValue } from './split-comma-value';
 
-
-function normalizeStringFilterValue(v: any): string | string[] {
-  if (typeof v === 'string' && v.includes(',')) {
-    return v.split(',').map(s => s.trim()).filter(s => s);
-  }
-  return v;
-}
 
 const makeStringFunc = (op: (val: string, fv: string) => boolean): FilterFunc<string> =>
   (filterInfo: FilterInfo) => {
-    const filterValue = normalizeStringFilterValue(filterInfo.filterValue);
+    const filterValue = splitCommaValue(filterInfo.filterValue);
     if (Array.isArray(filterValue)) {
       const vals = filterValue.map((v: string) => prepareForStringCompare(v));
       return (val) => vals.some((v: string) => op(prepareForStringCompare(val), v));

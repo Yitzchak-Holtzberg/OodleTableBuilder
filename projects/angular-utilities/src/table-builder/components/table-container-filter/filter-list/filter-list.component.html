@@ -14,7 +14,14 @@
 
   <mat-chip-set *ngrxLet="filters$ as filters">
     <mat-chip *ngFor="let filter of filters" (dblclick)="addFilter(filter)"  (removed)="tableState.removeFilter(filter.filterId!)">
-      {{ filter.key | keyDisplay | async  }} {{filter.filterType | formatFilterType : filter.filterValue}} {{ filter.filterValue | formatFilterValue: filter.key : filter.filterType  | async }}
+      {{ filter.key | keyDisplay | async  }} {{filter.filterType | formatFilterType : filter.filterValue}}
+      @if (isArray(filter.filterValue)) {
+        @for (v of filter.filterValue; track $index) {
+          <span class="filter-value-pill">{{ v }}</span>
+        }
+      } @else {
+        {{ filter.filterValue | formatFilterValue: filter.key : filter.filterType  | async }}
+      }
       <mat-icon matChipRemove>cancel</mat-icon>
     </mat-chip>
     <mat-chip *ngIf="filters.length >= 2" (removed)="tableState.clearFilters()">

@@ -2,22 +2,17 @@ import { Range, FilterFunc, FilterInfo } from '../classes/filter-info';
 import { FilterType } from '../enums/filterTypes';
 import { Dictionary } from '../interfaces/dictionary';
 import { isNull } from './null-filter-function';
+import { splitCommaValue } from './split-comma-value';
 
 type NumberFilterFunc = FilterFunc<number>
 
-function normalizeNumberFilterValue(v: any): number | number[] {
-  if (typeof v === 'string' && v.includes(',')) {
-    return v.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
-  }
-  return v;
-}
-
 const numberEqalsFunc: NumberFilterFunc = (filterInfo: FilterInfo<number>) => {
-  const filterValue = normalizeNumberFilterValue(filterInfo.filterValue);
-  if (Array.isArray(filterValue)) {
-    return (val: number): boolean => filterValue.some((v: number) => val === v);
+  const split = splitCommaValue(filterInfo.filterValue);
+  if (Array.isArray(split)) {
+    const nums = split.map(s => Number(s)).filter(n => !isNaN(n));
+    return (val: number): boolean => nums.some(v => val === v);
   }
-  return (val: number): boolean => val === filterValue;
+  return (val: number): boolean => val === filterInfo.filterValue;
 }
 
 const numberNotEqualFunc: NumberFilterFunc = (filterInfo: FilterInfo<number>) => (val: number): boolean => {
