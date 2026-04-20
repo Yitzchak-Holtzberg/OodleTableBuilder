@@ -15,8 +15,8 @@
   <mat-chip-set *ngrxLet="filters$ as filters">
     <mat-chip *ngFor="let filter of filters" (dblclick)="addFilter(filter)"  (removed)="tableState.removeFilter(filter.filterId!)">
       {{ filter.key | keyDisplay | async  }} {{filter.filterType | formatFilterType : filter.filterValue}}
-      @if (isArray(filter.filterValue)) {
-        @for (v of filter.filterValue; track $index) {
+      @if (filter.filterValue | asFilterPills; as pills) {
+        @for (v of pills; track $index) {
           <span class="filter-value-pill">{{ v }}</span>
         }
       } @else {

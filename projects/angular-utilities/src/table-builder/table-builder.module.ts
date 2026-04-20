@@ -29,6 +29,7 @@ import { ArrayColumnComponent } from './components/array-column.component';
 import { LinkColumnComponent } from './components/link-column.component';
 import { InFilterComponent } from './components/in-filter/in-filter.component';
 import { FormatFilterValuePipe } from './pipes/format-filter-value.pipe';
+import { AsFilterPillsPipe } from './pipes/as-filter-pills.pipe';
 import { FormatFilterTypePipe } from './pipes/format-filter-type.pipe';
 import { ResizeColumnDirective } from './directives/resize-column.directive';
 import {LetDirective} from '@ngrx/component'
@@ -108,6 +109,7 @@ import { DateTimeFilterComponent } from './components/date-time-filter/date-time
         HeaderMenuComponent,
         KeyDisplayPipe,
         FormatFilterValuePipe,
+        AsFilterPillsPipe,
         FormatFilterTypePipe,
         ResizeColumnDirective,
         InFilterComponent,
