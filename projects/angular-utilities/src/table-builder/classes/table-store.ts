@@ -15,7 +15,6 @@ import { notNull, onceWhen } from '../../rxjs/rxjs-operators';
 import { GeneralTableSettings, NotPersisitedTableSettings, PesrsistedTableSettings } from './table-builder-general-settings';
 import * as _ from 'lodash';
 import { splitCommaValue } from '../functions/split-comma-value';
-import { FilterType } from '../enums/filterTypes';
 
 export function stateIs(initializationState: InitializationState) {
   return (state: TableState) => state.initializationState === initializationState;
@@ -152,9 +151,7 @@ export class TableStore extends ComponentStore<TableState> {
         if (!filter.filterId) {
           filter.filterId = uuid();
         }
-        if (filter.filterType === FilterType.In) {
-          filter.filterValue = splitCommaValue(filter.filterValue);
-        }
+        filter.filterValue = splitCommaValue(filter.filterValue);
         filtersObj[filter.filterId] = filter;
         return filtersObj;
       },{});
