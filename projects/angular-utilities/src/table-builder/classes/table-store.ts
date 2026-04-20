@@ -14,6 +14,7 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { notNull, onceWhen } from '../../rxjs/rxjs-operators';
 import { GeneralTableSettings, NotPersisitedTableSettings, PesrsistedTableSettings } from './table-builder-general-settings';
 import * as _ from 'lodash';
+import { splitCommaValue } from '../functions/split-comma-value';
 
 export function stateIs(initializationState: InitializationState) {
   return (state: TableState) => state.initializationState === initializationState;
@@ -150,6 +151,7 @@ export class TableStore extends ComponentStore<TableState> {
         if (!filter.filterId) {
           filter.filterId = uuid();
         }
+        filter.filterValue = splitCommaValue(filter.filterValue);
         filtersObj[filter.filterId] = filter;
         return filtersObj;
       },{});

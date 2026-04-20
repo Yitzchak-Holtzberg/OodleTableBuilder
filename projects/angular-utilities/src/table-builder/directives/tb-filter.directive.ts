@@ -136,14 +136,6 @@ export abstract class TableCustomFilterDirective<T = any> {
     super(model,wrapper);
     this.filterType = FilterType.StringContains;
     this.fieldType = FieldType.String;
-    this.effect( () => {
-      return model.valueChanges!.pipe(
-        tap( val => {
-          this.filterValue = val;
-          this.update();
-        })
-      )
-    })
   }
 
   override reset() {

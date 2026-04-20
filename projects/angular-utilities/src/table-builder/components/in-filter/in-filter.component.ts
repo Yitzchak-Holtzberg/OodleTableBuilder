@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, Input, ChangeDetectorRef } from '@a
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { FilterInfo } from '../../classes/filter-info';
 import { FieldType } from '../../interfaces/report-def';
+import { splitCommaValue } from '../../functions/split-comma-value';
 
 @Component({
     selector: 'lib-in-filter',
@@ -53,7 +54,12 @@ export class InFilterComponent implements ControlValueAccessor {
 
   onValueChange(i:number,value: number | string){
     this.value = [...this.value];
-    this.value[i] = value;
+    const split = splitCommaValue(value);
+    if (Array.isArray(split)) {
+      this.value.splice(i, 1, ...split);
+    } else {
+      this.value[i] = value;
+    }
     this.ref.markForCheck();
     this.onChange(this.value);
   }

@@ -12,6 +12,7 @@ import { Observable } from 'rxjs';
     standalone: false
 })
 export class FilterChipsComponent {
+  isArray = Array.isArray;
 
   constructor( public tableState: TableStore, private filterStore : WrapperFilterStore) {
   }
