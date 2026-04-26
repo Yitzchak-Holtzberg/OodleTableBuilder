@@ -38,6 +38,41 @@ describe('StringFilterFuncs', () => {
       expect(predicate('contains bar')).toBe(true);
     });
 
+    it('does not split on plain space (multi-word values stay intact)', () => {
+      const predicate = fn(makeInfo('ACME INC'));
+      expect(predicate('ACME INC — corporate')).toBe(true);
+      expect(predicate('ACME')).toBe(false); // "INC" must be present too
+    });
+
+    it('OR-matches a tab-separated string (Excel row paste)', () => {
+      const predicate = fn(makeInfo('foo\tbar\tbaz'));
+      expect(predicate('has foo')).toBe(true);
+      expect(predicate('has bar')).toBe(true);
+      expect(predicate('has baz')).toBe(true);
+      expect(predicate('has qux')).toBe(false);
+    });
+
+    it('OR-matches a newline-separated string (Excel column paste, after directive injection)', () => {
+      const predicate = fn(makeInfo('foo\nbar\nbaz'));
+      expect(predicate('has foo')).toBe(true);
+      expect(predicate('has bar')).toBe(true);
+      expect(predicate('has baz')).toBe(true);
+    });
+
+    it('handles CRLF line endings', () => {
+      const predicate = fn(makeInfo('foo\r\nbar'));
+      expect(predicate('has foo')).toBe(true);
+      expect(predicate('has bar')).toBe(true);
+    });
+
+    it('OR-matches mixed comma and tab/newline delimiters', () => {
+      const predicate = fn(makeInfo('foo,bar\tbaz\nqux'));
+      expect(predicate('has foo')).toBe(true);
+      expect(predicate('has bar')).toBe(true);
+      expect(predicate('has baz')).toBe(true);
+      expect(predicate('has qux')).toBe(true);
+    });
+
     it('OR-matches an array filterValue (programmatic In semantics)', () => {
       const predicate = fn(makeInfo(['foo', 'bar']));
       expect(predicate('has foo')).toBe(true);

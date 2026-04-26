@@ -46,6 +46,7 @@ import {
   MatOptionTbFilterDirective,
   MatRadioButtonTbFilterDirective,
   MatSlideToggleTbFilterDirective,
+  PreservePasteDelimitersDirective,
   TableFilterDirective,
   TableFilterStringContainsDirective,
 } from './directives';
@@ -89,6 +90,7 @@ import { DateTimeFilterComponent } from './components/date-time-filter/date-time
         TableFilterStringContainsDirective,
         TableWrapperDirective,
         GroupByListComponent,
+        PreservePasteDelimitersDirective,
     ],
     declarations: [
         ColumnTotalPipe,
@@ -127,6 +129,7 @@ import { DateTimeFilterComponent } from './components/date-time-filter/date-time
         TableWrapperDirective,
         GroupByListComponent,
         DateTimeFilterComponent,
+        PreservePasteDelimitersDirective,
     ],
     providers : [
       SpaceCasePipe,
