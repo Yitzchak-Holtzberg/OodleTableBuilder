@@ -1,5 +1,17 @@
+/* Size the VS viewport to "viewport minus the chrome": 48px navbar +
+   ~56px of .filters-container chrome (12px top/bottom padding +
+   button-toggle group with its 12px bottom margin). The library's
+   VirtualScrollViewportDirective overrides this inline at runtime,
+   but our CSS provides the baseline so initial render is correct. */
 .tb-virtual-scroll-viewport {
-  height: 90vh !important;
+  height: calc(100vh - 48px - 56px) !important;
+}
+
+/* Clip mat-elevation shadow that leaks past the routed component's
+   content box, so the oodle route never gets an internal scrollbar
+   from the host being a few pixels taller than its container. */
+table-builder-oodle-example {
+  overflow: hidden !important;
 }
 
 .filters-container {

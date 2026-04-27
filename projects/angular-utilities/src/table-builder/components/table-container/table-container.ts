@@ -38,6 +38,8 @@ import { createFilterFunc, isCustomFilter, isFilterInfo } from '../../classes/fi
 import { Dictionary } from '../../interfaces/dictionary';
 import { TableWrapperDirective } from '../../directives/table-wrapper.directive';
 import { createLinkCreator } from '../../services/link-creator.service';
+
+const BLANK_GROUP_LABEL = '(Blank)';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
 
 @Component({
@@ -313,7 +315,16 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
 
   tbGroupBy = (data: any[], groupByKeys: string[], parentGroupName?: any): any[] => {
     let res = {};
-    res = groupBy(data, groupByKeys[0]);
+    const key = groupByKeys[0];
+    res = groupBy(data, (row: any) => {
+      const v = row?.[key];
+      const isBlank =
+        v === null
+        || v === undefined
+        || (typeof v === 'string' && v.trim() === '')
+        || (Array.isArray(v) && v.length === 0);
+      return isBlank ? BLANK_GROUP_LABEL : v;
+    });
     const remainingGroupByKeys = groupByKeys.slice(1);
     if (remainingGroupByKeys.length) {
       Object.keys(res).forEach(key => res[key] = this.tbGroupBy(res[key], remainingGroupByKeys, key))

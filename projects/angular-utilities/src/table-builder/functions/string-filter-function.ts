@@ -3,27 +3,40 @@ import { FilterType } from '../enums/filterTypes';
 import { Dictionary } from '../interfaces/dictionary';
 import { isNull } from './null-filter-function';
 import { splitCommaValue } from './split-comma-value';
+import { hasWildcard, wildcardToRegex, WildcardAnchor } from './wildcard-to-regex';
 
 
-const makeStringFunc = (op: (val: string, fv: string) => boolean): FilterFunc<string> =>
+type LiteralOp = (val: string, fv: string) => boolean;
+type SegmentMatcher = (preppedVal: string) => boolean;
+
+const makeSegmentMatcher = (segment: unknown, anchor: WildcardAnchor, literalOp: LiteralOp): SegmentMatcher => {
+  const prepped = prepareForStringCompare(segment);
+  if (hasWildcard(prepped)) {
+    const re = wildcardToRegex(prepped, anchor);
+    return (val) => re.test(val);
+  }
+  return (val) => literalOp(val, prepped);
+};
+
+const makeStringFunc = (anchor: WildcardAnchor, literalOp: LiteralOp): FilterFunc<string> =>
   (filterInfo: FilterInfo) => {
     const filterValue = splitCommaValue(filterInfo.filterValue);
-    if (Array.isArray(filterValue)) {
-      const vals = filterValue.map((v: string) => prepareForStringCompare(v));
-      return (val) => vals.some((v: string) => op(prepareForStringCompare(val), v));
-    }
-    const fv = prepareForStringCompare(filterValue);
-    return (val) => op(prepareForStringCompare(val), fv);
+    const segments = Array.isArray(filterValue) ? filterValue : [filterValue];
+    const matchers = segments.map(seg => makeSegmentMatcher(seg, anchor, literalOp));
+    return (val) => {
+      const prepped = prepareForStringCompare(val) ?? '';
+      return matchers.some(m => m(prepped));
+    };
   };
 
-const stringEqualFunc      = makeStringFunc((a, b) => a === b);
-const stringContainsFunc   = makeStringFunc((a, b) => a.includes(b));
-const stringStartsWithFunc = makeStringFunc((a, b) => a.startsWith(b));
-const stringEndsWithFunc   = makeStringFunc((a, b) => a.endsWith(b));
+const stringEqualFunc      = makeStringFunc('both',  (a, b) => a === b);
+const stringContainsFunc   = makeStringFunc('none',  (a, b) => a.includes(b));
+const stringStartsWithFunc = makeStringFunc('start', (a, b) => a.startsWith(b));
+const stringEndsWithFunc   = makeStringFunc('end',   (a, b) => a.endsWith(b));
 
 const stringDoesNotContainFunc: FilterFunc<string> = (filterInfo: FilterInfo) => {
-  const doesNotContainVal = prepareForStringCompare(filterInfo.filterValue);
-  return ((val) => !prepareForStringCompare(val)?.includes(doesNotContainVal));
+  const match = makeSegmentMatcher(filterInfo.filterValue, 'none', (a, b) => a.includes(b));
+  return (val) => !match(prepareForStringCompare(val) ?? '');
 }
 
 const multipleStringValuesEqualsFunc: FilterFunc<string[], string> = (filterInfo: FilterInfo) => {

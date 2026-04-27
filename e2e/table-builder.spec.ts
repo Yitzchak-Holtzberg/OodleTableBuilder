@@ -1,5 +1,21 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Locator } from '@playwright/test';
 import { TableBuilderPage } from './table-builder.page';
+
+/**
+ * Synthesize a paste event with arbitrary text, including tabs and newlines.
+ * Bypasses the OS clipboard (which would require browser permissions in CI) and
+ * exercises the same code path as a real paste — paste handlers see the same
+ * ClipboardEvent and clipboardData.getData('text/plain') call.
+ */
+async function dispatchPaste(input: Locator, text: string) {
+  await input.focus();
+  await input.evaluate((el: HTMLInputElement, value: string) => {
+    const dt = new DataTransfer();
+    dt.setData('text/plain', value);
+    const evt = new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true });
+    el.dispatchEvent(evt);
+  }, text);
+}
 
 test.describe('Table Builder', () => {
   let tb: TableBuilderPage;
@@ -105,6 +121,83 @@ test.describe('Table Builder', () => {
       await tb.waitForTableUpdate();
       const textAfter = await tb.getPaginatorText();
       expect(textAfter).toContain('of 8');
+    });
+
+    test.describe('Multi-value and wildcard filter input', () => {
+      const filterInput = (p: typeof tb.page) => p.locator('input[ngmodel]').first();
+
+      test.afterEach(async () => {
+        await filterInput(tb.page).fill('');
+        await tb.waitForTableUpdate();
+      });
+
+      test('comma separates values → OR match', async () => {
+        await filterInput(tb.page).fill('Nitrogen,Lithium');
+        await tb.waitForTableUpdate();
+        expect(await tb.getPaginatorText()).toContain('of 2');
+      });
+
+      test('whitespace is NOT a delimiter — multi-word values stay intact', async () => {
+        // 'Nitrogen Lithium' is treated as the literal phrase "Nitrogen Lithium".
+        // None of the element rows contain that phrase, so zero matches.
+        await filterInput(tb.page).fill('Nitrogen Lithium');
+        await tb.waitForTableUpdate();
+        expect(await tb.getPaginatorText()).toContain('of 0');
+      });
+
+      test('wildcard * matches any run of characters', async () => {
+        // "H*" under Contains (unanchored) matches any row containing 'h':
+        // Hydrogen, Helium, Lithium. Three matches.
+        await filterInput(tb.page).fill('H*');
+        await tb.waitForTableUpdate();
+        expect(await tb.getPaginatorText()).toContain('of 3');
+      });
+
+      test('wildcard ? matches a single character', async () => {
+        // "H?drogen" → H + any single + drogen → only Hydrogen.
+        await filterInput(tb.page).fill('H?drogen');
+        await tb.waitForTableUpdate();
+        expect(await tb.getPaginatorText()).toContain('of 1');
+        expect(await tb.getRowText(0)).toContain('Hydrogen');
+      });
+
+      test('wildcard combined with comma split', async () => {
+        await filterInput(tb.page).fill('Nitro*,Lith*');
+        await tb.waitForTableUpdate();
+        expect(await tb.getPaginatorText()).toContain('of 2');
+      });
+
+      test('regex metacharacters are treated as literals (not wildcards)', async () => {
+        // A dot in a plain value should not behave like a regex `.`.
+        // None of the element names contain ".", so a filter of "." shouldn't match any.
+        await filterInput(tb.page).fill('.');
+        await tb.waitForTableUpdate();
+        expect(await tb.getPaginatorText()).toContain('of 0');
+      });
+
+      test('tab-separated paste (Excel row) → OR match', async () => {
+        // Synthesize a paste event with tab-delimited content. Browsers preserve tabs
+        // in <input> by default, so the directive isn't strictly required here, but
+        // testing both delimiters in one place is the cleanest contract check.
+        await dispatchPaste(filterInput(tb.page), 'Nitrogen\tLithium');
+        await tb.waitForTableUpdate();
+        expect(await tb.getPaginatorText()).toContain('of 2');
+      });
+
+      test('newline-separated paste (Excel column) → OR match', async () => {
+        // The directive intercepts paste, reads raw clipboard text via
+        // clipboardData.getData('text/plain'), and writes the value (with newlines
+        // intact) directly through the native setter so ngModel picks it up.
+        await dispatchPaste(filterInput(tb.page), 'Nitrogen\nLithium\nOxygen');
+        await tb.waitForTableUpdate();
+        expect(await tb.getPaginatorText()).toContain('of 3');
+      });
+
+      test('mixed-delimiter paste (2D Excel block)', async () => {
+        await dispatchPaste(filterInput(tb.page), 'Nitrogen\tLithium\nOxygen');
+        await tb.waitForTableUpdate();
+        expect(await tb.getPaginatorText()).toContain('of 3');
+      });
     });
   });
 
@@ -274,6 +367,39 @@ test.describe('Table Builder', () => {
 
       const text = await tb.getPaginatorText();
       expect(text).toContain('of 8');
+    });
+
+    test('collapses null/undefined/empty values into a single (Blank) group', async () => {
+      // The example data has rows with name: '', name: undefined, name: null.
+      // Grouping by "name" should put those rows into one (Blank) bucket,
+      // not into separate "null" / "undefined" / " " buckets.
+      await tb.groupByColumn('name');
+      await tb.waitForTableUpdate();
+
+      const allRowText = (await tb.dataRows.allTextContents()).join(' | ');
+
+      expect(allRowText).toContain('(Blank)');
+      expect(allRowText).not.toMatch(/\bnull\s*\(/);
+      expect(allRowText).not.toMatch(/\bundefined\s*\(/);
+    });
+
+    test('collapses whitespace-only string values into the (Blank) group', async () => {
+      // The example data has phone: null, phone: undefined, and phone: '       '
+      // (whitespace-only). All three should land in a single (Blank) bucket
+      // instead of producing a separate empty-label group for the whitespace row.
+      await tb.groupByColumn('phone');
+      await tb.waitForTableUpdate();
+
+      const headerCount = await tb.page.locator('mat-row.group-header-row').count();
+      const blankHeaders = tb.page.locator('mat-row.group-header-row', { hasText: '(Blank)' });
+      expect(await blankHeaders.count()).toBe(1);
+
+      // No header should render with an empty group name (e.g. " (1)").
+      const headerTexts = await tb.page.locator('mat-row.group-header-row').allTextContents();
+      for (const t of headerTexts) {
+        expect(t.trim()).not.toMatch(/^\(\d+\)/);
+      }
+      expect(headerCount).toBeGreaterThan(0);
     });
   });
 

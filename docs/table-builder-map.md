@@ -1,273 +1,154 @@
 # Table Builder — Codebase Map
 
-Visual map of `projects/angular-utilities/src/table-builder/`.
+A mental model for `projects/angular-utilities/src/table-builder/` organized around **how data moves through the library**, not how files are organized on disk.
 
 ---
 
-## 1. High-Level Architecture
+## 1. The Mental Model: A Pipeline
+
+The library is a pipeline from `MetaData[] + Observable<T[]>` to rendered cells. Every feature — filter, sort, group, paginate, virtual-scroll, persist, inline-edit — is a stage of that pipeline. If you understand the stages, you know where to look for any behavior.
 
 ```mermaid
 flowchart TB
-    subgraph PUBLIC["Public API (public-api.ts)"]
-        PAPI["TableBuilderModule · TableBuilder · TableContainer · GenericTable · MetaData · FieldType · ReportDef · TableStore · FilterInfo · Directives · Pipes"]
-    end
+    IN["MetaData[]  +  Observable&lt;T[]&gt;<br/><i>consumer provides</i>"]
 
-    subgraph MOD["TableBuilderModule.forRoot(config)"]
-        MODwire["Declares components/directives/pipes<br/>StoreModule.forFeature('globalStorageState')<br/>EffectsModule.forFeature([SaveTableEffects])<br/>Provides TableBuilderConfigToken"]
-    end
+    TB["TableBuilder&lt;T&gt;<br/><i>schema + data wrapper</i>"]
+    TS["TableStore<br/><i>state: filters · sort · groupBy · hidden · order · profile</i>"]
+    DF["DataFilter<br/><i>AND-chains active predicates</i>"]
+    XFORM["sort · group · page<br/><i>derived streams</i>"]
+    TC["TableContainer<br/><i>wires Store ↔ template</i>"]
+    GT["GenericTable  /  GenericTableVs<br/><i>Material table · virtual scroll</i>"]
+    CB["ColumnBuilder → GenColDisplayer<br/><i>per-cell rendering</i>"]
 
-    subgraph CORE["Core Data Pipeline"]
-        direction LR
-        TB["TableBuilder&lt;T&gt;<br/><i>classes/table-builder.ts</i>"]
-        TC["TableContainerComponent<br/><i>components/table-container</i>"]
-        GT["GenericTableComponent<br/><i>components/generic-table</i>"]
-        MT["MatTable (Material)"]
+    IN --> TB --> TS
+    TS --> DF --> XFORM --> TC --> GT --> CB --> OUT["Rendered rows"]
 
-        TB -->|"metaData$ + data$"| TC
-        TC -->|"filtered + grouped data$"| GT
-        GT -->|"via GenericTableDataSource"| MT
-    end
+    TS -.persist.-> LS[("NgRx globalStorageState<br/>+ localStorage")]
 
-    subgraph STATE["State Management"]
-        TS["TableStore<br/>(NgRx ComponentStore)<br/><i>classes/table-store.ts</i>"]
-        NGRX["NgRx Feature Slice<br/>globalStorageState"]
-        LS[("localStorage")]
-
-        TS <-->|"hydrate / persist"| NGRX
-        NGRX -->|"SaveTableEffects"| LS
-    end
-
-    TC <-->|"filters · sort · columns · paging · groupBy"| TS
-
-    PUBLIC --> MOD
-    MOD --> CORE
-
-    classDef pub fill:#eab308,stroke:#854d0e,color:#1a1a1a
-    classDef mod fill:#a78bfa,stroke:#5b21b6,color:#fff
+    classDef in fill:#fde68a,stroke:#92400e,color:#1a1a1a
     classDef core fill:#3b82f6,stroke:#1e40af,color:#fff
     classDef state fill:#ef4444,stroke:#991b1b,color:#fff
-    class PAPI pub
-    class MODwire mod
-    class TB,TC,GT,MT core
-    class TS,NGRX,LS state
+    classDef out fill:#10b981,stroke:#065f46,color:#fff
+    class IN in
+    class TB,DF,XFORM,TC,GT,CB core
+    class TS,LS state
+    class OUT out
 ```
+
+**Public surface** (`public-api.ts`): `TableBuilderModule`, `TableBuilder<T>`, `TableContainer`, `GenericTable`, `MetaData`, `FieldType`, `ReportDef`, `TableStore`, `FilterInfo`, directives, pipes. Everything else is internal.
+
+**Wiring**: `TableBuilderModule.forRoot(config)` registers the `globalStorageState` NgRx feature, the `SaveTableEffects` effects, declares every component/directive/pipe, and provides `TableBuilderConfigToken`.
 
 ---
 
-## 2. Component Tree
+## 2. Stage Deep-Dives (in pipeline order)
 
-```mermaid
-flowchart TB
-    TC["TableContainerComponent<br/>(orchestrator)"]
+### 2.1 State — `TableStore` + NgRx + persistence
 
-    TC --> INIT["InitializationComponent"]
-    TC --> HM["HeaderMenuComponent"]
-    TC --> SM["SortMenuComponent"]
-    TC --> GBL["GroupByListComponent"]
-    TC --> FL["FilterChipsComponent<br/><i>filter-list/</i>"]
-    TC --> GFD["GenFilterDisplayerComponent"]
-    TC --> GT["GenericTableComponent"]
+`TableStore` (`classes/table-store.ts`) is an NgRx ComponentStore holding all interactive state: active filters, sort descriptors, visible/hidden columns, column order, pagination, groupBy, resizing, user-defined widths, initialization status. Every UI interaction flows into one of its `updater`s or `effect`s.
 
-    GT --> GTV["GenericTableVsComponent<br/>(virtual scroll variant)"]
-    GT --> PAG["PaginatorComponent"]
-    GT --> CB["ColumnBuilderComponent<br/>(dynamic per column)"]
-    GT --> GCD["GenColDisplayerComponent<br/>(cell renderer)"]
-
-    CB --> AC["ArrayColumnComponent"]
-    CB --> LC["LinkColumnComponent"]
-
-    GFD --> FC["FilterComponent"]
-    GFD --> DF["DateFilterComponent"]
-    GFD --> DTF["DateTimeFilterComponent"]
-    GFD --> NF["NumberFilterComponent"]
-    GFD --> INF["InFilterComponent"]
-    GFD --> ILF["InListFilterComponent"]
-
-    classDef container fill:#8b5cf6,stroke:#5b21b6,color:#fff
-    classDef display fill:#f59e0b,stroke:#92400e,color:#1a1a1a
-    classDef filter fill:#10b981,stroke:#065f46,color:#fff
-    classDef menu fill:#06b6d4,stroke:#155e75,color:#fff
-
-    class TC,GT,GTV container
-    class CB,GCD,AC,LC,PAG,INIT display
-    class FC,DF,DTF,NF,INF,ILF,GFD,FL filter
-    class HM,SM,GBL menu
-```
-
----
-
-## 3. Filter Subsystem
+Persistence is piggy-backed on a feature slice (`ngrx/`) that holds **profiles** — named snapshots of savable state. `SaveTableEffects` watches `setLocalProfile(persist=true)` actions and writes to `localStorage` under `'global-state-storage'`; the slice is hydrated on boot.
 
 ```mermaid
 flowchart LR
-    subgraph USER["User / Template"]
-        U1["[tbFilter] inputs<br/>(directives)"]
-        U2["&lt;app-date-filter&gt;<br/>(components)"]
-        U3["customFilters<br/>CustomFilter[]"]
+    subgraph SLICE["globalStorageState slice"]
+        A["actions<br/>setLocalProfile<br/>setLocalProfilesState<br/>deleteLocalProfilesState"] --> R["reducer<br/>{ globalProfiles, localProfiles }<br/>Profile { default, current, states }"]
+        R --> S["selectors<br/>selectLocalProfileState&lt;T&gt;<br/>selectLocalProfileKeys<br/>selectLocalProfileCurrentKey"]
     end
-
-    subgraph DIR["Filter Directives<br/><i>directives/index.ts</i>"]
-        TBF["TbFilterDirective"]
-        MCF["MatCheckboxTbFilter"]
-        MRF["MatRadioTbFilter"]
-        MSF["MatSlideTbFilter"]
-        MOF["MatOptionTbFilter"]
-        MBF["MatButtonToggleTbFilter"]
-    end
-
-    subgraph CLASS["Filter Classes"]
-        FI["FilterInfo<br/><i>classes/filter-info.ts</i>"]
-        DFL["DataFilter<br/><i>classes/data-filter.ts</i>"]
-        FTM["filterTypeMap<br/>FieldType → FilterType"]
-    end
-
-    subgraph FUNC["Filter Functions<br/><i>functions/</i>"]
-        SFF["StringFilterFuncs"]
-        NFF["NumberFilterFuncs"]
-        DFF["DateFilterFuncs"]
-        BFF["BooleanFilterFuncs"]
-        NLF["NullFilterFuncs"]
-    end
-
-    USER --> DIR
-    DIR -->|"filter$: Observable"| FI
-    USER -.->|"filter$"| FI
-    FI --> FTM
-    FTM --> FUNC
-    FUNC --> DFL
-    DFL -->|"applied predicates"| STORE["TableStore.addFilter()"]
-
-    classDef user fill:#fde68a,stroke:#92400e,color:#1a1a1a
-    classDef dir fill:#14b8a6,stroke:#115e59,color:#fff
-    classDef cls fill:#3b82f6,stroke:#1e40af,color:#fff
-    classDef fn fill:#6b7280,stroke:#1f2937,color:#fff
-    class U1,U2,U3 user
-    class TBF,MCF,MRF,MSF,MOF,MBF dir
-    class FI,DFL,FTM cls
-    class SFF,NFF,DFF,BFF,NLF fn
-    class STORE cls
-```
-
----
-
-## 4. NgRx Slice — `globalStorageState`
-
-```mermaid
-flowchart LR
-    subgraph ACT["actions.ts"]
-        A1["setLocalProfile"]
-        A2["setLocalProfilesState"]
-        A3["deleteLocalProfilesState"]
-    end
-
-    subgraph RED["reducer.ts"]
-        R["GlobalStorageState<br/>{ globalProfiles, localProfiles }<br/>Profile { default, current, states }"]
-    end
-
-    subgraph SEL["selectors.ts"]
-        S1["selectLocalProfileState&lt;T&gt;"]
-        S2["selectLocalProfileKeys"]
-        S3["selectLocalProfileCurrentKey"]
-    end
-
-    subgraph EFF["effects.ts"]
-        E["SaveTableEffects<br/>watches setLocalProfile(persist=true)"]
-    end
-
-    LS[("localStorage<br/>'global-state-storage'")]
-    TS["TableStore"]
-
-    ACT --> RED
-    RED --> SEL
-    SEL --> TS
-    TS --> ACT
-    ACT --> EFF
-    EFF <--> LS
-    LS -.->|"hydrate on boot"| RED
+    S --> TS["TableStore"]
+    TS --> A
+    A --> E["SaveTableEffects"]
+    E <--> LS[("localStorage<br/>'global-state-storage'")]
+    LS -.hydrate.-> R
 
     classDef act fill:#ef4444,stroke:#991b1b,color:#fff
     classDef red fill:#f87171,stroke:#991b1b,color:#1a1a1a
     classDef sel fill:#fca5a5,stroke:#991b1b,color:#1a1a1a
     classDef eff fill:#dc2626,stroke:#7f1d1d,color:#fff
-    class A1,A2,A3 act
+    classDef store fill:#3b82f6,stroke:#1e40af,color:#fff
+    class A act
     class R red
-    class S1,S2,S3 sel
+    class S sel
     class E eff
+    class TS,LS store
 ```
 
----
+**Key rule**: TableStore is a **dumb container**. It does not transform filter values, run predicates, or normalize input. All semantics live downstream in `DataFilter` / filter functions. Violating this has bitten us (comma-split in `addFilter` breaking debounced search round-trips).
 
-## 5. Data Source Layer
+### 2.2 Filter stage — three layers
+
+A `FilterFunc<T,V>` = `(FilterInfo) => (val: V) => boolean`. Read it twice: the outer runs **once** when a filter is added/changed, the inner runs **once per row**.
 
 ```mermaid
 flowchart TB
-    OBS["Observable&lt;T[]&gt;<br/>from TableBuilder"] --> MTODS
-    MTODS["MatTableObservableDataSource<br/><i>classes/MatTableObservableDataSource.ts</i><br/>adapts Observable → MatTableDataSource"]
-    MTODS --> GTDS
-    GTDS["GenericTableDataSource<br/><i>classes/GenericTableDataSource.ts</i><br/>overrides sortData for multi-sort"]
-    GTDS --> MAT["&lt;mat-table&gt;"]
+    L1["<b>Layer 1 — per-cell predicate</b><br/><i>functions/*-filter-function.ts</i><br/>Build-time: split commas · compile wildcards · normalize<br/>Match-time: test one cell value"]
+    L2["<b>Layer 2 — row predicate</b><br/><i>createFilterFunc (classes/filter-info.ts)</i><br/>Look up column via filter.key · null handling · CustomFilter short-circuit"]
+    L3["<b>Layer 3 — dataset filter</b><br/><i>DataFilter.filter (classes/data-filter.ts)</i><br/>data.filter(r =&gt; filters.every(f =&gt; f(r))) — AND across columns"]
 
-    MSD["MultiSortDirective<br/><i>directives/multi-sort.directive.ts</i>"] -.->|"provides Sort[]"| GTDS
-    SDF["sort-data-function.ts"] -.->|"applied in"| GTDS
+    L1 --> L2 --> L3
 
-    classDef ds fill:#3b82f6,stroke:#1e40af,color:#fff
-    class OBS,MTODS,GTDS,MAT ds
-    class MSD,SDF ds
+    classDef l1 fill:#10b981,stroke:#065f46,color:#fff
+    classDef l2 fill:#3b82f6,stroke:#1e40af,color:#fff
+    classDef l3 fill:#8b5cf6,stroke:#5b21b6,color:#fff
+    class L1 l1
+    class L2 l2
+    class L3 l3
+```
+
+- **Routing by `FieldType`** (`filterTypeFuncMap` in `filter-info.ts`): `String/Array/PhoneNumber/Unknown` → `StringFilterFuncs`; `Number/Currency` → `NumberFilterFuncs`; `Enum` → `EnumFilterFuncs`; plus `Date`, `DateTime`, `Boolean`.
+- **CustomFilter** bypasses layer 1 entirely — the consumer provides the closed-over predicate directly.
+- **Reactivity**: `DataFilter.appendFilters` composes filter streams; `combineLatest([data$, filters$])` re-runs the filter pass on any change.
+
+**Where to fix a bug**:
+| Symptom | Layer |
+|---|---|
+| Commas · wildcards · case · whitespace in filter value | 1 |
+| Null rows passing/failing incorrectly | 2 |
+| Nested-property access (`a.b.c`) | 2 |
+| Filter not re-running when data changes | 3 |
+| Filters behaving as OR instead of AND | 3 |
+
+### 2.3 Sort · Group · Page
+
+Applied after filtering as derived streams off `TableStore`:
+- **Sort** — `functions/sort-data-function.ts`; multi-sort is handled by `MultiSortDirective` providing the `Sort[]` and `GenericTableDataSource.sortData` overriding the Material default.
+- **Group** — `TableContainer` builds groups from the sorted filtered data using `tbGroupBy` + `groupHeaderTemplate`.
+- **Page** — `PaginatorComponent` reads/writes pagination state on the Store.
+
+### 2.4 Rendering
+
+`TableContainer` is the orchestrator — it reads Store state and passes the final filtered/sorted/grouped/paged stream down. `GenericTable` (or `GenericTableVs` for virtual scroll) uses `GenericTableDataSource`, a thin adapter on top of `MatTableObservableDataSource` that swaps in multi-sort.
+
+Per-cell rendering goes through `ColumnBuilder` → `GenColDisplayer`, with `CustomCellDirective` as the consumer's escape hatch (`matColumnDef` override).
+
+```mermaid
+flowchart TB
+    TC["TableContainer"] --> GT["GenericTable / GenericTableVs"]
+    GT --> PAG["PaginatorComponent"]
+    GT --> CB["ColumnBuilder (per column)"]
+    CB --> GCD["GenColDisplayer"]
+    CB --> AC["ArrayColumn"]
+    CB --> LC["LinkColumn"]
+    CB -.escape hatch.-> CCD["CustomCellDirective<br/><i>consumer's matColumnDef</i>"]
+
+    TC --> HM["HeaderMenu"]
+    TC --> SM["SortMenu"]
+    TC --> GBL["GroupByList"]
+    TC --> FL["FilterChips + GenFilterDisplayer"]
+
+    classDef container fill:#8b5cf6,stroke:#5b21b6,color:#fff
+    classDef cell fill:#f59e0b,stroke:#92400e,color:#1a1a1a
+    classDef menu fill:#06b6d4,stroke:#155e75,color:#fff
+    classDef escape fill:#eab308,stroke:#854d0e,color:#1a1a1a
+    class TC,GT container
+    class CB,GCD,AC,LC,PAG cell
+    class HM,SM,GBL,FL menu
+    class CCD escape
 ```
 
 ---
 
-## 6. File Inventory
-
-### `classes/` — state & data plumbing
-| File | Purpose |
-|---|---|
-| `table-builder.ts` | `TableBuilder<T>` — entry point, wraps data + metadata |
-| `table-store.ts` | NgRx ComponentStore — filters, sort, columns, paging, groupBy |
-| `TableState.ts` | Persisted + non-persisted state shapes; `InitializationState` |
-| `data-filter.ts` | Chains filter predicates over the data Observable |
-| `filter-info.ts` | `FilterInfo`, `CustomFilter`, `filterTypeMap`, `createFilterFunc` |
-| `MatTableObservableDataSource.ts` | Observable → MatTableDataSource adapter |
-| `GenericTableDataSource.ts` | Adds multi-sort to the data source |
-| `TableBuilderConfig.ts` | DI token for runtime config |
-| `table-builder-general-settings.ts` | `PersistedTableSettings` / `NotPersistedTableSettings` |
-| `DefaultSettings.ts` | Array default style + limit |
-| `display-col.ts`, `ColumnInfo.ts` | Column display helpers |
-
-### `components/` — UI
-**Containers:** `table-container`, `generic-table` (+ `generic-table-vs`), `initialization-component`
-**Column/display:** `column-builder`, `gen-col-displayer`, `array-column`, `link-column`, `paginator`
-**Filters:** `filter`, `date-filter`, `date-time-filter`, `number-filter`, `in-filter`, `inlist-filter`
-**Filter orchestration:** `table-container-filter/gen-filter-displayer`, `table-container-filter/filter-list`, `table-container-filter/table-wrapper-filter-store`
-**Menus:** `header-menu`, `sort-menu` (+ `sort-menu-component-store`), `group-by-list`
-
-### `directives/`
-`custom-cell-directive` · `tb-filter.directive` · `multi-sort.directive` · `resize-column.directive` · `table-wrapper.directive` · `virtual-scroll-viewport.directive` · `index` (barrel of Mat*TbFilter directives)
-
-### `ngrx/`
-`actions.ts` · `reducer.ts` · `selectors.ts` · `effects.ts`
-
-### `functions/` — pure predicates & helpers
-`sort-data-function` · `string-filter-function` · `number-filter-function` · `date-filter-function` · `date-time-filter-function` · `boolean-filter-function` · `null-filter-function` · `download-data`
-
-### `services/`
-`export-to-csv.service` · `link-creator.service` · `table-template-service` · `transform-creator`
-
-### `pipes/`
-`column-total.pipe` · `format-filter-type.pipe` · `format-filter-value.pipe` · `key-display`
-
-### `interfaces/`
-`report-def` (`MetaData`, `FieldType`, `ReportDef`) · `ColumnInfo` · `column-template` · `dictionary`
-
-### `enums/`
-`filterTypes` (`FilterType` enum, `FilterMap`)
-
-### Root
-`table-builder.module.ts` — module wiring · `material.module.ts` — Material/CDK re-exports
-
----
-
-## 7. End-to-End Data Flow
+## 3. End-to-End: filter click → rendered table
 
 ```mermaid
 sequenceDiagram
@@ -281,9 +162,9 @@ sequenceDiagram
 
     User->>TB: new TableBuilder(data$, metaData)
     TB->>TC: data$ + metaData$
-    User->>TC: filter input (via directive/component)
+    User->>TC: filter input (directive or search box)
     TC->>TS: addFilter(FilterInfo)
-    TS->>DF: active predicates
+    TS->>DF: active predicates (combineLatest)
     TB->>DF: raw data$
     DF->>DS: filtered data$
     TS->>DS: sort · page · groupBy
@@ -291,3 +172,37 @@ sequenceDiagram
     TS-->>NgRx: persist profile
     NgRx-->>localStorage: save
 ```
+
+---
+
+## 4. Extension Points — "I want to change X, touch Y"
+
+| I want to… | Files / APIs |
+|---|---|
+| Render a column differently | Consumer template: `matColumnDef` + `CustomCellDirective` |
+| Add a new built-in cell type | `components/column-builder` + `components/gen-col-displayer`; add a branch keyed on `FieldType` |
+| Add a new `FilterType` | `enums/filterTypes.ts` (enum + `filterTypeMap` entry) · new entry in the relevant `*FilterFuncs` map in `functions/` · UI form branch in `components/filter/filter.component.html` |
+| Add a new `FieldType` | `interfaces/report-def.ts` · route in `filter-info.ts` `filterTypeFuncMap` · render branch in `GenColDisplayer` |
+| Inject one-off custom filter logic | Provide a `CustomFilter` with `predicate: (row) => boolean` — layer 1 is bypassed |
+| Persist state elsewhere (e.g. backend profiles) | Subscribe to `TableStore.getSavableState()` · replace `SaveTableEffects` |
+| Add a column-header menu item | `components/header-menu/*` + wire a `TableStore` updater |
+| Change virtual-scroll viewport sizing | `directives/virtual-scroll-viewport.directive.ts` (`[offset]` input) |
+| Override default table behavior globally | `TableBuilderConfig` via `TableBuilderConfigToken` at `forRoot(config)` |
+| Add or change an export format | `services/export-to-csv.service.ts` · `functions/download-data.ts` |
+
+---
+
+## 5. Appendix — Folder cheat sheet
+
+Needed only when extension points above send you to a folder and you want to browse siblings.
+
+- **`classes/`** — state & data plumbing: `TableBuilder<T>`, `TableStore`, `TableState`, `DataFilter`, `FilterInfo`/`CustomFilter`, `MatTableObservableDataSource`, `GenericTableDataSource`, `TableBuilderConfig`, general/persisted settings, column helpers.
+- **`components/`** — UI: containers (`table-container`, `generic-table` + `-vs`), column/display (`column-builder`, `gen-col-displayer`, `array-column`, `link-column`, `paginator`), filters (`filter`, `date-filter`, `date-time-filter`, `number-filter`, `in-filter`, `inlist-filter`), filter orchestration (`table-container-filter/*`), menus (`header-menu`, `sort-menu`, `group-by-list`).
+- **`directives/`** — `custom-cell-directive`, `tb-filter.directive`, `multi-sort.directive`, `resize-column.directive`, `table-wrapper.directive`, `virtual-scroll-viewport.directive`, Mat*TbFilter barrel.
+- **`functions/`** — pure predicates & helpers: `sort-data-function`, `*-filter-function`, `download-data`, `wildcard-to-regex`, `split-comma-value`.
+- **`ngrx/`** — `actions`, `reducer`, `selectors`, `effects` (for the `globalStorageState` slice).
+- **`services/`** — `export-to-csv`, `link-creator`, `table-template-service`, `transform-creator`.
+- **`pipes/`** — `column-total`, `format-filter-type`, `format-filter-value`, `key-display`, `as-filter-pills`.
+- **`interfaces/`** — `report-def` (`MetaData`, `FieldType`, `ReportDef`), `ColumnInfo`, `column-template`, `dictionary`.
+- **`enums/`** — `filterTypes`.
+- **Root** — `table-builder.module.ts`, `material.module.ts`.

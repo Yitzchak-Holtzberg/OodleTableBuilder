@@ -14,7 +14,7 @@
 
   <ng-container before>
     <div>
-      <input  [tbFilterStringContains]="'name'" ngModel filterId="abcdef" />
+      <input  [tbFilterStringContains]="'name'" ngModel filterId="abcdef" tbPreservePasteDelimiters />
       <mat-form-field>
         <mat-select>
           <mat-option [tbCustomFilter]='myTestPredicate'  filterId="yid3" > Click me! </mat-option>
@@ -41,7 +41,6 @@
 
   @if (tableBuilder) {
     <tb-table-container
-      isVs
       [isSticky]="true"
       (data)='emitter($event)'
       tableId='test-table-id-123'
