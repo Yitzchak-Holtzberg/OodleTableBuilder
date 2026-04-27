@@ -1,12 +1,44 @@
 /* You can add global styles to this file, and also import other style files */
 
-html { overflow: hidden; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-.mat-mdc-header-cell{
-  border-top: 1px solid rgba(0,0,0,.12)!important;
-  border-right: 1px solid rgba(0,0,0,.12)!important;
+/*
+ * Layout: <app-root> is a vertical flex container locked to the viewport.
+ * The fixed-height navbar takes its natural size; the routed component
+ * (the element rendered after <router-outlet>) takes the remaining space
+ * and scrolls internally when its content overflows. This way:
+ *  - Non-VS routes get an internal scrollbar on the routed-component
+ *    container instead of the page (so the navbar stays put).
+ *  - VS routes don't get a stray edge scrollbar from sub-pixel chrome,
+ *    because the layout never overflows the viewport.
+ */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
 }
-.opDialog .mat-mdc-dialog-container .mdc-dialog__surface{
+
+body {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+app-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+router-outlet + * {
+  display: block;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+.mat-mdc-header-cell {
+  border-top: 1px solid rgba(0, 0, 0, 0.12) !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.12) !important;
+}
+.opDialog .mat-mdc-dialog-container .mdc-dialog__surface {
   padding: 1rem;
   background-color: white;
 }
