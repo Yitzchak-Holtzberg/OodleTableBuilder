@@ -382,6 +382,25 @@ test.describe('Table Builder', () => {
       expect(allRowText).not.toMatch(/\bnull\s*\(/);
       expect(allRowText).not.toMatch(/\bundefined\s*\(/);
     });
+
+    test('collapses whitespace-only string values into the (Blank) group', async () => {
+      // The example data has phone: null, phone: undefined, and phone: '       '
+      // (whitespace-only). All three should land in a single (Blank) bucket
+      // instead of producing a separate empty-label group for the whitespace row.
+      await tb.groupByColumn('phone');
+      await tb.waitForTableUpdate();
+
+      const headerCount = await tb.page.locator('mat-row.group-header-row').count();
+      const blankHeaders = tb.page.locator('mat-row.group-header-row', { hasText: '(Blank)' });
+      expect(await blankHeaders.count()).toBe(1);
+
+      // No header should render with an empty group name (e.g. " (1)").
+      const headerTexts = await tb.page.locator('mat-row.group-header-row').allTextContents();
+      for (const t of headerTexts) {
+        expect(t.trim()).not.toMatch(/^\(\d+\)/);
+      }
+      expect(headerCount).toBeGreaterThan(0);
+    });
   });
 
   test.describe('Pagination', () => {

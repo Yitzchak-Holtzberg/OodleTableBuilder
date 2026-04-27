@@ -321,7 +321,7 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
       const isBlank =
         v === null
         || v === undefined
-        || v === ''
+        || (typeof v === 'string' && v.trim() === '')
         || (Array.isArray(v) && v.length === 0);
       return isBlank ? BLANK_GROUP_LABEL : v;
     });
