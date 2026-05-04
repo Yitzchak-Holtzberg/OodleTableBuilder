@@ -9,11 +9,11 @@ export class TableBuilderPage {
   readonly paginator: Locator;
   readonly paginatorStatus: Locator;
   readonly selectAllCheckbox: Locator;
-  readonly addGoldButton: Locator;
-  readonly filterBButton: Locator;
-  readonly clearFilterButton: Locator;
-  readonly addColumnButton: Locator;
-  readonly clearAllFiltersButton: Locator;
+  readonly addSampleRowButton: Locator;
+  readonly showPricedRowsButton: Locator;
+  readonly clearExternalFilterButton: Locator;
+  readonly addStatusColumnButton: Locator;
+  readonly resetAllFiltersButton: Locator;
   readonly trialTitle: Locator;
 
   constructor(page: Page) {
@@ -25,11 +25,11 @@ export class TableBuilderPage {
     this.paginator = page.locator('mat-paginator');
     this.paginatorStatus = page.locator('.page-amounts');
     this.selectAllCheckbox = page.locator('mat-header-cell.mat-column-select mat-checkbox');
-    this.addGoldButton = page.getByRole('button', { name: 'Add Gold' });
-    this.filterBButton = page.getByRole('button', { name: 'Filter B' });
-    this.clearFilterButton = page.getByRole('button', { name: 'clear filter' });
-    this.addColumnButton = page.getByRole('button', { name: 'Add Column' });
-    this.clearAllFiltersButton = page.getByRole('button', { name: 'Cleart All Filters' });
+    this.addSampleRowButton = page.getByRole('button', { name: 'Add Sample Row' });
+    this.showPricedRowsButton = page.getByRole('button', { name: 'Show Priced Rows' });
+    this.clearExternalFilterButton = page.getByRole('button', { name: 'Clear External Filter' });
+    this.addStatusColumnButton = page.getByRole('button', { name: 'Add Status Column' });
+    this.resetAllFiltersButton = page.getByRole('button', { name: 'Reset All Filters' });
     this.trialTitle = page.locator('.tb-header-title');
   }
 

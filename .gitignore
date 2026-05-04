@@ -55,3 +55,10 @@ projects/angular-utilities/node_modules/*
 
 # Claude Code local settings
 .claude/settings.local.json
+.superpowers/
+
+# Ad-hoc screenshots from interactive verification at repo root
+# (Playwright e2e screenshots live under /test-results/ which is already ignored)
+/*.png
+/*.jpeg
+/*.jpg

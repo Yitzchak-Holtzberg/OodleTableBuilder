@@ -90,7 +90,7 @@ test.describe('Table Builder', () => {
       const text = await tb.getPaginatorText();
       expect(text).toContain('of 4');
 
-      await tb.clearAllFiltersButton.click();
+      await tb.resetAllFiltersButton.click();
       await tb.waitForTableUpdate();
     });
 
@@ -101,23 +101,24 @@ test.describe('Table Builder', () => {
       const text = await tb.getPaginatorText();
       expect(text).toContain('of 4');
 
-      await tb.clearAllFiltersButton.click();
+      await tb.resetAllFiltersButton.click();
       await tb.waitForTableUpdate();
     });
 
-    test('external Filter B button should filter to names containing B', async () => {
-      await tb.filterBButton.click();
+    test('external priced rows button should filter to rows with non-negative prices', async () => {
+      await tb.showPricedRowsButton.click();
       await tb.waitForTableUpdate();
 
-      const count = await tb.getRowCount();
-      expect(count).toBeGreaterThan(0);
+      const text = await tb.getPaginatorText();
+      expect(text).toContain('of 2');
 
+      const count = await tb.getRowCount();
       for (let i = 0; i < count; i++) {
         const rowText = await tb.getRowText(i);
-        expect(rowText).toContain('B');
+        expect(rowText).toMatch(/\$(0\.00|100\.00)/);
       }
 
-      await tb.clearFilterButton.click();
+      await tb.clearExternalFilterButton.click();
       await tb.waitForTableUpdate();
       const textAfter = await tb.getPaginatorText();
       expect(textAfter).toContain('of 8');
@@ -280,21 +281,22 @@ test.describe('Table Builder', () => {
     });
   });
 
-  test.describe('Add Column / Add Row', () => {
-    test('Add Column button should add a new column', async () => {
+  test.describe('Dynamic Examples', () => {
+    test('Add Status Column button should add a computed column', async () => {
       const headersBefore = await tb.getColumnHeaders();
-      await tb.addColumnButton.click();
+      await tb.addStatusColumnButton.click();
       await tb.waitForTableUpdate();
 
       const headersAfter = await tb.getColumnHeaders();
       expect(headersAfter.length).toBeGreaterThanOrEqual(headersBefore.length);
+      expect(headersAfter.join(' ')).toContain('Status');
     });
 
-    test('Add Gold button should not error', async () => {
+    test('Add Sample Row button should not error', async () => {
       const errors: string[] = [];
       tb.page.on('pageerror', e => errors.push(e.message));
 
-      await tb.addGoldButton.click();
+      await tb.addSampleRowButton.click();
       await tb.waitForTableUpdate();
 
       // Verify no console errors and table still renders
@@ -410,9 +412,9 @@ test.describe('Table Builder', () => {
     });
 
     test('should still render after adding rows', async () => {
-      await tb.addGoldButton.click();
+      await tb.addSampleRowButton.click();
       await tb.waitForTableUpdate();
-      await tb.addGoldButton.click();
+      await tb.addSampleRowButton.click();
       await tb.waitForTableUpdate();
 
       // Table should still be intact after adding rows
@@ -427,7 +429,7 @@ test.describe('Table Builder', () => {
       const text = await tb.getPaginatorText();
       expect(text).toContain('of 4');
 
-      await tb.clearAllFiltersButton.click();
+      await tb.resetAllFiltersButton.click();
       await tb.waitForTableUpdate();
     });
   });
