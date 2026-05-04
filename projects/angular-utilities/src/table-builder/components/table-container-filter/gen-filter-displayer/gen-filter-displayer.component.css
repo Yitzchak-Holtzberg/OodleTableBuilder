@@ -1,31 +1,11 @@
+/* ===== Existing classes used by filter-list (in-progress floating editors) ===== */
 .filter {
     margin: 15px;
     display: inline-block;
 }
-.filter-button {
-    color: cornflowerblue;
-    font-size: 22px;
-    font-weight: 700;
-}
-
 .cancel-button  {
   margin-right: 30px;
   font-weight: 700;
-}
-.filter-wrapper{
-  margin-top: 1em;
-  margin-bottom: 1em;
-  float: right;
-}
-.menu {
-    margin-bottom: 10px;
-    width: 109.1%;
-}
-
-.filter-labels {
-    color: cornflowerblue;
-    font-size: 17px;
-    font-weight: 600;
 }
 .float{
   position: absolute;
@@ -35,14 +15,510 @@
   right: 180px;
   max-width: 90vw;
 }
-
 .filter-value-pill {
   display: inline-block;
-  background: rgba(63, 81, 181, 0.15);
+  background: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 15%, transparent);
+  color: var(--mat-sys-primary, #006a6a);
   padding: 1px 8px;
   border-radius: 10px;
   margin: 0 2px;
   font-size: 0.85em;
   line-height: 1.4;
   font-weight: 500;
+}
+
+/* filter-list page-level wrapper: flow chips + clear-all horizontally */
+.fl-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Inline flow variant of the chip stack — used when chips render in a page row
+   (filter-list) rather than stacked in a popup panel. */
+.fp-stack-inline {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Read-only value text (no inline input) — for filter-list page chips */
+.fp-val-text {
+  font-weight: 500;
+  color: var(--mat-sys-on-surface, #1d1b1e);
+  padding: 0 4px;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   FILTER PANEL — V3-A chip stack
+   Same visual language as columns-panel: cyan/orange via M3 system tokens.
+   ============================================================ */
+
+::ng-deep .filter-panel-menu.mat-mdc-menu-panel {
+  max-width: 480px !important;
+  min-width: 360px !important;
+}
+
+.fp-panel {
+  padding: 14px 16px 12px;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface, #1d1b1e);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.fp-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.fp-title {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.fp-count {
+  display: inline-flex;
+  align-items: center;
+  background: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 10%, transparent);
+  color: var(--mat-sys-primary, #006a6a);
+  border-radius: 999px;
+  padding: 1px 9px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.fp-add-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px 6px 10px;
+  background: var(--mat-sys-primary, #006a6a);
+  color: var(--mat-sys-on-primary, #fff);
+  border: none;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 2px 6px -1px color-mix(in srgb, var(--mat-sys-primary, #006a6a) 45%, transparent);
+}
+
+.fp-add-pill:hover {
+  filter: brightness(0.95);
+}
+
+.fp-plus-circle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* ===== empty state ===== */
+.fp-empty {
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant, #6b6970);
+  font-size: 12px;
+  padding: 24px 12px;
+  border-radius: 10px;
+  border: 1px dashed color-mix(in srgb, var(--mat-sys-primary, #006a6a) 20%, transparent);
+  margin-bottom: 8px;
+}
+.fp-empty strong { color: var(--mat-sys-primary, #006a6a); }
+
+/* ===== single-column chip stack ===== */
+.fp-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fp-chip {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 8px;
+  background: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 8%, transparent);
+  color: var(--mat-sys-on-surface, #1d1b1e);
+  border-radius: 999px;
+  padding: 5px 4px 5px 12px;
+  font-size: 12.5px;
+  border: 1px solid transparent;
+  max-width: 100%;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.fp-chip:hover {
+  background: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 14%, transparent);
+  border-color: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 22%, transparent);
+}
+
+.fp-chip:hover .fp-x-btn {
+  opacity: 1;
+}
+
+.fp-chip-custom {
+  background: color-mix(in srgb, var(--mat-sys-on-surface, #6b6970) 6%, transparent);
+  border-color: color-mix(in srgb, var(--mat-sys-on-surface, #6b6970) 12%, transparent);
+}
+
+.fp-col-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.fp-col-hidden-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+  color: var(--mat-sys-on-surface-variant, #6b6970);
+}
+
+/* operator pill — always full-strength primary, even for symbols */
+.fp-op-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--mat-sys-primary, #006a6a);
+  color: var(--mat-sys-on-primary, #fff);
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  min-width: 24px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 3px -1px color-mix(in srgb, var(--mat-sys-primary, #006a6a) 50%, transparent);
+}
+
+.fp-op-pill:hover {
+  filter: brightness(0.95);
+}
+
+.fp-op-custom {
+  background: var(--mat-sys-on-surface-variant, #6b6970);
+  cursor: default;
+}
+
+.fp-val-input {
+  border: none;
+  background: transparent;
+  padding: 3px 6px;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface, #1d1b1e);
+  border-radius: 6px;
+  outline: none;
+  font-family: inherit;
+  min-width: 80px;
+  width: auto;
+  max-width: 220px;
+  flex: 0 1 auto;
+}
+
+.fp-val-input:focus,
+.fp-val-input:hover {
+  background: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 10%, transparent);
+}
+
+.fp-val-input::placeholder {
+  color: var(--mat-sys-on-surface-variant, #6b6970);
+  font-style: italic;
+}
+
+.fp-val-readonly {
+  font-size: 12px;
+  color: var(--mat-sys-on-surface-variant, #6b6970);
+  font-style: italic;
+}
+
+.fp-x-btn {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  opacity: 0;
+  margin-left: 2px;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--mat-sys-on-surface-variant, #6b6970);
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.fp-x-btn:hover {
+  background: color-mix(in srgb, var(--mat-sys-error, #ba1a1a) 18%, transparent);
+  color: var(--mat-sys-error, #ba1a1a);
+  opacity: 1;
+}
+
+.fp-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-top: 10px;
+  margin-top: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.fp-ghost-link {
+  color: var(--mat-sys-primary, #006a6a);
+  cursor: pointer;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  font-size: 11.5px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-family: inherit;
+}
+
+.fp-ghost-link:hover {
+  background: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 10%, transparent);
+}
+
+/* ============================================================
+   COMPACT-CHIP TWEAKS for Combo 4 — chip is now a click target
+   ============================================================ */
+
+.fp-chip {
+  cursor: pointer;
+}
+.fp-chip-custom {
+  cursor: default;
+}
+.fp-chip-pending {
+  background: color-mix(in srgb, var(--mat-sys-on-surface, #6b6970) 4%, transparent);
+  border-color: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 25%, transparent);
+  border-style: dashed;
+}
+.fp-val-pending {
+  font-style: italic;
+  color: var(--mat-sys-on-surface-variant, #6b6970);
+  font-size: 12px;
+  padding: 0 4px;
+}
+
+/* ============================================================
+   EXPANDED FORM
+   Replaces the compact-chip pill when a filter is being edited.
+   ============================================================ */
+
+.fp-expanded {
+  background: var(--mat-sys-surface, #fff);
+  border: 1px solid var(--mat-sys-primary, #006a6a);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-self: stretch;
+  box-shadow: 0 4px 14px -4px color-mix(in srgb, var(--mat-sys-primary, #006a6a) 25%, transparent);
+}
+
+.fp-expanded-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fp-expanded-head .fp-col-name {
+  font-weight: 600;
+  font-size: 13px;
+  flex: 1;
+}
+
+.fp-expanded-head .fp-x-btn {
+  margin-left: auto;
+  opacity: 0.7;
+}
+
+.fp-form-grid {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 6px 12px;
+  align-items: center;
+}
+
+.fp-form-lbl {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--mat-sys-on-surface-variant, #6b6970);
+  font-weight: 600;
+}
+
+.fp-form-input,
+.fp-form-select {
+  font: inherit;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface, #1d1b1e);
+  background: var(--mat-sys-surface, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 6px;
+  padding: 5px 8px;
+  outline: none;
+  width: 100%;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.fp-form-input:focus,
+.fp-form-select:focus {
+  border-color: var(--mat-sys-primary, #006a6a);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-primary, #006a6a) 15%, transparent);
+}
+
+.fp-form-input::placeholder {
+  color: var(--mat-sys-on-surface-variant, #6b6970);
+  font-style: italic;
+}
+
+.fp-form-toggle {
+  display: inline-flex;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary, #006a6a) 22%, transparent);
+  overflow: hidden;
+  width: fit-content;
+}
+
+.fp-form-toggle button {
+  background: transparent;
+  border: none;
+  padding: 4px 14px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant, #6b6970);
+  font-family: inherit;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.fp-form-toggle button.active {
+  background: var(--mat-sys-primary, #006a6a);
+  color: var(--mat-sys-on-primary, #fff);
+  font-weight: 600;
+}
+
+.fp-form-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.fp-btn-ghost,
+.fp-btn-primary {
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.fp-btn-ghost {
+  background: transparent;
+  color: var(--mat-sys-on-surface-variant, #6b6970);
+}
+
+.fp-btn-ghost:hover {
+  background: color-mix(in srgb, var(--mat-sys-on-surface, #6b6970) 8%, transparent);
+}
+
+.fp-btn-primary {
+  background: var(--mat-sys-primary, #006a6a);
+  color: var(--mat-sys-on-primary, #fff);
+  box-shadow: 0 1px 3px -1px color-mix(in srgb, var(--mat-sys-primary, #006a6a) 50%, transparent);
+}
+
+.fp-btn-primary:hover {
+  filter: brightness(0.96);
+}
+
+/* ============================================================
+   INLINE COLUMN PICKER
+   Replaces the nested mat-menu so the parent panel stays open
+   when a column is selected.
+   ============================================================ */
+
+.fp-add-pill-active {
+  filter: brightness(0.94);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-primary, #006a6a) 25%, transparent),
+              0 2px 6px -1px color-mix(in srgb, var(--mat-sys-primary, #006a6a) 45%, transparent);
+}
+
+.fp-col-picker {
+  background: var(--mat-sys-surface, #fff);
+  border: 1px solid var(--mat-sys-primary, #006a6a);
+  border-radius: 10px;
+  padding: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 240px;
+  overflow-y: auto;
+  box-shadow: 0 4px 14px -4px color-mix(in srgb, var(--mat-sys-primary, #006a6a) 25%, transparent);
+}
+
+.fp-col-picker-label {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--mat-sys-on-surface-variant, #6b6970);
+  font-weight: 600;
+  padding: 4px 8px 6px;
+}
+
+.fp-col-picker-item {
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface, #1d1b1e);
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.fp-col-picker-item:hover {
+  background: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 10%, transparent);
+  color: var(--mat-sys-primary, #006a6a);
 }

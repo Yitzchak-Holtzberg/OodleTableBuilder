@@ -1,5 +1,5 @@
 .filter-name {
-  color: cornflowerblue;
+  color: var(--tb-filter-name-color, cornflowerblue);
   margin: 10px 0;
   font-weight: 600;
   display: inline-block;

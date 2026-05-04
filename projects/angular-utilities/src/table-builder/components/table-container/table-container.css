@@ -7,6 +7,7 @@
   flex-direction: row;
   justify-content: space-between;
   width:100%;
+  background-color: var(--mat-menu-container-color, white);
 }
 
 
@@ -20,6 +21,19 @@
 .flat-menu{
   line-height: initial;
   height: initial;
+}
+
+/* Icon coloring helpers — replaces the deprecated color="primary"/"warn" inputs.
+   ::ng-deep is needed so the rule reaches mat-menu items (which render in
+   cdk-overlay-container outside this component's view). Use var() with a fallback
+   so consumers without M3 system tokens still get sensible colors. */
+:host ::ng-deep .tb-icon-primary,
+::ng-deep .tb-icon-primary {
+  color: var(--mat-sys-primary, #006a6a);
+}
+:host ::ng-deep .tb-icon-warn,
+::ng-deep .tb-icon-warn {
+  color: var(--mat-sys-error, #ba1a1a);
 }
 
 

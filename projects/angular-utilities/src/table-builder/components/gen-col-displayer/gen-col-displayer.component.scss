@@ -6,7 +6,7 @@
 }
 
 .label {
-    color: cornflowerblue;
+    color: var(--tb-filter-name-color, cornflowerblue);
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;

@@ -18,19 +18,19 @@
   padding: 5px 2px;
   border-bottom: solid 1px #ccc;
   color: rgba(0, 0, 0, 0.87);
-  background: white;
+  background: var(--mat-app-background-color, white);
 }
 
 .light-arrow{
-  color: rgb(147 177 234 / 47%);
+  color: var(--tb-primary-light, rgb(147 177 234 / 47%));
 }
 
 .dark-arrow{
-  color: #224e9c;
+  color: var(--tb-primary-dark, #224e9c);
 }
 
 .up-down-button{
-  background-color: white;
+  background-color: var(--mat-app-background-color, white);
   border-radius: 30%;
   border-color: aqua;
   padding: 1px 1px 0;
@@ -72,7 +72,7 @@
 }
 
 .sorted-name{
-  color: #224e9c;
+  color: var(--tb-primary-dark, #224e9c);
   font-size: 17px;
   font-weight: 700;
 }
@@ -85,7 +85,7 @@
 }
 
 .apply-border{
-  border: #224e9c solid .5px;
+  border: var(--tb-primary-dark, #224e9c) solid .5px;
 }
 
 .apply-border:hover{

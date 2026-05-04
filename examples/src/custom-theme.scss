@@ -1,34 +1,86 @@
 
 // Custom Theming for Angular Material
-// For more information: https://material.angular.io/guide/theming
+// Material 3 theme using define-theme API
 @use '@angular/material' as mat;
-//@import '@angular/material/theming';
-// Plus imports for other components in your app.
 
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
-@include mat.all-component-typographies();
-@include mat.elevation-classes();
-@include mat.app-background();
+// M3 theme — Material 20 pattern with proper system-token emission.
+//
+// Two things have to be true to get --mat-sys-primary etc. usable in custom CSS:
+// 1. `mat.theme(rawConfig)` — note: takes the RAW config map, not the result of
+//    define-theme(). It calls system-level-colors() which emits all --mat-sys-*
+//    color tokens. Reference: node_modules/@angular/material/core/tokens/_system.scss
+//    line 57 (mixin theme) → line 103 (calls system-level-colors).
+// 2. `use-system-variables: true` in the color config — makes per-component
+//    tokens emitted by all-component-themes() reference var(--mat-sys-primary)
+//    instead of baking in the resolved hex. Reference: node_modules/@angular/material/
+//    core/theming/_definition.scss line 45.
+$theme-config: (
+  color: (
+    theme-type: light,
+    primary: mat.$cyan-palette,
+    tertiary: mat.$orange-palette,
+    use-system-variables: true,
+  ),
+  density: (
+    scale: 0,
+  ),
+);
+$theme: mat.define-theme($theme-config);
 
-// Define the palettes for your theme using the Material Design palettes available in palette.scss
-// (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// hue. Available color palettes: https://material.io/design/color/
-$material-extensions-primary: mat.m2-define-palette(mat.$m2-indigo-palette);
-$material-extensions-accent: mat.m2-define-palette(mat.$m2-pink-palette, A200, A100, A400);
+// M3 requires theme includes to be inside a selector. The order matters:
+//  - mat.theme(rawConfig) emits the --mat-sys-* color tokens
+//  - mat.all-component-themes($theme) emits per-component tokens that REFERENCE those system tokens
+//  - color-variants-backwards-compatibility keeps color="primary"/"warn" working
+html {
+  @include mat.theme($theme-config);
+  @include mat.all-component-themes($theme);
+  @include mat.color-variants-backwards-compatibility($theme);
+}
 
-// The warn palette is optional (defaults to red).
-$material-extensions-warn: mat.m2-define-palette(mat.$m2-red-palette);
+// In M3, color="primary" on mat-icon-button doesn't propagate color to the icon
+// (only to ripple/container). Re-add icon coloring for the legacy attribute.
+.mat-primary mat-icon,
+mat-icon[color="primary"] {
+  color: var(--mat-sys-primary);
+}
+.mat-warn mat-icon,
+mat-icon[color="warn"] {
+  color: var(--mat-sys-error);
+}
+.mat-accent mat-icon,
+mat-icon[color="accent"] {
+  color: var(--mat-sys-tertiary);
+}
 
-// Create the theme object (a Sass map containing all of the palettes).
-$material-extensions-theme: mat.m2-define-light-theme(( color: (primary: $material-extensions-primary, accent: $material-extensions-accent, warn: $material-extensions-warn),
-typography: mat.m2-define-typography-config(),
-density: 0,
-));
+// Tooltip — ensure the MDC tokens have explicit values under our M3 theme.
+// In Material 20 these aren't always set by mat.theme(), so the tooltip can
+// render with browser defaults (semi-transparent black on light bg = readable
+// but visually inconsistent with our cyan theme).
+.mdc-tooltip {
+  --mdc-plain-tooltip-container-color: var(--mat-sys-on-surface);
+  --mdc-plain-tooltip-supporting-text-color: var(--mat-sys-surface);
+  --mdc-plain-tooltip-supporting-text-font: 'Roboto', sans-serif;
+  --mdc-plain-tooltip-supporting-text-size: 12px;
+}
 
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
-@include mat.all-component-themes($material-extensions-theme);
+// Menu surface — Material 20's mat.theme() doesn't always emit
+// --mat-menu-container-color, so menus can render with transparent backgrounds
+// (you can see the table data through them). Force an opaque surface.
+.mat-mdc-menu-panel {
+  --mat-menu-container-color: #ffffff;
+  background-color: #ffffff;
+}
 
+// Same problem for autocomplete and select panels — emit opaque surfaces.
+.mat-mdc-autocomplete-panel,
+.mat-mdc-select-panel {
+  --mat-autocomplete-background-color: #ffffff;
+  --mat-select-panel-background-color: #ffffff;
+  background-color: #ffffff;
+}
+
+// Dialog surfaces too, while we're at it.
+.mat-mdc-dialog-surface {
+  --mdc-dialog-container-color: #ffffff;
+  background-color: #ffffff;
+}

@@ -19,6 +19,7 @@ body {
 
 body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: var(--mat-app-background-color, #fafafa);
 }
 
 app-root {
@@ -40,5 +41,5 @@ router-outlet + * {
 }
 .opDialog .mat-mdc-dialog-container .mdc-dialog__surface {
   padding: 1rem;
-  background-color: white;
+  background-color: var(--mat-dialog-container-background-color, white);
 }
