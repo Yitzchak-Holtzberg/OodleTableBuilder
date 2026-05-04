@@ -1,8 +1,178 @@
-<button stop-propagation class="filter-button" mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Add Filter">
-  <mat-icon class="filter-icon" color="primary">filter_list</mat-icon>
+<button stop-propagation class="filter-trigger-button" mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Filters">
+  <mat-icon fontSet="material-icons-outlined" class="filter-icon tb-icon-primary">filter_alt</mat-icon>
 </button>
-<mat-menu #menu="matMenu">
-  <button *ngFor="let md of filterCols$ | async" (click)="addFilter(md)" mat-menu-item>
-    <span class="filter-labels">{{md.displayName || (md.key | spaceCase)}}</span>
-  </button>
+
+<mat-menu #menu="matMenu" class="filter-panel-menu" xPosition="before">
+  <div class="fp-panel" stop-propagation (click)="$event.stopPropagation()">
+    <div class="fp-head">
+      <div class="fp-title">
+        Active filters
+        <span class="fp-count">{{ count$ | async }}</span>
+      </div>
+      <button class="fp-add-pill"
+              [class.fp-add-pill-active]="pickerOpen()"
+              type="button"
+              (click)="togglePicker($event)"
+              stop-propagation>
+        <span class="fp-plus-circle">＋</span> Add filter
+      </button>
+    </div>
+
+    @if (pickerOpen()) {
+      <div class="fp-col-picker" stop-propagation (click)="$event.stopPropagation()">
+        <div class="fp-col-picker-label">Pick a column to filter</div>
+        @for (md of filterCols$ | async; track md.key) {
+          <button class="fp-col-picker-item"
+                  type="button"
+                  (click)="addFilter(md); $event.stopPropagation()">
+            {{ md.displayName || (md.key | spaceCase) }}
+          </button>
+        }
+      </div>
+    }
+
+    @if (chips$ | async; as chips) {
+      @if (chips.length === 0) {
+        <div class="fp-empty">
+          No filters applied. Click <strong>+ Add filter</strong> to create one.
+        </div>
+      }
+      <div class="fp-stack">
+        @for (chip of chips; track chip.filterId) {
+          @if (isExpanded(chip.filterId) && draft(); as d) {
+
+            <!-- ============ EXPANDED FORM ============ -->
+            <div class="fp-expanded">
+              <div class="fp-expanded-head">
+                <span class="fp-col-name">
+                  @if (chip.isHidden) {
+                    <mat-icon class="fp-col-hidden-icon">visibility_off</mat-icon>
+                  }
+                  {{ chip.columnName }}
+                </span>
+                <button class="fp-x-btn"
+                        type="button"
+                        (click)="cancel(chip)"
+                        stop-propagation
+                        [attr.aria-label]="'Close form for ' + chip.columnName">
+                  ✕
+                </button>
+              </div>
+
+              <div class="fp-form-grid">
+                <span class="fp-form-lbl">Operator</span>
+                <select class="fp-form-select"
+                        [value]="d.filterType || ''"
+                        (change)="draftSetOperator($any($event.target).value)"
+                        stop-propagation>
+                  @for (op of operatorsFor(chip.fieldType); track op.value) {
+                    <option [value]="op.value">{{ op.label }}</option>
+                  }
+                </select>
+
+                <span class="fp-form-lbl">Value</span>
+                @switch (inputKindFor(chip.fieldType)) {
+                  @case ('date') {
+                    <input class="fp-form-input"
+                           type="date"
+                           [value]="d.value || ''"
+                           (input)="draftSetValue($any($event.target).value)"
+                           stop-propagation />
+                  }
+                  @case ('datetime') {
+                    <input class="fp-form-input"
+                           type="datetime-local"
+                           [value]="d.value || ''"
+                           (input)="draftSetValue($any($event.target).value)"
+                           stop-propagation />
+                  }
+                  @case ('number') {
+                    <input class="fp-form-input"
+                           type="number"
+                           [value]="d.value === null || d.value === undefined ? '' : d.value"
+                           (input)="draftSetValue($any($event.target).valueAsNumber)"
+                           stop-propagation />
+                  }
+                  @case ('boolean') {
+                    <span class="fp-form-toggle">
+                      <button type="button"
+                              [class.active]="d.value === true"
+                              (click)="draftSetValue(true)"
+                              stop-propagation>true</button>
+                      <button type="button"
+                              [class.active]="d.value === false"
+                              (click)="draftSetValue(false)"
+                              stop-propagation>false</button>
+                    </span>
+                  }
+                  @default {
+                    <input class="fp-form-input"
+                           type="text"
+                           [value]="d.value || ''"
+                           placeholder="value"
+                           (input)="draftSetValue($any($event.target).value)"
+                           (keydown.enter)="apply(chip)"
+                           autofocus
+                           stop-propagation />
+                  }
+                }
+              </div>
+
+              <div class="fp-form-actions">
+                <button type="button" class="fp-btn-ghost" (click)="cancel(chip)" stop-propagation>
+                  Cancel
+                </button>
+                <button type="button" class="fp-btn-primary" (click)="apply(chip)" stop-propagation>
+                  Apply
+                </button>
+              </div>
+            </div>
+
+          } @else {
+
+            <!-- ============ COMPACT CHIP ============ -->
+            <div class="fp-chip"
+                 [class.fp-chip-custom]="chip.isCustom"
+                 [class.fp-chip-pending]="!chip.valueDisplay && !chip.isCustom"
+                 (click)="!chip.isCustom && expand(chip)"
+                 [attr.role]="chip.isCustom ? null : 'button'"
+                 [attr.tabindex]="chip.isCustom ? null : 0">
+              <span class="fp-col-name">
+                @if (chip.isHidden) {
+                  <mat-icon class="fp-col-hidden-icon">visibility_off</mat-icon>
+                }
+                {{ chip.columnName }}
+              </span>
+
+              <span class="fp-op-pill" [class.fp-op-custom]="chip.isCustom">
+                {{ chip.operatorLabel }}
+              </span>
+
+              @if (chip.isCustom) {
+                <span class="fp-val-readonly">(predicate)</span>
+              } @else if (chip.valueDisplay) {
+                <span class="fp-val-text">{{ chip.valueDisplay }}</span>
+              } @else {
+                <span class="fp-val-pending">click to set value…</span>
+              }
+
+              <button class="fp-x-btn"
+                      type="button"
+                      (click)="$event.stopPropagation(); removeFilter(chip.filterId)"
+                      [attr.aria-label]="'Remove filter on ' + chip.columnName">
+                ✕
+              </button>
+            </div>
+          }
+        }
+      </div>
+
+      @if (chips.length > 0) {
+        <div class="fp-foot">
+          <button class="fp-ghost-link" type="button" (click)="clearAll()">Clear all</button>
+        </div>
+      }
+    }
+  </div>
 </mat-menu>
+

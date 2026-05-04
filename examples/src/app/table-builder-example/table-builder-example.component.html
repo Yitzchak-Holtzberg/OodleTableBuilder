@@ -1,87 +1,151 @@
-<mat-checkbox (change)="Checked($event)" [checked]="!!(isFilterChecked && (isFilterChecked | async))"  />
-<button (click)="clearAllFilters()">Cleart All Filters</button>
-<button (click)="addColumn()">Add Column</button>
-<br/>
-<mat-form-field style="width: 25%;">
-  <mat-select multiple (selectionChange)="multipleValuesTest($event)">
-    <mat-option [value]="'Hydrogen'">Hydrogen</mat-option>
-    <mat-option [value]="'Lithium'">Lithium</mat-option>
-  </mat-select>
-</mat-form-field>
-
-<ng-container tbWrapper >
-
-
-  <ng-container before>
+<section class="example-page">
+  <header class="example-header">
     <div>
-      <input  [tbFilterStringContains]="'name'" ngModel filterId="abcdef" tbPreservePasteDelimiters />
-      <mat-form-field>
-        <mat-select>
-          <mat-option [tbCustomFilter]='myTestPredicate'  filterId="yid3" > Click me! </mat-option>
-          <mat-option  > Un-Click me! </mat-option>
-        </mat-select>
-      </mat-form-field>
-      <div  >
-        <mat-checkbox [tbCustomFilter]='myTestPredicate' filterId="yid" >The filterator</mat-checkbox>
+      <p class="example-kicker">Table Builder Example</p>
+      <h1>Element catalog</h1>
+      <p class="example-subtitle">Explore sorting, filters, custom cells, selection, sticky headers, and persisted table settings.</p>
+    </div>
+
+    <div class="example-stats" aria-label="Example capabilities">
+      <span>50 rows/page</span>
+      <span>Selectable</span>
+      <span>Sticky header</span>
+    </div>
+  </header>
+
+  <ng-container tbWrapper>
+    <section class="example-toolbar" aria-label="Table actions">
+      <div class="example-toolbar-group">
+        <button type="button" class="example-button primary" (click)="addItem()">Add Sample Element</button>
+        <button type="button" class="example-button" (click)="addColumn()">Add Stability Column</button>
       </div>
-      <mat-checkbox [tbCustomFilter]='myTestPredicate' filterId="yid2" >The filterator 2</mat-checkbox>
-    </div>
-    hello there
 
+      <div class="example-toolbar-group">
+        <button type="button" class="example-button" (click)="emitFilter()">Show Rows With Known Density</button>
+        <button type="button" class="example-button" (click)="clearFilter()">Clear External Filter</button>
+        <button type="button" class="example-button danger" (click)="clearAllFilters()">Reset All Filters</button>
+      </div>
+    </section>
 
+    <section class="example-filters" before aria-label="Demo filters">
+      <div class="example-filter-card">
+        <span class="example-control-label">Quick filters</span>
+        <mat-checkbox
+          class="example-checkbox"
+          (change)="Checked($event)"
+          [checked]="!!(isFilterChecked && (isFilterChecked | async))">
+          Atomic number is 5
+        </mat-checkbox>
+        <mat-checkbox [tbCustomFilter]="myTestPredicate" filterId="yid">Oxygen only</mat-checkbox>
+      </div>
+
+      <div class="example-filter-card">
+        <label class="example-control-label" for="name-filter">Name contains</label>
+        <input
+          id="name-filter"
+          class="example-input"
+          [tbFilterStringContains]="'name'"
+          ngModel
+          filterId="abcdef"
+          tbPreservePasteDelimiters
+          placeholder="Type or paste element names" />
+      </div>
+
+      <div class="example-filter-card">
+        <span class="example-control-label">Selected elements</span>
+        <mat-form-field class="example-select">
+          <mat-select multiple placeholder="Choose categories" (selectionChange)="multipleValuesTest($event)">
+            <mat-option [value]="'Reactive nonmetal'">Reactive nonmetal</mat-option>
+            <mat-option [value]="'Noble gas'">Noble gas</mat-option>
+            <mat-option [value]="'Alkali metal'">Alkali metal</mat-option>
+            <mat-option [value]="'Alkaline earth metal'">Alkaline earth metal</mat-option>
+            <mat-option [value]="'Metalloid'">Metalloid</mat-option>
+            <mat-option [value]="'Transition metal'">Transition metal</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="example-filter-card">
+        <span class="example-control-label">Predicate option</span>
+        <mat-form-field class="example-select">
+          <mat-select placeholder="Toggle Oxygen filter">
+            @for (quickFilter of quickFilters; track quickFilter.label) {
+              <mat-option [tbCustomFilter]="quickFilter.predicate" [filterId]="'quick-' + quickFilter.label">{{ quickFilter.label }}</mat-option>
+            }
+            <mat-option>All element data</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </section>
+
+    <ng-template #groupHeaderTemplate let-element="element">
+      <div class="example-group-header">
+        <span>Group start</span>
+        <span>Grouped row</span>
+        <span>isGroupHeader: {{element.isGroupHeader}}</span>
+      </div>
+    </ng-template>
+
+    @if (tableBuilder) {
+      <section class="example-table-shell">
+        <tb-table-container
+          [isSticky]="true"
+          (data)="emitter($event)"
+          tableId="test-table-id-123"
+          #tb
+          [tableBuilder]="tableBuilder"
+          [inputFilters]="myFilter"
+          [pageSize]="50"
+          [SelectionColumn]="true"
+          (selection$)="selectionEvent($event)"
+          [IndexColumn]="true"
+          [groupHeaderTemplate]="groupHeaderTemplate">
+          <span
+            [ngClass]="(tb.state$ | async)?.persistedTableSettings?.collapseHeader ? 'small-title' : 'big-title'"
+            class="tb-header-title">
+            Element data
+          </span>
+          <span *customCell="'symbol'; let element = element" class="element-symbol-cell">{{ element.symbol }}</span>
+          <span
+            *customCell="'category'; let element = element"
+            class="element-pill"
+            [ngClass]="'category-' + element.category.toLowerCase().replaceAll(' ', '-')">
+            {{ element.category }}
+          </span>
+          <span
+            *customCell="'phaseAtRoomTemp'; let element = element"
+            class="phase-badge"
+            [ngClass]="'phase-' + element.phaseAtRoomTemp.toLowerCase()">
+            {{ element.phaseAtRoomTemp }}
+          </span>
+          <span
+            *customCell="'atomicMass'; let element = element"
+            class="mass-cell"
+            [class.mass-range]="(element.atomicMass + '').startsWith('[')">
+            {{ element.atomicMass }}
+          </span>
+          <ng-container *customCell="'meltingPointC'; let element = element">
+            {{ element.meltingPointC === null ? 'Unknown' : (element.meltingPointC + ' °C') }}
+          </ng-container>
+          <ng-container *customCell="'boilingPointC'; let element = element">
+            {{ element.boilingPointC === null ? 'Unknown' : (element.boilingPointC + ' °C') }}
+          </ng-container>
+          <span *customCell="'electronegativity'; let element = element" [class.null-value]="element.electronegativity === null">
+            {{ element.electronegativity === null ? 'Not assigned' : element.electronegativity }}
+          </span>
+          <span
+            *customCell="'isRadioactive'; let element = element"
+            class="radioactive-badge"
+            [class.radioactive]="element.isRadioactive">
+            {{ element.isRadioactive ? 'Radioactive' : 'Stable isotope data' }}
+          </span>
+          <mat-row *matRowDef="let row; let even = even; when: runWhen" [ngClass]="{'deleted': row.deletedAt!=null}" />
+        </tb-table-container>
+      </section>
+    }
+
+    <ng-template #myTemplate let-element="element" let-metaData="metaData">
+      from template: {{element[metaData.key]}}
+    </ng-template>
   </ng-container>
-
-  <ng-template #groupHeaderTemplate let-element="element">
-    <div style="display: flex; flex-grow: 1; justify-content: space-between;">
-      <div style="display: flex; padding-left: 20px;">Hi From The Start</div>
-      <div style="display: flex">Hi From The Middle</div>
-      <div style="display: flex">Hi From The End: isGroupHeader: {{element.isGroupHeader}}</div>
-    </div>
-  </ng-template>
-
-  @if (tableBuilder) {
-    <tb-table-container
-      [isSticky]="true"
-      (data)='emitter($event)'
-      tableId='test-table-id-123'
-      #tb
-      [tableBuilder]='tableBuilder'
-      [inputFilters]='myFilter'
-      [pageSize]="50"
-      [SelectionColumn]='true'
-      (selection$)="selectionEvent($event)"
-      [IndexColumn]="true"
-      [groupHeaderTemplate]="groupHeaderTemplate"
-      >
-      <span [ngClass]="(tb.state$ | async)?.persistedTableSettings?.collapseHeader ? 'small-title' : 'big-title'"
-      class="tb-header-title">TRIAL TITLE</span>
-      <p *customCell="'testCell';let element = element; Width '10px'" [class.makeMeRed]="element?.name && element?.name[0] === 'H'" >Hi {{element.name}}!</p>
-      <ng-container customCell='date' matColumnDef="date"   >
-        <mat-footer-cell *matFooterCellDef="let styles=styles" [styler]="styles" >
-          date footer {{(styles | json) + 'a'}}
-        </mat-footer-cell>
-      </ng-container>
-      <ng-container customCell="blue" matColumnDef="blue">
-        <mat-cell *matCellDef="let element = element;let styles = styles;" [class.makeMeBlue]="element?.name && element?.name[0] === 'B'" [styler]="styles">
-          Hi {{element?.name}} !
-        </mat-cell>
-      </ng-container>
-      <ng-container customCell="green" matColumnDef="green"  >
-        <mat-header-cell *matHeaderCellDef="let styles=styles" style="color: green;" [styler]="styles" [resizeColumn]="true" [key]="'green'">Custom header</mat-header-cell >
-        <mat-cell *matCellDef="let element = element;let styles=styles;" [class.makeMeBlue]="element?.name && element?.name[0] === 'H'" [styler]="styles">
-          F {{element?.name}} !
-        </mat-cell>
-      </ng-container>
-      <mat-row *matRowDef="let row; let even = even; when: runWhen" [ngClass]="{'deleted': row.deletedAt!=null}" />
-    </tb-table-container>
-  }
-
-  <button (click)='addItem()'>Add Gold</button>
-  <button (click)='emitFilter()'>Filter B</button>
-  <button (click)='clearFilter()'>clear filter</button>
-
-  <ng-template #myTemplate let-element='element' let-metaData='metaData' >
-    from template: {{element[metaData.key]}}
-  </ng-template>
-
-</ng-container>
+</section>

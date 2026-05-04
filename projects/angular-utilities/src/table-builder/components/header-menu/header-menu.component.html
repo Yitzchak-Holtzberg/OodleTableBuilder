@@ -3,11 +3,11 @@
 </button>
 <mat-menu #menu="matMenu" >
   <button mat-menu-item (click)="tableState.addGroupByKey(metaData.key)">
-    <mat-icon color="primary">group</mat-icon>
+    <mat-icon class="tb-icon-primary">group</mat-icon>
     <span>Group By</span>
   </button>
   <button mat-menu-item (click)=hideField(metaData.key)>
-    <mat-icon color="primary">visibility_off</mat-icon>
+    <mat-icon class="tb-icon-primary">visibility_off</mat-icon>
     <span>Hide Column</span>
   </button>
   <ng-form #myForm="ngForm" [ngSwitch]="true" (keydown.enter)="onEnter(myForm.value)" class="tb-header-filter">
@@ -29,8 +29,8 @@
             <mat-label>{{myFilterType === FilterType.StringDoesNotContain ? 'Does Not Contain...' : 'Contains...'}}</mat-label>
             <input matInput name="filterValue" [ngModel]="filter.filterValue" />
             <span matSuffix [matTooltip]="myFilterType === FilterType.StringDoesNotContain ? 'Contains' : 'Does Not Contain'">
-              <button mat-icon-button color="primary" (click)="setStringFilterType()" class="header-filter-icon-button">
-                <mat-icon [ngClass]="{'chosen-icon': myFilterType === FilterType.StringDoesNotContain }">
+              <button mat-icon-button (click)="setStringFilterType()" class="header-filter-icon-button">
+                <mat-icon class="tb-icon-primary" [class.chosen-icon]="myFilterType === FilterType.StringDoesNotContain">
                   block
                 </mat-icon>
               </button>

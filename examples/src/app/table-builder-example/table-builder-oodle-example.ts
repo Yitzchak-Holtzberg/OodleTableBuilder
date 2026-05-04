@@ -3,11 +3,11 @@ import { TableContainerComponent, TableBuilder, FieldType, MetaData, TableBuilde
 import { map, Observable, of } from "rxjs";
 import { MatCell, MatCellDef } from "@angular/material/table";
 import { MatMenu, MatMenuTrigger } from "@angular/material/menu";
-import { CommonModule, CurrencyPipe } from "@angular/common";
+import { CommonModule } from "@angular/common";
 import { MatIcon } from "@angular/material/icon";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 
-const metaHelper = (fields: { key: string; displayName: string; fieldType: FieldType }[]) => fields;
+const metaHelper = (fields: MetaData[]) => fields;
 
 @Component({
   selector: 'table-builder-oodle-example',
@@ -15,7 +15,7 @@ const metaHelper = (fields: { key: string; displayName: string; fieldType: Field
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['./table-builder-oodle-example.component.css'],
-  imports: [TableBuilderModule, MatCell, MatMenuTrigger, CurrencyPipe, MatIcon, MatMenu, CommonModule, MatButtonToggleModule,
+  imports: [TableBuilderModule, MatCell, MatMenuTrigger, MatIcon, MatMenu, CommonModule, MatButtonToggleModule,
     MatCellDef, VirtualScrollViewportDirective
   ]
 })
@@ -25,45 +25,36 @@ export default class ChargebackComponent implements OnInit {
   @ViewChild(TableContainerComponent) tableContainer: TableContainerComponent | undefined;
   tableBuilder!: TableBuilder;
   tableBuilderWithLines!: TableBuilder;
-  chargebacks$!: Observable<Chargeback[]>;
+  presidents$!: Observable<PresidentRecord[]>;
   meta$: Observable<MetaData[]> | undefined;
   metaWithLines$: Observable<MetaData[]> | undefined;
-  statuses: string[];
-  vendorIdForPopup = 12345;
-
-  constructor() {
-    this.statuses = Object.values(ChargebackStatus);
-  }
 
   ngOnInit() {
-    this.chargebacks$ = this.populateChargebacks();
+    this.presidents$ = this.populatePresidents();
     this.meta$ = this.getMeta();
     this.metaWithLines$ = this.getMetaWithLines();
-    const flattenedChargebacks$ = this.mapChargebacksToLines();
+    const flattenedPresidents$ = this.mapPresidentsToEvents();
 
-
-    this.tableBuilder = new TableBuilder(this.chargebacks$, this.meta$);
-    this.tableBuilderWithLines = new TableBuilder(flattenedChargebacks$, this.metaWithLines$);
+    this.tableBuilder = new TableBuilder(this.presidents$, this.meta$);
+    this.tableBuilderWithLines = new TableBuilder(flattenedPresidents$, this.metaWithLines$);
   }
 
-
-  private populateChargebacks(): Observable<Chargeback[]> {
-    const multipleChargebacks: Chargeback[] = [];
+  private populatePresidents(): Observable<PresidentRecord[]> {
+    const multiplePresidents: PresidentRecord[] = [];
     for(let i = 0; i < 12; i++) {
-      multipleChargebacks.push(...anonymizedData);
+      multiplePresidents.push(...presidentData);
     }
-    return of(multipleChargebacks);
+    return of(multiplePresidents);
   }
 
-  private mapChargebacksToLines() {
-    return this.chargebacks$.pipe(
-      map(chargebacks => chargebacks.flatMap(chargeback => chargeback.chargebackLines.map(line => ({
-        ...chargeback,
-        ...line,
-        id: chargeback.id,
-        lineId: line.id,
-        totalLineAmount: line.amount * line.quantity,
-        parentChargeback: chargeback
+  private mapPresidentsToEvents() {
+    return this.presidents$.pipe(
+      map(presidents => presidents.flatMap(president => president.events.map(event => ({
+        ...president,
+        ...event,
+        id: president.id,
+        eventId: event.id,
+        parentPresident: president
       }))))
     );
   }
@@ -72,394 +63,246 @@ export default class ChargebackComponent implements OnInit {
     this.isLinesView = value;
   }
 
-  getTotalAmount(element: Chargeback): number {
-    return element.chargebackLines.reduce((total, line) => total + (line.amount * line.quantity || 0), 0);
-  }
-
-  getDepartmentOptions(): Observable<Option[]> {
-    return of([
-      { id: 'HR', label: 'Human Resources' },
-      { id: 'IT', label: 'Information Technology' },
-      { id: 'FIN', label: 'Finance' }
-    ]);
-  }
-
-
   getMeta(): Observable<MetaData[]> {
     return of(metaHelper([
-      { key: 'vendorId', displayName: 'Vendor Id', fieldType: FieldType.Hidden },
-      { key: 'vendorName', displayName: 'Vendor Name', fieldType: this.vendorIdForPopup ? FieldType.Hidden : FieldType.String },
-      { key: 'createdOn', displayName: 'Created On', fieldType: FieldType.Date },
-      { key: 'createdBy', displayName: 'Id', fieldType: FieldType.Hidden },
-      { key: 'createdByName', displayName: 'Created By', fieldType: FieldType.String },
-      { key: 'currentStatusValue', displayName: 'Status', fieldType: FieldType.String },
-      { key: 'departmentName', displayName: 'Department', fieldType: FieldType.String },
-      { key: 'notes', displayName: 'Notes', fieldType: FieldType.String }
+      { key: 'id', displayName: 'No.', fieldType: FieldType.Number, width: '72px' },
+      { key: 'presidentName', displayName: 'President', fieldType: FieldType.String, width: '190px' },
+      { key: 'party', displayName: 'Party', fieldType: FieldType.String, width: '170px' },
+      { key: 'birthplace', displayName: 'Birthplace', fieldType: FieldType.String, width: '220px' },
+      { key: 'termStart', displayName: 'Took Office', fieldType: FieldType.Date, width: '132px', additional: { dateFormat: 'mediumDate' } },
+      { key: 'termEnd', displayName: 'Left Office', fieldType: FieldType.Date, width: '132px', additional: { dateFormat: 'mediumDate' } },
+      { key: 'vicePresident', displayName: 'Vice President', fieldType: FieldType.String, width: '210px' },
+      { key: 'priorOffice', displayName: 'Prior Office', fieldType: FieldType.String, width: '250px' },
+      { key: 'notes', displayName: 'Historical Context', fieldType: FieldType.String, width: '360px' }
     ]));
   }
 
   getMetaWithLines(): Observable<MetaData[]> {
     return of(metaHelper([
-      { key: 'vendorId', displayName: 'Vendor Id', fieldType: FieldType.Hidden },
-      { key: 'vendorName', displayName: 'Vendor Name', fieldType: this.vendorIdForPopup ? FieldType.Hidden : FieldType.String },
-      { key: 'createdByName', displayName: 'Created By', fieldType: FieldType.String },
-      { key: 'createdOn', displayName: 'Created On', fieldType: FieldType.Date },
-      { key: 'totalAmount', displayName: 'Total Amount', fieldType: FieldType.Number },
-      { key: 'currentStatusValue', displayName: 'Status', fieldType: FieldType.String },
-      { key: 'departmentName', displayName: 'Department', fieldType: FieldType.String },
-      { key: 'chargebackTypeDescription', displayName: 'Chargeback Type', fieldType: FieldType.String },
-      { key: 'totalLineAmount', displayName: 'Total Line Amount', fieldType: FieldType.Currency },
-      { key: 'amount', displayName: 'Amount', fieldType: FieldType.Currency },
-      { key: 'quantity', displayName: 'Quantity', fieldType: FieldType.Number }
+      { key: 'id', displayName: 'No.', fieldType: FieldType.Number, width: '72px' },
+      { key: 'presidentName', displayName: 'President', fieldType: FieldType.String, width: '190px' },
+      { key: 'party', displayName: 'Party', fieldType: FieldType.String, width: '170px' },
+      { key: 'termStart', displayName: 'Took Office', fieldType: FieldType.Date, width: '132px', additional: { dateFormat: 'mediumDate' } },
+      { key: 'eventYear', displayName: 'Year', fieldType: FieldType.Number, width: '90px' },
+      { key: 'policyArea', displayName: 'Area', fieldType: FieldType.String, width: '160px' },
+      { key: 'eventName', displayName: 'Event', fieldType: FieldType.String, width: '260px' },
+      { key: 'description', displayName: 'Description', fieldType: FieldType.String, width: '420px' }
     ]));
   }
 }
 
-class Option<T = string> {
-  id?: T;
-  label?: string;
-}
-
-export enum ChargebackStatus {
-  WaitingForApproval = "waiting for approval",
-  SentToVendor = "sent to vendor",
-  Approved = "approved",
-  Rejected = "rejected",
-  SentToNetSuite = "sent to NetSuite"
-}
-
-export class ChargebackLine {
+export class PresidentEvent {
   public id: number = 0;
-  public chargebackTypeDescription: string;
-  public amount: number;
-  public quantity: number;
+  public eventYear: number;
+  public policyArea: string;
+  public eventName: string;
+  public description: string;
 
-  constructor(chargebackLine: Partial<ChargebackLine> = {}) {
-    this.id = chargebackLine.id || 0;
-    this.chargebackTypeDescription = chargebackLine.chargebackTypeDescription || "";
-    this.amount = chargebackLine.amount || 0;
-    this.quantity = chargebackLine.quantity || 0;
+  constructor(event: Partial<PresidentEvent> = {}) {
+    this.id = event.id || 0;
+    this.eventYear = event.eventYear || 0;
+    this.policyArea = event.policyArea || "";
+    this.eventName = event.eventName || "";
+    this.description = event.description || "";
   }
 }
 
-export class Chargeback {
+export class PresidentRecord {
   id?: number;
-  vendorId?: number;
-  vendorName?: string;
-  createdOn: string = "";
-  createdBy?: string;
-  createdByName?: string;
-  lastModified: string = "";
-  lastModifiedById?: string;
-  isDeleted?: boolean;
+  presidentName?: string;
+  party?: string;
+  birthplace?: string;
+  termStart?: string;
+  termEnd?: string;
+  vicePresident?: string;
+  priorOffice?: string;
   notes?: string;
-  subsidiaryId?: number;
-  currentStatusValue?: string;
-  approvedBy?: string;
-  departmentId?: number;
-  departmentName?: string;
-  chargebackLines: ChargebackLine[] = [];
-  poId?: number;
-  poNumber?: string;
-  lastSent?: string = "";
-  timesSent?: number;
-  lastSentTo?: string;
-  totalAmount?: number = 0;
+  events: PresidentEvent[] = [];
 
-  constructor(chargeback: Partial<Chargeback> = {}) {
-    Object.assign(this, chargeback);
+  constructor(president: Partial<PresidentRecord> = {}) {
+    Object.assign(this, president);
   }
 }
 
-
-const anonymizedData: Chargeback[] = [
+const presidentData: PresidentRecord[] = [
   {
     id: 1,
-    vendorId: 12345,
-    poId: undefined,
-    createdOn: "2024/09/13",
-    createdBy: "user-123",
-    lastModified: "2024/09/13",
-    lastModifiedById: "user-123",
-    notes: undefined,
-    subsidiaryId: 13001,
-    currentStatusValue: "waiting for approval",
-    chargebackLines: [
-      { id: 1, chargebackTypeDescription: "Broken Teapot", amount: 1000.00, quantity: 1 }
-    ],
-    departmentId: 1,
-    vendorName: "ABC INDUSTRIAL CO.",
-    poNumber: undefined,
-    createdByName: "creator-123",
-    approvedBy: undefined,
-    departmentName: "QC",
-    lastSent: undefined,
-    lastSentTo: undefined,
-    timesSent: 0
+    presidentName: "George Washington",
+    party: "Unaffiliated",
+    birthplace: "Westmoreland county, Virginia",
+    termStart: "1789/04/30",
+    termEnd: "1797/03/04",
+    vicePresident: "John Adams",
+    priorOffice: "Commander in Chief of the Continental Army",
+    notes: "First U.S. president; established many executive precedents, including the two-term custom.",
+    events: [
+      { id: 1, eventYear: 1789, policyArea: "Government", eventName: "Judiciary Act of 1789", description: "Created the federal court system below the Supreme Court." },
+      { id: 2, eventYear: 1793, policyArea: "Foreign Policy", eventName: "Neutrality Proclamation", description: "Declared U.S. neutrality in the conflict between France and Great Britain." }
+    ]
   },
   {
     id: 2,
-    vendorId: 67890,
-    poId: undefined,
-    createdOn: "2024/09/13",
-    createdBy: "user-123",
-    lastModified: "2024/09/19",
-    lastModifiedById: "user-123",
-    notes: undefined,
-    subsidiaryId: 13001,
-    currentStatusValue: "sent to vendor",
-    chargebackLines: [
-      { id: 2, chargebackTypeDescription: "Loss", amount: 5000.00, quantity: 1 }
-    ],
-    departmentId: 1,
-    vendorName: "XYZ TECH CO.",
-    poNumber: undefined,
-    createdByName: "creator-123",
-    approvedBy: "creator-123",
-    departmentName: "QC",
-    lastSent: "2024/09/19",
-    lastSentTo: "contact@xyztech.com",
-    timesSent: 1
+    presidentName: "John Adams",
+    party: "Federalist",
+    birthplace: "Braintree, Massachusetts",
+    termStart: "1797/03/04",
+    termEnd: "1801/03/04",
+    vicePresident: "Thomas Jefferson",
+    priorOffice: "Vice President of the United States",
+    notes: "Second U.S. president; avoided full-scale war with France during the Quasi-War.",
+    events: [
+      { id: 3, eventYear: 1798, policyArea: "Foreign Policy", eventName: "Quasi-War with France", description: "Undeclared naval conflict between the United States and France." },
+      { id: 4, eventYear: 1800, policyArea: "Diplomacy", eventName: "Convention of 1800", description: "Ended the Quasi-War and restored peaceful relations with France." }
+    ]
   },
   {
     id: 3,
-    vendorId: 11223,
-    poId: 9343,
-    createdOn: "2024/09/12",
-    createdBy: "user-456",
-    lastModified: "2024/09/13",
-    lastModifiedById: "user-456",
-    notes: "Notes here.",
-    subsidiaryId: 13001,
-    currentStatusValue: "sent to vendor",
-    chargebackLines: [
-      { id: 3, chargebackTypeDescription: "Broken Teapot", amount: 1000.00, quantity: 1 }
-    ],
-    departmentId: 2,
-    vendorName: "GADGETWORKS LTD.",
-    poNumber: "3001049",
-    createdByName: "creator-456",
-    approvedBy: "creator-456",
-    departmentName: "QC",
-    lastSent: "2024/09/13",
-    lastSentTo: "info@gadgetworks.com",
-    timesSent: 2
+    presidentName: "Thomas Jefferson",
+    party: "Democratic-Republican",
+    birthplace: "Shadwell, Virginia",
+    termStart: "1801/03/04",
+    termEnd: "1809/03/04",
+    vicePresident: "Aaron Burr; George Clinton",
+    priorOffice: "Vice President of the United States",
+    notes: "Third U.S. president; his administration acquired the Louisiana Territory.",
+    events: [
+      { id: 5, eventYear: 1803, policyArea: "Territory", eventName: "Louisiana Purchase", description: "The United States bought Louisiana from France, roughly doubling national territory." },
+      { id: 6, eventYear: 1804, policyArea: "Exploration", eventName: "Lewis and Clark Expedition", description: "Expedition began to explore the Louisiana Purchase and routes to the Pacific." }
+    ]
   },
   {
     id: 4,
-    vendorId: 44556,
-    poId: undefined,
-    createdOn: "2024/09/14",
-    createdBy: "user-789",
-    lastModified: "2024/09/15",
-    lastModifiedById: "user-789",
-    notes: undefined,
-    subsidiaryId: 13001,
-    currentStatusValue: "waiting for approval",
-    chargebackLines: [
-      { id: 4, chargebackTypeDescription: "Sadness", amount: 4555.00, quantity: 1 }
-    ],
-    departmentId: 3,
-    vendorName: "ELECTROPARTS CO.",
-    poNumber: undefined,
-    createdByName: "creator-789",
-    approvedBy: undefined,
-    departmentName: "QUALITY",
-    lastSent: undefined,
-    lastSentTo: undefined,
-    timesSent: 0
+    presidentName: "James Madison",
+    party: "Democratic-Republican",
+    birthplace: "Port Conway, Virginia",
+    termStart: "1809/03/04",
+    termEnd: "1817/03/04",
+    vicePresident: "George Clinton; Elbridge Gerry; vacant",
+    priorOffice: "U.S. Secretary of State",
+    notes: "Fourth U.S. president; led the country during the War of 1812.",
+    events: [
+      { id: 7, eventYear: 1812, policyArea: "War", eventName: "War of 1812", description: "The United States declared war on Great Britain." },
+      { id: 8, eventYear: 1814, policyArea: "Diplomacy", eventName: "Treaty of Ghent", description: "Peace treaty signed to end the War of 1812." }
+    ]
   },
   {
     id: 5,
-    vendorId: 33445,
-    poId: 9543,
-    createdOn: "2024/09/16",
-    createdBy: "user-101",
-    lastModified: "2024/09/17",
-    lastModifiedById: "user-101",
-    notes: undefined,
-    subsidiaryId: 13001,
-    currentStatusValue: "Sent to NetSuite",
-    chargebackLines: [
-      { id: 5, chargebackTypeDescription: "Loss", amount: 5000.00, quantity: 1 }
-    ],
-    departmentId: 2,
-    vendorName: "TOOLKING INC.",
-    poNumber: "3001449",
-    createdByName: "creator-101",
-    approvedBy: "creator-101",
-    departmentName: "QUALITY",
-    lastSent: "2024/09/16",
-    lastSentTo: "sales@toolking.com",
-    timesSent: 1
-  },
-  {
-    id: 6,
-    vendorId: 77889,
-    poId: 9574,
-    createdOn: "2024/09/18",
-    createdBy: "user-102",
-    lastModified: "2024/09/19",
-    lastModifiedById: "user-102",
-    notes: "Inspection required",
-    subsidiaryId: 13002,
-    currentStatusValue: "waiting for vendor response",
-    chargebackLines: [
-      { id: 6, chargebackTypeDescription: "Damaged Goods", amount: 1200.00, quantity: 2 }
-    ],
-    departmentId: 1,
-    vendorName: "FURNITECH LTD.",
-    poNumber: "4002567",
-    createdByName: "creator-102",
-    approvedBy: "creator-102",
-    departmentName: "QC",
-    lastSent: "2024/09/18",
-    lastSentTo: "service@furnitech.com",
-    timesSent: 2
+    presidentName: "James Monroe",
+    party: "Democratic-Republican",
+    birthplace: "Westmoreland county, Virginia",
+    termStart: "1817/03/04",
+    termEnd: "1825/03/04",
+    vicePresident: "Daniel D. Tompkins",
+    priorOffice: "U.S. Secretary of State",
+    notes: "Fifth U.S. president; associated with the Era of Good Feelings and the Monroe Doctrine.",
+    events: [
+      { id: 9, eventYear: 1820, policyArea: "Domestic Policy", eventName: "Missouri Compromise", description: "Admitted Missouri as a slave state and Maine as a free state." },
+      { id: 10, eventYear: 1823, policyArea: "Foreign Policy", eventName: "Monroe Doctrine", description: "Warned European powers against further colonization or intervention in the Americas." }
+    ]
   },
   {
     id: 7,
-    vendorId: 22901,
-    poId: undefined,
-    createdOn: "2024/09/20",
-    createdBy: "user-103",
-    lastModified: "2024/09/21",
-    lastModifiedById: "user-103",
-    notes: undefined,
-    subsidiaryId: 13003,
-    currentStatusValue: "in review",
-    chargebackLines: [
-      { id: 7, chargebackTypeDescription: "Manufacturing Fault", amount: 3200.00, quantity: 1 }
-    ],
-    departmentId: 2,
-    vendorName: "MECHANIC PRO.",
-    poNumber: undefined,
-    createdByName: "creator-103",
-    approvedBy: undefined,
-    departmentName: "QC",
-    lastSent: "2024/09/20",
-    lastSentTo: "contact@mechanicpro.com",
-    timesSent: 1
+    presidentName: "Andrew Jackson",
+    party: "Democratic",
+    birthplace: "Waxhaws region, South Carolina",
+    termStart: "1829/03/04",
+    termEnd: "1837/03/04",
+    vicePresident: "John C. Calhoun; Martin Van Buren",
+    priorOffice: "U.S. Senator from Tennessee",
+    notes: "Seventh U.S. president; expanded presidential power and mass-party politics.",
+    events: [
+      { id: 11, eventYear: 1830, policyArea: "Domestic Policy", eventName: "Indian Removal Act", description: "Authorized relocation of Native peoples from lands east of the Mississippi." },
+      { id: 12, eventYear: 1832, policyArea: "Economy", eventName: "Bank Veto", description: "Vetoed the bill to recharter the Second Bank of the United States." }
+    ]
   },
   {
-    id: 8,
-    vendorId: 55678,
-    poId: 9678,
-    createdOn: "2024/09/22",
-    createdBy: "user-104",
-    lastModified: "2024/09/23",
-    lastModifiedById: "user-104",
-    notes: "Pending further inspection",
-    subsidiaryId: 13004,
-    currentStatusValue: "approved",
-    chargebackLines: [
-      { id: 8, chargebackTypeDescription: "Missing Parts", amount: 2500.00, quantity: 1 }
-    ],
-    departmentId: 3,
-    vendorName: "BUILDTECH SUPPLIERS",
-    poNumber: "4002765",
-    createdByName: "creator-104",
-    approvedBy: "creator-104",
-    departmentName: "QUALITY",
-    lastSent: "2024/09/22",
-    lastSentTo: "support@buildtech.com",
-    timesSent: 3
+    id: 16,
+    presidentName: "Abraham Lincoln",
+    party: "Republican",
+    birthplace: "Hodgenville, Kentucky",
+    termStart: "1861/03/04",
+    termEnd: "1865/04/15",
+    vicePresident: "Hannibal Hamlin; Andrew Johnson",
+    priorOffice: "U.S. Representative from Illinois",
+    notes: "Sixteenth U.S. president; preserved the Union and issued the Emancipation Proclamation.",
+    events: [
+      { id: 13, eventYear: 1863, policyArea: "Civil Rights", eventName: "Emancipation Proclamation", description: "Declared enslaved people in Confederate-held areas to be free." },
+      { id: 14, eventYear: 1863, policyArea: "War", eventName: "Gettysburg Address", description: "Speech reframed the Civil War around union, equality, and democratic government." }
+    ]
   },
   {
-    id: 9,
-    vendorId: 33478,
-    poId: undefined,
-    createdOn: "2024/09/24",
-    createdBy: "user-105",
-    lastModified: "2024/09/25",
-    lastModifiedById: "user-105",
-    notes: undefined,
-    subsidiaryId: 13001,
-    currentStatusValue: "waiting for approval",
-    chargebackLines: [
-      { id: 9, chargebackTypeDescription: "Quality Issue", amount: 4000.00, quantity: 1 }
-    ],
-    departmentId: 1,
-    vendorName: "PROVISION SUPPLIES",
-    poNumber: undefined,
-    createdByName: "creator-105",
-    approvedBy: undefined,
-    departmentName: "QC",
-    lastSent: undefined,
-    lastSentTo: undefined,
-    timesSent: 0
+    id: 26,
+    presidentName: "Theodore Roosevelt",
+    party: "Republican",
+    birthplace: "New York, New York",
+    termStart: "1901/09/14",
+    termEnd: "1909/03/04",
+    vicePresident: "Vacant; Charles W. Fairbanks",
+    priorOffice: "Vice President of the United States",
+    notes: "Twenty-sixth U.S. president; known for progressive reform, conservation, and assertive foreign policy.",
+    events: [
+      { id: 15, eventYear: 1902, policyArea: "Labor", eventName: "Coal Strike Arbitration", description: "Federal mediation helped resolve the anthracite coal strike." },
+      { id: 16, eventYear: 1906, policyArea: "Consumer Protection", eventName: "Pure Food and Drug Act", description: "Prohibited adulterated or mislabeled food and drugs in interstate commerce." }
+    ]
   },
   {
-    id: 10,
-    vendorId: 44567,
-    poId: 9812,
-    createdOn: "2024/09/26",
-    createdBy: "user-106",
-    lastModified: "2024/09/27",
-    lastModifiedById: "user-106",
-    notes: "Follow-up required",
-    subsidiaryId: 13003,
-    currentStatusValue: "rejected",
-    chargebackLines: [
-      { id: 10, chargebackTypeDescription: "Damage during Transit", amount: 2100.00, quantity: 1 }
-    ],
-    departmentId: 4,
-    vendorName: "TRANSLOGISTICS INC.",
-    poNumber: "4002983",
-    createdByName: "creator-106",
-    approvedBy: "creator-106",
-    departmentName: "LOGISTICS",
-    lastSent: "2024/09/26",
-    lastSentTo: "claims@translogistics.com",
-    timesSent: 1
+    id: 32,
+    presidentName: "Franklin D. Roosevelt",
+    party: "Democratic",
+    birthplace: "Hyde Park, New York",
+    termStart: "1933/03/04",
+    termEnd: "1945/04/12",
+    vicePresident: "John N. Garner; Henry A. Wallace; Harry S. Truman",
+    priorOffice: "Governor of New York",
+    notes: "Thirty-second U.S. president; led through the Great Depression and most of World War II.",
+    events: [
+      { id: 17, eventYear: 1935, policyArea: "Social Policy", eventName: "Social Security Act", description: "Created a federal old-age benefits system and unemployment insurance support." },
+      { id: 18, eventYear: 1941, policyArea: "World War II", eventName: "Lend-Lease Act", description: "Authorized aid to Allied nations before U.S. entry into World War II." }
+    ]
   },
   {
-    id: 11,
-    vendorId: 55887,
-    poId: 9900,
-    createdOn: "2024/09/28",
-    createdBy: "user-107",
-    lastModified: "2024/09/29",
-    lastModifiedById: "user-107",
-    notes: "Resubmission required",
-    subsidiaryId: 13005,
-    currentStatusValue: "pending resubmission",
-    chargebackLines: [
-      { id: 11, chargebackTypeDescription: "Incorrect Specification", amount: 3300.00, quantity: 1 }
-    ],
-    departmentId: 1,
-    vendorName: "FABTECH INDUSTRIES",
-    poNumber: "4003129",
-    createdByName: "creator-107",
-    approvedBy: "creator-107",
-    departmentName: "QC",
-    lastSent: "2024/09/28",
-    lastSentTo: "support@fabtech.com",
-    timesSent: 2
+    id: 34,
+    presidentName: "Dwight D. Eisenhower",
+    party: "Republican",
+    birthplace: "Denison, Texas",
+    termStart: "1953/01/20",
+    termEnd: "1961/01/20",
+    vicePresident: "Richard Nixon",
+    priorOffice: "Supreme Allied Commander Europe",
+    notes: "Thirty-fourth U.S. president; oversaw Cold War policy and major infrastructure expansion.",
+    events: [
+      { id: 19, eventYear: 1956, policyArea: "Infrastructure", eventName: "Federal-Aid Highway Act", description: "Authorized the Interstate Highway System." },
+      { id: 20, eventYear: 1957, policyArea: "Civil Rights", eventName: "Little Rock Integration", description: "Sent federal troops to enforce school desegregation in Little Rock, Arkansas." }
+    ]
   },
   {
-    id: 12,
-    vendorId: 11234,
-    poId: 9932,
-    createdOn: "2024/09/30",
-    createdBy: "user-108",
-    lastModified: "2024/10/01",
-    lastModifiedById: "user-108",
-    notes: "Additional details required",
-    subsidiaryId: 13006,
-    currentStatusValue: "under review",
-    chargebackLines: [
-      { id: 12, chargebackTypeDescription: "Warranty Issue", amount: 4600.00, quantity: 1 }
-    ],
-    departmentId: 3,
-    vendorName: "RELIABLE COMPONENTS",
-    poNumber: "4003345",
-    createdByName: "creator-108",
-    approvedBy: "creator-108",
-    departmentName: "WARRANTY",
-    lastSent: "2024/09/30",
-    lastSentTo: "warranty@reliablecomp.com",
-    timesSent: 4
+    id: 35,
+    presidentName: "John F. Kennedy",
+    party: "Democratic",
+    birthplace: "Brookline, Massachusetts",
+    termStart: "1961/01/20",
+    termEnd: "1963/11/22",
+    vicePresident: "Lyndon B. Johnson",
+    priorOffice: "U.S. Senator from Massachusetts",
+    notes: "Thirty-fifth U.S. president; set the Moon landing goal and faced the Cuban Missile Crisis.",
+    events: [
+      { id: 21, eventYear: 1961, policyArea: "Space", eventName: "Moon Landing Goal", description: "Asked Congress to commit to landing a person on the Moon before decade's end." },
+      { id: 22, eventYear: 1962, policyArea: "Foreign Policy", eventName: "Cuban Missile Crisis", description: "Thirteen-day confrontation over Soviet nuclear missiles in Cuba." }
+    ]
   },
-
+  {
+    id: 36,
+    presidentName: "Lyndon B. Johnson",
+    party: "Democratic",
+    birthplace: "Gillespie county, Texas",
+    termStart: "1963/11/22",
+    termEnd: "1969/01/20",
+    vicePresident: "Vacant; Hubert Humphrey",
+    priorOffice: "Vice President of the United States",
+    notes: "Thirty-sixth U.S. president; advanced landmark civil rights and Great Society legislation.",
+    events: [
+      { id: 23, eventYear: 1964, policyArea: "Civil Rights", eventName: "Civil Rights Act of 1964", description: "Outlawed major forms of discrimination and segregation." },
+      { id: 24, eventYear: 1965, policyArea: "Health Policy", eventName: "Medicare and Medicaid", description: "Created federal health insurance programs for older and low-income Americans." }
+    ]
+  }
 ];

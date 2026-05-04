@@ -4,7 +4,7 @@
     <!-- Menu Trigger -->
     <span matTooltip="Sort">
       <button mat-icon-button [matMenuTriggerFor]="menu">
-        <mat-icon color="primary">swap_vert</mat-icon>
+        <mat-icon class="tb-icon-primary">swap_vert</mat-icon>
       </button>
     </span>
 
@@ -23,7 +23,7 @@
 
       <!-- Apply Button -->
       <div class="apply-button-wrapper">
-        <button mat-button color="primary" (click)="apply(null)"
+        <button mat-button class="tb-icon-primary" (click)="apply(null)"
           stop-propagation [class.apply-border]="dirty"
           [disabled]="!dirty">
             Apply

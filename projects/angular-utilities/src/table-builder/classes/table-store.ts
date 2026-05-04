@@ -70,7 +70,50 @@ export class TableStore extends ComponentStore<TableState> {
   readonly hideColumn = this.updater((state, key: string) => ({
     ...state,
     hiddenKeys: [...state.hiddenKeys.filter( k => k !== key), key],
+    sorted: state.sorted.filter( s => s.active !== key),
   }));
+
+  readonly showColumnAt = this.updater((state, payload: { key: string; newOrder: number }) => {
+    const { key, newOrder } = payload;
+    const hiddenKeys = state.hiddenKeys.filter(k => k !== key);
+    const viewable = orderViewableMetaData({ ...state, hiddenKeys })
+      .map(m => m.key)
+      .filter(k => k !== key);
+    const insertAt = Math.max(0, Math.min(newOrder, viewable.length));
+    viewable.splice(insertAt, 0, key);
+    const newViewableOrder = viewable.reduce((acc: Dictionary<number>, k, i) => {
+      acc[k] = i; return acc;
+    }, {});
+    const userDefinedOrder = { ...state.userDefined.order, ...newViewableOrder };
+    return { ...state, hiddenKeys, userDefined: { ...state.userDefined, order: userDefinedOrder } };
+  });
+
+  readonly cycleColumnSort = this.updater((state, key: string) => {
+    const idx = state.sorted.findIndex(s => s.active === key);
+    if (idx === -1) {
+      return { ...state, sorted: [{ active: key, direction: 'asc' as SortDirection }, ...state.sorted] };
+    }
+    if (state.sorted[idx].direction === 'asc') {
+      const next = state.sorted.map((s, i) => i === idx ? { ...s, direction: 'desc' as SortDirection } : s);
+      return { ...state, sorted: next };
+    }
+    return { ...state, sorted: state.sorted.filter((_, i) => i !== idx) };
+  });
+
+  // Reorder a column within the visible columns (excludes user-hidden columns from the index space).
+  // Hidden columns stay in their existing slots; only visible columns get rearranged.
+  readonly reorderVisibleColumn = this.updater((state, payload: { previousVisibleIndex: number; currentVisibleIndex: number }) => {
+    const { previousVisibleIndex, currentVisibleIndex } = payload;
+    const allViewable = orderViewableMetaData(state).map(m => m.key);
+    const hiddenSet = new Set(state.hiddenKeys);
+    const visibleSeq = allViewable.filter(k => !hiddenSet.has(k));
+    const newVisibleSeq = [...visibleSeq];
+    moveItemInArray(newVisibleSeq, previousVisibleIndex, currentVisibleIndex);
+    let vi = 0;
+    const newAll = allViewable.map(k => hiddenSet.has(k) ? k : newVisibleSeq[vi++]);
+    const newOrder = newAll.reduce((acc: Dictionary<number>, k, i) => { acc[k] = i; return acc; }, {});
+    return { ...state, userDefined: { ...state.userDefined, order: newOrder } };
+  });
 
   readonly resetState = this.updater((state) => {
     const hiddenColumns = Object.values(state.metaData)

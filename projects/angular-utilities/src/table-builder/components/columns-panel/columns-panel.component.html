@@ -1,0 +1,85 @@
+<button stop-propagation class="trigger-button" mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Columns">
+  <mat-icon class="tb-icon-primary">tune</mat-icon>
+</button>
+<mat-menu #menu="matMenu" class="columns-panel-menu" xPosition="before">
+  <div class="cp-panel" stop-propagation (click)="$event.stopPropagation()">
+    <div class="cp-head">
+      <div class="cp-title">
+        Columns
+        <span class="cp-count">{{ (visibleCount$ | async) }} / {{ (totalCount$ | async) }}</span>
+      </div>
+    </div>
+
+    <div class="cp-zones">
+      <!-- HIDDEN ZONE -->
+      <div class="cp-zone"
+           cdkDropList
+           #hiddenList="cdkDropList"
+           [cdkDropListData]="(hiddenRows$ | async) || []"
+           [cdkDropListConnectedTo]="[visibleList]"
+           (cdkDropListDropped)="onHiddenDrop($event)">
+        <div class="cp-zone-label">
+          Hidden
+          <span class="cp-zone-count">{{ ((hiddenRows$ | async) || []).length }}</span>
+        </div>
+        @if (hiddenRows$ | async; as hiddenRows) {
+          @if (hiddenRows.length === 0) {
+            <div class="cp-empty">All visible</div>
+          }
+          @for (row of hiddenRows; track row.key) {
+            <div class="cp-tag cp-tag-hidden"
+                 cdkDrag
+                 [cdkDragData]="row">
+              <span class="cp-grip">⋮⋮</span>
+              <span class="cp-name">{{ row.displayName }}</span>
+            </div>
+          }
+        }
+      </div>
+
+      <!-- VISIBLE ZONE -->
+      <div class="cp-zone cp-zone-visible"
+           cdkDropList
+           #visibleList="cdkDropList"
+           [cdkDropListData]="(visibleRows$ | async) || []"
+           [cdkDropListConnectedTo]="[hiddenList]"
+           (cdkDropListDropped)="onVisibleDrop($event)">
+        <div class="cp-zone-label">
+          Visible
+          <span class="cp-zone-count">{{ ((visibleRows$ | async) || []).length }}</span>
+        </div>
+        @if (visibleRows$ | async; as visibleRows) {
+          @if (visibleRows.length === 0) {
+            <div class="cp-empty">No columns visible</div>
+          }
+          @for (row of visibleRows; track row.key) {
+            <div class="cp-row" cdkDrag [cdkDragData]="row">
+              <span class="cp-grip">⋮⋮</span>
+              <span class="cp-priority"
+                    [class.cp-priority-empty]="row.sortPriority === null">
+                {{ row.sortPriority }}
+              </span>
+              <span class="cp-col-name">{{ row.displayName }}</span>
+              <button class="cp-dir-pill"
+                      [class.cp-dir-none]="row.sortDirection === null"
+                      [class.cp-dir-asc]="row.sortDirection === 'asc'"
+                      [class.cp-dir-desc]="row.sortDirection === 'desc'"
+                      (click)="cycleSort(row.key, $event)"
+                      type="button">
+                @switch (row.sortDirection) {
+                  @case ('asc') { ↑ asc }
+                  @case ('desc') { ↓ desc }
+                  @default { sort }
+                }
+              </button>
+            </div>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="cp-foot">
+      Drag between zones to show/hide. Drag within Visible to reorder. Click direction to cycle sort.
+    </div>
+  </div>
+</mat-menu>

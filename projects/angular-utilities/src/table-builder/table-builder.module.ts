@@ -37,6 +37,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { InitializationComponent } from './components/initialization-component/initialization-component';
 import { InListFilterComponent } from './components/filter/in-list/in-list-filter.component';
 import { SortMenuComponent } from './components/sort-menu/sort-menu.component';
+import { ColumnsPanelComponent } from './components/columns-panel/columns-panel.component';
 import { FilterChipsComponent } from './components/table-container-filter/filter-list/filter-list.component';
 import { PaginatorComponent } from './components/generic-table/paginator.component';
 import { UtilitiesModule } from '../utilities';
@@ -78,6 +79,7 @@ import { DateTimeFilterComponent } from './components/date-time-filter/date-time
         CustomCellDirective,
         GenColDisplayerComponent,
         GenFilterDisplayerComponent,
+        ColumnsPanelComponent,
         FilterComponent,
         MultiSortDirective,
         ResizeColumnDirective,
@@ -101,6 +103,7 @@ import { DateTimeFilterComponent } from './components/date-time-filter/date-time
         CustomCellDirective,
         GenColDisplayerComponent,
         GenFilterDisplayerComponent,
+        ColumnsPanelComponent,
         DateFilterComponent,
         FilterComponent,
         MultiSortDirective,

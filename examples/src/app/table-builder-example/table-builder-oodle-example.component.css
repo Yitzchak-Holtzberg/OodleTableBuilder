@@ -21,3 +21,85 @@ table-builder-oodle-example {
 .filters-container mat-button-toggle-group {
   margin-bottom: 12px;
 }
+
+.chargeback-table-container {
+  overflow: hidden;
+  border: 1px solid #d8dde6;
+  background: #fff;
+}
+
+.chargeback-table mat-table {
+  background: #fff;
+}
+
+.chargeback-table .mat-mdc-header-row {
+  min-height: 44px;
+  background: #f6f8fb;
+  border-bottom: 1px solid #cfd7e3;
+}
+
+.chargeback-table .mat-mdc-header-cell {
+  color: #243447;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.chargeback-table .mat-mdc-row {
+  min-height: 48px;
+  border-bottom: 1px solid #eef1f5;
+}
+
+.chargeback-table .mat-mdc-row:nth-child(odd) {
+  background: #fbfcfe;
+}
+
+.chargeback-table .mat-mdc-row:hover {
+  background: #eef6ff;
+}
+
+.chargeback-table .mat-mdc-cell,
+.chargeback-table .mat-mdc-header-cell {
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 0 12px;
+}
+
+.chargeback-table .mat-mdc-cell {
+  color: #1f2937;
+  font-size: 13px;
+}
+
+.chargeback-table .mat-column-id,
+.chargeback-table .mat-column-eventYear {
+  justify-content: center;
+  text-align: center;
+}
+
+.chargeback-table .mat-column-presidentName {
+  color: #0f3d5e;
+  font-weight: 700;
+}
+
+.chargeback-table .mat-column-party,
+.chargeback-table .mat-column-vicePresident,
+.chargeback-table .mat-column-policyArea {
+  color: #44546a;
+  font-weight: 600;
+}
+
+.chargeback-table .mat-column-birthplace,
+.chargeback-table .mat-column-priorOffice,
+.chargeback-table .mat-column-notes,
+.chargeback-table .mat-column-eventName,
+.chargeback-table .mat-column-description {
+  line-height: 1.35;
+  white-space: normal;
+}
+
+.chargeback-table .menu-button-mover {
+  width: 32px;
+  height: 32px;
+  margin-left: 8px;
+}

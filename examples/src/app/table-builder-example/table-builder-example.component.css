@@ -1,19 +1,375 @@
+.example-page {
+  min-height: 100%;
+  color: #172033;
+  background:
+    linear-gradient(180deg, #f8fafc 0%, #eef3f8 100%);
+}
+
+.example-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 28px 32px 22px;
+  border-bottom: 1px solid #dce4ee;
+  background: #ffffff;
+}
+
+.example-kicker {
+  margin: 0 0 6px;
+  color: #55708d;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.example-header h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.example-subtitle {
+  max-width: 720px;
+  margin: 8px 0 0;
+  color: #5f6f84;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.example-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 240px;
+}
+
+.example-stats span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border: 1px solid #d4dfeb;
+  border-radius: 999px;
+  color: #31465e;
+  background: #f7fafc;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.example-toolbar,
+.example-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 32px 0;
+}
+
+.example-toolbar {
+  justify-content: space-between;
+}
+
+.example-toolbar-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.example-button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid #cad7e5;
+  border-radius: 7px;
+  color: #26384d;
+  background: #ffffff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.example-button:hover {
+  border-color: #9fb2c7;
+  background: #f7fafc;
+  box-shadow: 0 1px 2px rgba(23, 32, 51, 0.08);
+}
+
+.example-button.primary {
+  border-color: #176d72;
+  color: #ffffff;
+  background: #176d72;
+}
+
+.example-button.primary:hover {
+  border-color: #11575b;
+  background: #11575b;
+}
+
+.example-button.danger {
+  color: #9d2d2d;
+}
+
+.example-filter-card {
+  display: flex;
+  flex: 1 1 230px;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 220px;
+  min-height: 94px;
+  padding: 14px 16px;
+  border: 1px solid #dce4ee;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(23, 32, 51, 0.04);
+}
+
+.example-control-label {
+  display: block;
+  margin-bottom: 10px;
+  color: #56677b;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.example-checkbox {
+  margin-bottom: 2px;
+}
+
+.example-input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid #c7d4e2;
+  border-radius: 7px;
+  color: #172033;
+  background: #fbfdff;
+  font: inherit;
+  outline: none;
+}
+
+.example-input:focus {
+  border-color: #176d72;
+  box-shadow: 0 0 0 3px rgba(23, 109, 114, 0.14);
+}
+
+.example-select {
+  width: 100%;
+}
+
+.example-table-shell {
+  margin: 16px 32px 32px;
+  overflow: hidden;
+  border: 1px solid #d3deea;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 14px 34px rgba(23, 32, 51, 0.08);
+}
+
+.example-table-shell .header-wrapper {
+  min-height: 56px;
+  padding: 0 12px 0 18px;
+  border-bottom: 1px solid #dce4ee;
+  background: #ffffff;
+}
+
+.example-table-shell .mat-mdc-header-row,
+.example-table-shell .mat-header-row {
+  background: #f7fafc;
+}
+
+.example-table-shell .cdk-column-select,
+.example-table-shell .cdk-column-index {
+  flex: 0 0 56px;
+  max-width: 56px;
+  justify-content: center;
+}
+
+.example-group-header {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-left: 20px;
+  color: #31465e;
+  font-weight: 600;
+}
+
+.example-custom-header {
+  color: #176d72;
+  font-weight: 700;
+}
+
+.element-symbol-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #9fb2c7;
+  border-radius: 6px;
+  color: #102a43;
+  background: #f7fafc;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.element-pill,
+.phase-badge,
+.radioactive-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 9px;
+  border: 1px solid #d4dfeb;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.category-reactive-nonmetal {
+  color: #125e3b;
+  background: #e9f7ef;
+  border-color: #b8dfc8;
+}
+
+.category-noble-gas {
+  color: #4b2f83;
+  background: #f0ebff;
+  border-color: #d4c7ff;
+}
+
+.category-alkali-metal,
+.category-alkaline-earth-metal,
+.category-transition-metal {
+  color: #7a3e00;
+  background: #fff4df;
+  border-color: #f0ce91;
+}
+
+.category-metalloid {
+  color: #22545b;
+  background: #e6f6f8;
+  border-color: #b8dfe4;
+}
+
+.phase-solid {
+  color: #334155;
+  background: #eef2f7;
+}
+
+.phase-liquid {
+  color: #075985;
+  background: #e0f2fe;
+}
+
+.phase-gas {
+  color: #6b3d00;
+  background: #fff7e6;
+}
+
+.mass-cell {
+  font-variant-numeric: tabular-nums;
+}
+
+.mass-range {
+  color: #0f5f63;
+  font-weight: 700;
+}
+
+.null-value {
+  color: #6b7280;
+  font-style: italic;
+}
+
+.radioactive-badge {
+  color: #315046;
+  background: #edf7f2;
+  border-color: #c4ded2;
+}
+
+.radioactive-badge.radioactive {
+  color: #9d2d2d;
+  background: #fff1f1;
+  border-color: #f1b8b8;
+}
+
+.example-table-shell .mat-column-atomicNumber,
+.example-table-shell .mat-column-group,
+.example-table-shell .mat-column-period,
+.example-table-shell .mat-column-block,
+.example-table-shell .mat-column-density,
+.example-table-shell .mat-column-meltingPointC,
+.example-table-shell .mat-column-boilingPointC,
+.example-table-shell .mat-column-electronegativity {
+  justify-content: center;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.example-table-shell .mat-column-discoveredBy,
+.example-table-shell .mat-column-electronConfiguration {
+  line-height: 1.35;
+  white-space: normal;
+}
+
 .makeMeRed {
-  color: red;
+  color: #b42318;
+  font-weight: 600;
 }
 
 .makeMeBlue {
-  color: blue;
+  color: #155eef;
+  font-weight: 600;
 }
 
-.big-title{
-  font-size: x-large;
+.big-title {
+  color: #172033;
+  font-size: 20px;
+  font-weight: 700;
 }
 
-.small-title{
-  font-size: small;
+.small-title {
+  color: #31465e;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .tb-virtual-scroll-viewport {
-  height: 90vh !important;
+  height: calc(100vh - 300px) !important;
+  min-height: 420px;
+}
+
+@media (max-width: 820px) {
+  .example-header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 22px 20px 18px;
+  }
+
+  .example-stats {
+    justify-content: flex-start;
+    min-width: 0;
+  }
+
+  .example-toolbar,
+  .example-filters {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+
+  .example-table-shell {
+    margin-right: 20px;
+    margin-left: 20px;
+  }
 }

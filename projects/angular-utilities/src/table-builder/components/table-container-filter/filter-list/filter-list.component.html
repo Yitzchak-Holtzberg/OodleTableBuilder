@@ -1,33 +1,43 @@
-<div style="display: flex; flex-direction: row;justify-content: flex-end;" *ngrxLet="currentFilters$ as currentFilters" >
+<div class="fl-row" *ngrxLet="currentFilters$ as currentFilters">
 
-  <button class="cancel-button" *ngIf="currentFilters.length" mat-icon-button (click)="clearAll()"
-    matTooltip="Close all Filters Cards">
-    <mat-icon class="cancel-button" color="primary">close</mat-icon>
-  </button>
+  @if (currentFilters.length > 0) {
+    <button class="cancel-button" mat-icon-button (click)="clearAll()" matTooltip="Close all in-progress filters">
+      <mat-icon class="cancel-button">close</mat-icon>
+    </button>
 
-
-  <div *ngIf="currentFilters.length" class="float">
-    <div class="filter" *ngFor="let filter of (currentFilters$ | async); index as i;">
-      <tb-filter [filter]="filter" (close)="deleteByIndex(i)" > </tb-filter>
-    </div>
-  </div>
-
-  <mat-chip-set *ngrxLet="filters$ as filters">
-    <mat-chip *ngFor="let filter of filters" (dblclick)="addFilter(filter)"  (removed)="tableState.removeFilter(filter.filterId!)">
-      {{ filter.key | keyDisplay | async  }} {{filter.filterType | formatFilterType : filter.filterValue}}
-      @if (filter.filterValue | asFilterPills; as pills) {
-        @for (v of pills; track $index) {
-          <span class="filter-value-pill">{{ v }}</span>
-        }
-      } @else {
-        {{ filter.filterValue | formatFilterValue: filter.key : filter.filterType  | async }}
+    <div class="float">
+      @for (filter of currentFilters; track $index; let i = $index) {
+        <div class="filter">
+          <tb-filter [filter]="filter" (close)="deleteByIndex(i)"></tb-filter>
+        </div>
       }
-      <mat-icon matChipRemove>cancel</mat-icon>
-    </mat-chip>
-    <mat-chip *ngIf="filters.length >= 2" (removed)="tableState.clearFilters()">
-      Clear All
-      <mat-icon matChipRemove>cancel</mat-icon>
-    </mat-chip>
-  </mat-chip-set>
+    </div>
+  }
+
+  <div class="fp-stack-inline" *ngrxLet="filters$ as filters">
+    @for (filter of filters; track filter.filterId) {
+      <div class="fp-chip" [matTooltip]="'Double-click to edit'" (dblclick)="addFilter(filter)">
+        <span class="fp-col-name">{{ filter.key | keyDisplay | async }}</span>
+        <span class="fp-op-pill">{{ filter.filterType | formatFilterType : filter.filterValue }}</span>
+        @if (filter.filterValue | asFilterPills; as pills) {
+          @for (v of pills; track $index) {
+            <span class="filter-value-pill">{{ v }}</span>
+          }
+        } @else {
+          <span class="fp-val-text">{{ filter.filterValue | formatFilterValue: filter.key : filter.filterType | async }}</span>
+        }
+        <button class="fp-x-btn" type="button"
+                (click)="tableState.removeFilter(filter.filterId!)"
+                [attr.aria-label]="'Remove filter on ' + (filter.key | keyDisplay | async)">
+          ✕
+        </button>
+      </div>
+    }
+    @if (filters.length >= 2) {
+      <button class="fp-ghost-link" type="button" (click)="tableState.clearFilters()">
+        Clear all
+      </button>
+    }
+  </div>
 
 </div>
