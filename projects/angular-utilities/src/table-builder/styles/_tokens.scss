@@ -1,10 +1,19 @@
 // Default brand tokens - consumers can override these via CSS custom properties
+// Defaults align with M3 cyan/orange theme from PurchaseOrders.
+// These reference M3 system variables when available, with cyan fallbacks.
 :root {
-  --tb-primary-color: #3f51b5;
-  --tb-primary-dark: #224e9c;
-  --tb-primary-light: rgb(147 177 234 / 47%);
-  --tb-row-stripe-bg: #cdeefe;
-  --tb-filter-name-color: cornflowerblue;
-  --tb-drag-handle-color: lightblue;
-  --tb-chosen-icon-color: green;
+  // Primary cyan from mat.$cyan-palette (approx. hue 500)
+  --tb-primary-color: var(--mat-sys-primary, #00acc1);
+  // Darker cyan for emphasis (approx. hue 700)
+  --tb-primary-dark: var(--mat-sys-primary, #00838f);
+  // Light cyan with transparency for subtle backgrounds
+  --tb-primary-light: var(--mat-sys-primary-container, rgb(178 235 242 / 47%));
+  // Row stripe background - very light cyan (approx. hue 50)
+  --tb-row-stripe-bg: var(--mat-sys-surface-container-low, #e0f7fa);
+  // Filter name highlight - use primary
+  --tb-filter-name-color: var(--mat-sys-primary, #00acc1);
+  // Drag handle - light cyan for subtle affordance
+  --tb-drag-handle-color: var(--mat-sys-primary-container, #b2ebf2);
+  // Chosen/selected icon - green for positive state (or tertiary orange)
+  --tb-chosen-icon-color: var(--mat-sys-tertiary, #fb8c00);
 }
