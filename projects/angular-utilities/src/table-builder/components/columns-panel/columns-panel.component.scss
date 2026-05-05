@@ -1,5 +1,5 @@
 // columns-panel — combined visibility + order + sort
-// Visual language matches the M3 violet theme (var(--mat-sys-primary)).
+// Visual language matches the M3 cyan theme (var(--mat-sys-primary)).
 
 .trigger-button {
   // matches the other top-right icon-buttons in table-container
@@ -36,8 +36,8 @@
 .cp-count {
   display: inline-flex;
   align-items: center;
-  background: color-mix(in srgb, var(--mat-sys-primary, #7d00fa) 10%, transparent);
-  color: var(--mat-sys-primary, #7d00fa);
+  background: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 10%, transparent);
+  color: var(--mat-sys-primary, #006a6a);
   border-radius: 999px;
   padding: 1px 9px;
   font-size: 11px;
@@ -52,7 +52,7 @@
 
 .cp-zone {
   background: var(--mat-sys-surface-container-lowest, #ffffff);
-  border: 1.5px dashed color-mix(in srgb, var(--mat-sys-primary, #7d00fa) 20%, transparent);
+  border: 1.5px dashed color-mix(in srgb, var(--mat-sys-primary, #006a6a) 20%, transparent);
   border-radius: 10px;
   padding: 8px;
   min-height: 200px;
@@ -61,11 +61,11 @@
 }
 
 .cp-zone-visible {
-  border-color: color-mix(in srgb, var(--mat-sys-primary, #7d00fa) 45%, transparent);
+  border-color: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 45%, transparent);
 }
 
 .cp-zone.cdk-drop-list-dragging {
-  background: color-mix(in srgb, var(--mat-sys-primary, #7d00fa) 4%, transparent);
+  background: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 4%, transparent);
 }
 
 .cp-zone-label {
@@ -73,7 +73,7 @@
   text-transform: uppercase;
   letter-spacing: .08em;
   font-weight: 700;
-  color: var(--mat-sys-primary, #7d00fa);
+  color: var(--mat-sys-primary, #006a6a);
   padding: 2px 4px 8px;
   display: flex;
   align-items: center;
@@ -81,8 +81,8 @@
 }
 
 .cp-zone-count {
-  background: color-mix(in srgb, var(--mat-sys-primary, #7d00fa) 10%, transparent);
-  color: var(--mat-sys-primary, #7d00fa);
+  background: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 10%, transparent);
+  color: var(--mat-sys-primary, #006a6a);
   padding: 1px 7px;
   border-radius: 999px;
   font-size: 10px;
@@ -118,12 +118,12 @@
 }
 
 .cp-tag:hover {
-  border-color: var(--mat-sys-primary, #7d00fa);
+  border-color: var(--mat-sys-primary, #006a6a);
 }
 
 .cp-tag .cp-grip,
 .cp-row .cp-grip {
-  color: color-mix(in srgb, var(--mat-sys-primary, #7d00fa) 50%, transparent);
+  color: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 50%, transparent);
   font-size: 11px;
   flex-shrink: 0;
   cursor: grab;
@@ -153,14 +153,14 @@
 }
 
 .cp-row:hover {
-  border-color: color-mix(in srgb, var(--mat-sys-primary, #7d00fa) 40%, transparent);
+  border-color: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 40%, transparent);
 }
 
 .cp-priority {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: var(--mat-sys-primary, #7d00fa);
+  background: var(--mat-sys-primary, #006a6a);
   color: var(--mat-sys-on-primary, #fff);
   display: inline-flex;
   align-items: center;
@@ -207,15 +207,15 @@
 }
 
 .cp-dir-pill.cp-dir-none:hover {
-  color: var(--mat-sys-primary, #7d00fa);
-  border-color: color-mix(in srgb, var(--mat-sys-primary, #7d00fa) 40%, transparent);
+  color: var(--mat-sys-primary, #006a6a);
+  border-color: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 40%, transparent);
 }
 
 .cp-dir-pill.cp-dir-asc,
 .cp-dir-pill.cp-dir-desc {
-  background: var(--mat-sys-primary, #7d00fa);
+  background: var(--mat-sys-primary, #006a6a);
   color: var(--mat-sys-on-primary, #fff);
-  box-shadow: 0 1px 3px -1px color-mix(in srgb, var(--mat-sys-primary, #7d00fa) 50%, transparent);
+  box-shadow: 0 1px 3px -1px color-mix(in srgb, var(--mat-sys-primary, #006a6a) 50%, transparent);
 }
 
 .cp-foot {
