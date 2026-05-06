@@ -70,6 +70,7 @@
                   }
                 </select>
 
+                @if (d.filterType !== FilterType.IsNull) {
                 <span class="fp-form-lbl">Value</span>
                 @switch (inputKindFor(chip.fieldType)) {
                   @case ('date') {
@@ -115,6 +116,7 @@
                            autofocus
                            stop-propagation />
                   }
+                }
                 }
               </div>
 

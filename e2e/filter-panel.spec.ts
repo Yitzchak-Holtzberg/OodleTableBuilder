@@ -295,6 +295,27 @@ test.describe('Filter panel — combo 4 inline-edit', () => {
       const chip = h.panel.locator('.fp-chip').first();
       await expect(chip).toContainText('not contains');
     });
+
+    test('"is empty" hides the value input and commits filterValue=true', async () => {
+      // Regression: picking "is empty" used to render a stale value input AND
+      // commit filterValue=undefined, which made the legacy filter-list chip
+      // display "Is Not Blank" (the inverse) and made the filter inert.
+      await h.pickColumn('Party');
+      await h.pickOperator('is empty');
+      // No value input should be rendered for IsNull
+      await expect(h.expandedForm.locator('input.fp-form-input')).toHaveCount(0);
+      await h.apply();
+
+      // V3-A chip should display "is empty" (the OPERATOR_LABELS entry for IsNull)
+      const v3Chip = h.panel.locator('.fp-chip').first();
+      await expect(v3Chip).toContainText('is empty');
+
+      // Legacy filter-list chip (which uses formatFilterType pipe) should now
+      // read "Is Blank" — NOT "Is Not Blank". This is the symptom Melissa hit.
+      const legacyChip = h.page.locator('.fp-stack-inline .fp-op-pill').first();
+      await expect(legacyChip).toHaveText(/Is Blank/);
+      await expect(legacyChip).not.toHaveText(/Is Not Blank/);
+    });
   });
 
   test.describe('Multiple filters', () => {

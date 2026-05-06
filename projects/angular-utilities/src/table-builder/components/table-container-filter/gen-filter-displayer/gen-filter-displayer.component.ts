@@ -82,6 +82,9 @@ export class GenFilterDisplayerComponent {
    * parent panel stays open after a column is selected). */
   pickerOpen = signal(false);
 
+  /** Expose FilterType to the template so it can compare against d.filterType. */
+  protected readonly FilterType = FilterType;
+
   constructor(public tableState: TableStore, public filterStore: WrapperFilterStore) {
     this.filterCols$ = tableState.metaDataArray$.pipe(
       map(md => Object.values(md).filter(m => m.fieldType !== FieldType.Hidden && !m.noFilter))
@@ -281,6 +284,12 @@ export class GenFilterDisplayerComponent {
 
   /** Parse the draft's loosely-typed value into something filterValue-compatible. */
   private parseDraftValue(raw: any, fieldType: FieldType, ft: FilterType | undefined): any {
+    // FilterType.IsNull is overloaded: filterValue is a *boolean* indicating direction.
+    // true = match rows where the column is blank/null; false = match non-blank rows.
+    // The V3-A dialog only exposes the "is empty" operator, so we always commit `true`.
+    // (Without this, undefined filterValue makes the filter inert and the old chip pipe
+    // displays "Is Not Blank" — see format-filter-type.pipe.ts.)
+    if (ft === FilterType.IsNull) return true;
     if (raw === '' || raw === null || raw === undefined) return undefined;
     if (ft === FilterType.In && typeof raw === 'string') {
       return raw.split(',').map(s => s.trim()).filter(Boolean);
