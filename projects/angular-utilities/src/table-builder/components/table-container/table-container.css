@@ -7,7 +7,7 @@
   flex-direction: row;
   justify-content: space-between;
   width:100%;
-  background-color: var(--mat-menu-container-color, white);
+  background-color: var(--mat-sys-surface-container, #f4fafa);
 }
 
 

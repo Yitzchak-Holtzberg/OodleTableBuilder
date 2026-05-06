@@ -18,7 +18,7 @@
   padding: 5px 2px;
   border-bottom: solid 1px #ccc;
   color: rgba(0, 0, 0, 0.87);
-  background: var(--mat-app-background-color, white);
+  background: var(--mat-sys-surface, white);
 }
 
 .light-arrow{
@@ -30,7 +30,7 @@
 }
 
 .up-down-button{
-  background-color: var(--mat-app-background-color, white);
+  background-color: var(--mat-sys-surface, white);
   border-radius: 30%;
   border-color: aqua;
   padding: 1px 1px 0;
@@ -89,7 +89,7 @@
 }
 
 .apply-border:hover{
-  background-color: antiquewhite;
+  background-color: var(--mat-sys-surface-container-high, antiquewhite);
 }
 
 .apply-button-wrapper{
