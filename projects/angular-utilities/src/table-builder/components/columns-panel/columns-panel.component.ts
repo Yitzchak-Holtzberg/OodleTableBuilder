@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { TableStore, orderViewableMetaData } from '../../classes/table-store';
 import { FieldType, MetaData } from '../../interfaces/report-def';
+import { spaceCase } from '../../../utilities/pipes/space-case.pipes';
 
 interface VisibleRow {
   key: string;
@@ -40,7 +41,7 @@ export class ColumnsPanelComponent {
             const sortIdx = sorted.findIndex(s => s.active === md.key);
             return {
               key: md.key,
-              displayName: md.displayName || md.key,
+              displayName: md.displayName || spaceCase(md.key),
               sortDirection: sortIdx === -1 ? null : (sorted[sortIdx].direction as 'asc' | 'desc'),
               sortPriority: sortIdx === -1 ? null : sortIdx + 1,
             };
@@ -57,7 +58,7 @@ export class ColumnsPanelComponent {
           )
           .map<HiddenRow>(md => ({
             key: md.key,
-            displayName: md.displayName || md.key,
+            displayName: md.displayName || spaceCase(md.key),
           }))
       )
     );

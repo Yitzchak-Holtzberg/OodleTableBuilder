@@ -432,6 +432,21 @@ test.describe('Columns panel — combined visibility + order + sort', () => {
     await expect(firstRow.locator('.cp-priority')).toHaveClass(/cp-priority-empty/);
   });
 
+  test('column names render in human-readable form (no raw camelCase keys)', async () => {
+    // Regression: when a column lacks an explicit `displayName`, the panel used to
+    // fall back to the raw key (e.g. "createdOn"). The VM now runs the key through
+    // spaceCase so it matches the table-header rendering and the filter panel.
+    // This test asserts no visible cp-name contains a camelCase boundary
+    // (lowercase letter immediately followed by an uppercase letter), since that
+    // shape only appears in raw keys, never in human display names.
+    await trigger.click();
+    const names = await panel.locator('.cp-row .cp-name, .cp-row .cp-col-name').allTextContents();
+    expect(names.length).toBeGreaterThan(0);
+    for (const n of names) {
+      expect(n, `column name "${n}" looks like a raw camelCase key`).not.toMatch(/[a-z][A-Z]/);
+    }
+  });
+
   test('multiple sorts: priority numbers ascend in click order', async () => {
     await trigger.click();
     const rows = panel.locator('.cp-row');
