@@ -3,6 +3,14 @@
   background-color: var(--tb-row-stripe-bg, #cdeefe)
 }
 
+// Tint the column-header row so it visually merges with the toolbar bar above
+// instead of showing as a white strip. Uses the same surface tier as
+// .header-wrapper / .flx-row-end. The Material header cells inherit the row
+// background, so we only need to set it once.
+:host::ng-deep .mat-mdc-header-row {
+  background-color: var(--mat-sys-surface-container, #f4fafa);
+}
+
 .sticky {
   bottom: 0px;
   position: sticky;
