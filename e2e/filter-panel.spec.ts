@@ -296,6 +296,37 @@ test.describe('Filter panel — combo 4 inline-edit', () => {
       await expect(chip).toContainText('not contains');
     });
 
+    test('Date "on" filter actually narrows rows (regression: was 0 results)', async () => {
+      // Regression: V3-A's <input type="date"> emits "YYYY-MM-DD" strings while the
+      // legacy mat-datepicker emitted Date objects, and dateIsOnFunc for FieldType.Date
+      // was using identity `clean = (a,b) => b` which called .getTime() directly on the
+      // string row value (returns undefined → never matches). Plus `new Date("YYYY-MM-DD")`
+      // parses as UTC midnight, shifting against local-midnight row values.
+      // Washington took office on 1789/04/30 — there are 12 copies of him in the seed data.
+      const before = await h.parseRowCount();
+      await h.pickColumn('Took Office');
+      await h.pickOperator('on');
+      await h.typeValue('1789-04-30');
+      await h.apply();
+      await h.page.waitForTimeout(300);
+      const after = await h.parseRowCount();
+      expect(after.total).toBeLessThan(before.total);
+      expect(after.total).toBeGreaterThan(0);
+    });
+
+    test('Date "on or after" filter narrows correctly', async () => {
+      const before = await h.parseRowCount();
+      await h.pickColumn('Took Office');
+      await h.pickOperator('on or after');
+      await h.typeValue('1900-01-01');
+      await h.apply();
+      await h.page.waitForTimeout(300);
+      const after = await h.parseRowCount();
+      // 20th-21st century presidents only, far fewer than the full set
+      expect(after.total).toBeLessThan(before.total);
+      expect(after.total).toBeGreaterThan(0);
+    });
+
     test('"is empty" hides the value input and commits filterValue=true', async () => {
       // Regression: picking "is empty" used to render a stale value input AND
       // commit filterValue=undefined, which made the legacy filter-list chip
