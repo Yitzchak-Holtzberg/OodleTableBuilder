@@ -21,7 +21,7 @@
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
-  background-color: var(--mat-sys-surface-container, #f4fafa);
+  background-color: var(--mat-menu-container-color, white);
 }
 
 :host::ng-deep mat-paginator {

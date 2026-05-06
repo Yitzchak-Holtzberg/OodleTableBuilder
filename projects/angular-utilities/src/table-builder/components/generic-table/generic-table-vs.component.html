@@ -59,8 +59,8 @@
           <mat-header-row *matHeaderRowDef="keys; sticky: isSticky"></mat-header-row>
         </ng-container>
         <mat-row *matRowDef="let row; columns: keys; let i = index"></mat-row>
-        <mat-row *matRowDef="let row; columns: ['groupHeader']; when: isGroupHeader" class="group-header-row" style="background-color: var(--mat-sys-surface, white);"></mat-row>
-        <mat-row *matRowDef="let row; columns: keys; when: isGroupFooter" style="background-color: var(--mat-sys-surface-container-low, whitesmoke);"></mat-row>
+        <mat-row *matRowDef="let row; columns: ['groupHeader']; when: isGroupHeader" class="group-header-row" style="background-color: white;"></mat-row>
+        <mat-row *matRowDef="let row; columns: keys; when: isGroupFooter" style="background-color: whitesmoke;"></mat-row>
         <mat-footer-row *matFooterRowDef="keys"></mat-footer-row>
 
     </mat-table>
