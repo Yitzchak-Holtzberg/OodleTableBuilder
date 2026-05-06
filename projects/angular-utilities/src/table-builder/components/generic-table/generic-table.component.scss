@@ -3,15 +3,12 @@
   background-color: var(--tb-row-stripe-bg, #cdeefe)
 }
 
-// Header band: toolbar (.header-wrapper, table-container.css), the column-header
-// row, and the paginator bar (.flx-row-end) all share this token so they read
-// as one continuous band. We also tint mat-table itself the same color so the
-// area between the toolbar and the first row doesn't show Material's default
-// white. Even data rows still paint over with their own white via
-// --mat-table-row-item-container-color, and odd rows use .mat-mdc-row:nth-child(odd).
-:host::ng-deep .mat-mdc-header-row,
-:host::ng-deep mat-table.mat-mdc-table {
-  background-color: var(--mat-sys-surface-container-highest, #e3e8e8);
+// Tint the column-header row so it visually merges with the toolbar bar above
+// instead of showing as a white strip. Uses the same surface tier as
+// .header-wrapper / .flx-row-end. The Material header cells inherit the row
+// background, so we only need to set it once.
+:host::ng-deep .mat-mdc-header-row {
+  background-color: var(--mat-sys-secondary-container, #cce8e7);
 }
 
 .sticky {
@@ -32,7 +29,7 @@
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
-  background-color: var(--mat-sys-surface-container-highest, #e3e8e8);
+  background-color: var(--mat-sys-secondary-container, #cce8e7);
 }
 
 :host::ng-deep mat-paginator {
