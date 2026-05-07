@@ -296,6 +296,52 @@ test.describe('Filter panel — combo 4 inline-edit', () => {
       await expect(chip).toContainText('not contains');
     });
 
+    test('Number "between" renders Start+End inputs and filters correctly', async () => {
+      // Regression: V3-A used to render only one value input, so picking
+      // NumberBetween led to a runtime error in numberBetweenFunc trying to read
+      // .Start/.End on a primitive. Now the dialog renders two inputs.
+      const before = await h.parseRowCount();
+      await h.pickColumn('No.');
+      await h.pickOperator('between');
+      // Two number inputs now exist
+      const inputs = h.expandedForm.locator('input.fp-form-input');
+      await expect(inputs).toHaveCount(2);
+      await inputs.nth(0).fill('1');
+      await inputs.nth(1).fill('5');
+      await h.apply();
+      await h.page.waitForTimeout(300);
+      const after = await h.parseRowCount();
+      expect(after.total).toBeLessThan(before.total);
+      expect(after.total).toBeGreaterThan(0);
+    });
+
+    test('Date "between" renders Start+End inputs and filters correctly', async () => {
+      const before = await h.parseRowCount();
+      await h.pickColumn('Took Office');
+      await h.pickOperator('between');
+      const inputs = h.expandedForm.locator('input.fp-form-input');
+      await expect(inputs).toHaveCount(2);
+      await expect(inputs.first()).toHaveAttribute('type', 'date');
+      await inputs.nth(0).fill('1789-01-01');
+      await inputs.nth(1).fill('1900-01-01');
+      await h.apply();
+      await h.page.waitForTimeout(300);
+      const after = await h.parseRowCount();
+      // 19th-century presidents only
+      expect(after.total).toBeLessThan(before.total);
+      expect(after.total).toBeGreaterThan(0);
+    });
+
+    test('switching from "between" back to single-value resets to one input', async () => {
+      // Regression guard: switching operators should reset the value shape so we
+      // never hand a Range object to a primitive-expecting filter (or vice versa).
+      await h.pickColumn('No.');
+      await h.pickOperator('between');
+      await expect(h.expandedForm.locator('input.fp-form-input')).toHaveCount(2);
+      await h.pickOperator('equals');
+      await expect(h.expandedForm.locator('input.fp-form-input')).toHaveCount(1);
+    });
+
     test('Date "on" filter actually narrows rows (regression: was 0 results)', async () => {
       // Regression: V3-A's <input type="date"> emits "YYYY-MM-DD" strings while the
       // legacy mat-datepicker emitted Date objects, and dateIsOnFunc for FieldType.Date

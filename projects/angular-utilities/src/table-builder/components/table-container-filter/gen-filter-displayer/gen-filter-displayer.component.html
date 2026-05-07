@@ -63,7 +63,7 @@
                 <span class="fp-form-lbl">Operator</span>
                 <select class="fp-form-select"
                         [value]="d.filterType || ''"
-                        (change)="draftSetOperator($any($event.target).value)"
+                        (change)="draftSetOperator($any($event.target).value, chip.fieldType)"
                         stop-propagation>
                   @for (op of operatorsFor(chip.fieldType); track op.value) {
                     <option [value]="op.value">{{ op.label }}</option>
@@ -71,52 +71,112 @@
                 </select>
 
                 @if (d.filterType !== FilterType.IsNull) {
-                <span class="fp-form-lbl">Value</span>
-                @switch (inputKindFor(chip.fieldType)) {
-                  @case ('date') {
-                    <input class="fp-form-input"
-                           type="date"
-                           [value]="d.value || ''"
-                           (input)="draftSetValue($any($event.target).value)"
-                           stop-propagation />
+                  @if (isBetween(d.filterType)) {
+                    <!-- Between operators: render Start + End side-by-side. inputKindFor
+                         drives input type the same way as a single-value filter. -->
+                    <span class="fp-form-lbl">From</span>
+                    @switch (inputKindFor(chip.fieldType)) {
+                      @case ('date') {
+                        <input class="fp-form-input" type="date"
+                               [value]="d.value?.Start || ''"
+                               (input)="draftSetStart($any($event.target).value)"
+                               stop-propagation />
+                      }
+                      @case ('datetime') {
+                        <input class="fp-form-input" type="datetime-local"
+                               [value]="d.value?.Start || ''"
+                               (input)="draftSetStart($any($event.target).value)"
+                               stop-propagation />
+                      }
+                      @case ('number') {
+                        <input class="fp-form-input" type="number"
+                               [value]="d.value?.Start ?? ''"
+                               (input)="draftSetStart($any($event.target).valueAsNumber)"
+                               stop-propagation />
+                      }
+                      @default {
+                        <input class="fp-form-input" type="text"
+                               [value]="d.value?.Start || ''"
+                               (input)="draftSetStart($any($event.target).value)"
+                               stop-propagation />
+                      }
+                    }
+                    <span class="fp-form-lbl">To</span>
+                    @switch (inputKindFor(chip.fieldType)) {
+                      @case ('date') {
+                        <input class="fp-form-input" type="date"
+                               [value]="d.value?.End || ''"
+                               (input)="draftSetEnd($any($event.target).value)"
+                               stop-propagation />
+                      }
+                      @case ('datetime') {
+                        <input class="fp-form-input" type="datetime-local"
+                               [value]="d.value?.End || ''"
+                               (input)="draftSetEnd($any($event.target).value)"
+                               stop-propagation />
+                      }
+                      @case ('number') {
+                        <input class="fp-form-input" type="number"
+                               [value]="d.value?.End ?? ''"
+                               (input)="draftSetEnd($any($event.target).valueAsNumber)"
+                               stop-propagation />
+                      }
+                      @default {
+                        <input class="fp-form-input" type="text"
+                               [value]="d.value?.End || ''"
+                               (input)="draftSetEnd($any($event.target).value)"
+                               (keydown.enter)="apply(chip)"
+                               stop-propagation />
+                      }
+                    }
+                  } @else {
+                    <span class="fp-form-lbl">Value</span>
+                    @switch (inputKindFor(chip.fieldType)) {
+                      @case ('date') {
+                        <input class="fp-form-input"
+                               type="date"
+                               [value]="d.value || ''"
+                               (input)="draftSetValue($any($event.target).value)"
+                               stop-propagation />
+                      }
+                      @case ('datetime') {
+                        <input class="fp-form-input"
+                               type="datetime-local"
+                               [value]="d.value || ''"
+                               (input)="draftSetValue($any($event.target).value)"
+                               stop-propagation />
+                      }
+                      @case ('number') {
+                        <input class="fp-form-input"
+                               type="number"
+                               [value]="d.value === null || d.value === undefined ? '' : d.value"
+                               (input)="draftSetValue($any($event.target).valueAsNumber)"
+                               stop-propagation />
+                      }
+                      @case ('boolean') {
+                        <span class="fp-form-toggle">
+                          <button type="button"
+                                  [class.active]="d.value === true"
+                                  (click)="draftSetValue(true)"
+                                  stop-propagation>true</button>
+                          <button type="button"
+                                  [class.active]="d.value === false"
+                                  (click)="draftSetValue(false)"
+                                  stop-propagation>false</button>
+                        </span>
+                      }
+                      @default {
+                        <input class="fp-form-input"
+                               type="text"
+                               [value]="d.value || ''"
+                               placeholder="value"
+                               (input)="draftSetValue($any($event.target).value)"
+                               (keydown.enter)="apply(chip)"
+                               autofocus
+                               stop-propagation />
+                      }
+                    }
                   }
-                  @case ('datetime') {
-                    <input class="fp-form-input"
-                           type="datetime-local"
-                           [value]="d.value || ''"
-                           (input)="draftSetValue($any($event.target).value)"
-                           stop-propagation />
-                  }
-                  @case ('number') {
-                    <input class="fp-form-input"
-                           type="number"
-                           [value]="d.value === null || d.value === undefined ? '' : d.value"
-                           (input)="draftSetValue($any($event.target).valueAsNumber)"
-                           stop-propagation />
-                  }
-                  @case ('boolean') {
-                    <span class="fp-form-toggle">
-                      <button type="button"
-                              [class.active]="d.value === true"
-                              (click)="draftSetValue(true)"
-                              stop-propagation>true</button>
-                      <button type="button"
-                              [class.active]="d.value === false"
-                              (click)="draftSetValue(false)"
-                              stop-propagation>false</button>
-                    </span>
-                  }
-                  @default {
-                    <input class="fp-form-input"
-                           type="text"
-                           [value]="d.value || ''"
-                           placeholder="value"
-                           (input)="draftSetValue($any($event.target).value)"
-                           (keydown.enter)="apply(chip)"
-                           autofocus
-                           stop-propagation />
-                  }
-                }
                 }
               </div>
 

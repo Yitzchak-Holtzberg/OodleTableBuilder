@@ -207,11 +207,30 @@ export class GenFilterDisplayerComponent {
     });
   }
 
+  /**
+   * NumberBetween, DateBetween, and DateTimeBetween all have the same string enum value
+   * ('Between'). We check against any one of them and the comparison covers all three.
+   */
+  protected isBetween(ft: FilterType | undefined): boolean {
+    return ft === FilterType.NumberBetween;
+  }
+
   /** Update the operator in the draft (without committing). */
-  draftSetOperator(filterType: FilterType) {
+  draftSetOperator(filterType: FilterType, fieldType: FieldType) {
     const d = this.draft();
     if (!d) return;
-    this.draft.set({ ...d, filterType });
+    // Switching to/from a Between operator changes the value shape — primitive vs
+    // {Start, End} Range. Reset the value to the appropriate default so we don't
+    // hand a primitive to the between filter (or vice versa) on Apply.
+    const wasBetween = this.isBetween(d.filterType);
+    const willBeBetween = this.isBetween(filterType);
+    let value = d.value;
+    if (wasBetween !== willBeBetween) {
+      value = willBeBetween
+        ? { Start: this.defaultDraftValue(fieldType), End: this.defaultDraftValue(fieldType) }
+        : this.defaultDraftValue(fieldType);
+    }
+    this.draft.set({ ...d, filterType, value });
   }
 
   /** Update the value in the draft (without committing). */
@@ -219,6 +238,22 @@ export class GenFilterDisplayerComponent {
     const d = this.draft();
     if (!d) return;
     this.draft.set({ ...d, value });
+  }
+
+  /** Update the Start side of a Between range draft (without committing). */
+  draftSetStart(start: any) {
+    const d = this.draft();
+    if (!d) return;
+    const range = (d.value && typeof d.value === 'object') ? d.value : {};
+    this.draft.set({ ...d, value: { ...range, Start: start } });
+  }
+
+  /** Update the End side of a Between range draft (without committing). */
+  draftSetEnd(end: any) {
+    const d = this.draft();
+    if (!d) return;
+    const range = (d.value && typeof d.value === 'object') ? d.value : {};
+    this.draft.set({ ...d, value: { ...range, End: end } });
   }
 
   /** Apply: commit the draft to TableStore, collapse. */
@@ -290,6 +325,18 @@ export class GenFilterDisplayerComponent {
     // (Without this, undefined filterValue makes the filter inert and the old chip pipe
     // displays "Is Not Blank" — see format-filter-type.pipe.ts.)
     if (ft === FilterType.IsNull) return true;
+
+    // Between operators (NumberBetween, DateBetween, DateTimeBetween) take a Range
+    // {Start, End}. The draft holds an object with each side parsed independently
+    // through the same coercion logic as a single primitive value.
+    if (this.isBetween(ft)) {
+      if (!raw || typeof raw !== 'object') return undefined;
+      const start = this.parseDraftValue(raw.Start, fieldType, undefined);
+      const end = this.parseDraftValue(raw.End, fieldType, undefined);
+      if (start === undefined || end === undefined) return undefined;
+      return { Start: start, End: end };
+    }
+
     if (raw === '' || raw === null || raw === undefined) return undefined;
     if (ft === FilterType.In && typeof raw === 'string') {
       return raw.split(',').map(s => s.trim()).filter(Boolean);
