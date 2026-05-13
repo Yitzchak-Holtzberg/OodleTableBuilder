@@ -21,10 +21,19 @@ export class FilterComponent<T extends mappedFieldTypes = any> {
   @Input() filter!: PartialFilter;;
   @Output() close = new EventEmitter();
   currentFilterType?: FilterType;
+  /** Mirror of filter.filterValue for boolean / IsNull toggles. The hidden input
+   * keeps it in sync with the template-driven form so `form.value.filterValue`
+   * reflects the user's toggle pick on Apply. */
+  currentFilterValue: any;
   constructor(public state: TableStore) { }
 
   ngOnInit() {
     this.currentFilterType = this.filter.filterType;
+    this.currentFilterValue = this.filter.filterValue;
+  }
+
+  setFilterValue(v: any) {
+    this.currentFilterValue = v;
   }
   onEnter(filter: FilterInfo, event: any) {
     event.preventDefault();

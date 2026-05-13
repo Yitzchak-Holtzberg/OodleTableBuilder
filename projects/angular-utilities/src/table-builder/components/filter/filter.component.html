@@ -1,158 +1,145 @@
 @if (filter) {
-<mat-card
-  appearance="outlined"
-  class="filter-card"
->
-  <mat-card-content>
+  <div class="fp-dialog" stop-propagation>
     <form
       #form="ngForm"
       (keydown.enter)="onEnter(form.value,$event)"
       (keydown.escape)="close.emit()"
+      class="fp-dialog-form"
     >
-      <input
-        type="hidden"
-        name="filterId"
-        [ngModel]="filter.filterId"
-      />
-      <input
-        type="hidden"
-        name="key"
-        [ngModel]="filter.key"
-      />
-      <input
-        type="hidden"
-        name="fieldType"
-        [ngModel]="filter.fieldType"
-      />
-      <div class="head-row">
-        <h4 class="filter-name">{{(filter.key | spaceCase)}} Filter</h4>
+      <input type="hidden" name="filterId" [ngModel]="filter.filterId" />
+      <input type="hidden" name="key" [ngModel]="filter.key" />
+      <input type="hidden" name="fieldType" [ngModel]="filter.fieldType" />
+
+      <div class="fp-expanded-head">
+        <span class="fp-col-name">{{ filter.key | spaceCase }}</span>
         <button
-          class="cancel-button small-button"
-          mat-icon-button
-          (click)="close.emit();"
+          class="fp-x-btn"
           type="button"
+          (click)="close.emit()"
           matTooltip="Close"
-        >
-          <mat-icon
-            class="cancel-button tb-icon-primary"
-          >close</mat-icon>
-        </button>
+          [attr.aria-label]="'Close filter for ' + (filter.key | spaceCase)"
+        >✕</button>
       </div>
-      <div class="filter-row">
-        <div class="inline">
-          <mat-form-field class="my-filter">
-            <mat-select
-              placeholder="Select Filter Type"
-              name="filterType"
-              [(ngModel)]="currentFilterType"
-            >
-              @for (kvp of filterTypes[filter.fieldType] | keyvalue; track kvp.key) {
-              <mat-option [value]="$any(kvp.value)[0]">
-                {{ kvp.key }}
-              </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </div>
+
+      <div class="fp-form-grid">
+        <span class="fp-form-lbl">Operator</span>
+        <select
+          class="fp-form-select"
+          name="filterType"
+          [(ngModel)]="currentFilterType"
+        >
+          @for (kvp of filterTypes[filter.fieldType] | keyvalue; track kvp.key) {
+            <option [ngValue]="$any(kvp.value)[0]">{{ kvp.key }}</option>
+          }
+        </select>
+
         @switch (true) {
-        @case (filter.fieldType === FieldType.String || filter.fieldType === FieldType.Array || filter.fieldType === FieldType.Link ||
-        filter.fieldType === FieldType.Unknown || filter.fieldType === FieldType.PhoneNumber) {
-        <ng-container *ngTemplateOutlet="String"></ng-container>
+          @case (filter.fieldType === FieldType.String || filter.fieldType === FieldType.Array || filter.fieldType === FieldType.Link || filter.fieldType === FieldType.Unknown || filter.fieldType === FieldType.PhoneNumber) {
+            @if (currentFilterType !== FilterType.IsNull && currentFilterType !== FilterType.In) {
+              <span class="fp-form-lbl">Value</span>
+              <input
+                class="fp-form-input"
+                name="filterValue"
+                tbPreservePasteDelimiters
+                [ngModel]="filter.filterValue"
+                placeholder="value"
+              />
+            }
+            @if (currentFilterType === FilterType.In) {
+              <span class="fp-form-lbl">Values</span>
+              <lib-in-filter
+                [type]="FieldType.String"
+                name="filterValue"
+                [(ngModel)]="filter.filterValue"
+              ></lib-in-filter>
+            }
+          }
+          @case (filter.fieldType === FieldType.Number || filter.fieldType === FieldType.Currency) {
+            <span class="fp-form-lbl">Value</span>
+            <tb-number-filter
+              [info]="filter"
+              [CurrentFilterType]="currentFilterType!"
+            ></tb-number-filter>
+          }
+          @case (filter.fieldType === FieldType.Boolean) {
+            @if (currentFilterType === FilterType.BooleanEquals) {
+              <span class="fp-form-lbl">Value</span>
+              <span class="fp-form-toggle">
+                <button
+                  type="button"
+                  [class.active]="currentFilterValue === true"
+                  (click)="setFilterValue(true)"
+                  preventEnter
+                >True</button>
+                <button
+                  type="button"
+                  [class.active]="currentFilterValue === false"
+                  (click)="setFilterValue(false)"
+                  preventEnter
+                >False</button>
+              </span>
+              <input type="hidden" name="filterValue" [(ngModel)]="currentFilterValue" />
+            }
+          }
+          @case (filter.fieldType === FieldType.Date) {
+            <span class="fp-form-lbl">Value</span>
+            <tb-date-filter
+              [info]="filter"
+              [CurrentFilterType]="currentFilterType!"
+            ></tb-date-filter>
+          }
+          @case (filter.fieldType === FieldType.DateTime) {
+            <span class="fp-form-lbl">Value</span>
+            <tb-date-time-filter
+              [info]="filter"
+              [CurrentFilterType]="currentFilterType!"
+            ></tb-date-time-filter>
+          }
+          @case (filter.fieldType === FieldType.Enum) {
+            @if (currentFilterType === FilterType.In) {
+              <span class="fp-form-lbl">Values</span>
+              <tb-in-list-filter
+                [key]="filter.key"
+                name="filterValue"
+                [(ngModel)]="filter.filterValue"
+              ></tb-in-list-filter>
+            }
+          }
         }
-        @case (filter.fieldType === FieldType.Number || filter.fieldType === FieldType.Currency) {
-        <tb-number-filter
-          [info]="filter"
-          [CurrentFilterType]="currentFilterType!"
-        ></tb-number-filter>
-        }
-        @case (filter.fieldType === FieldType.Boolean) {
-        <ng-container *ngTemplateOutlet="Boolean"></ng-container>
-        }
-        @case (filter.fieldType === FieldType.Date) {
-        <tb-date-filter
-          [info]="filter"
-          [CurrentFilterType]="currentFilterType!"
-        ></tb-date-filter>
-        }
-        @case (filter.fieldType === FieldType.DateTime) {
-        <tb-date-time-filter
-          [info]="filter"
-          [CurrentFilterType]="currentFilterType!"
-        ></tb-date-time-filter>
-        }
-        @case (filter.fieldType === FieldType.Enum) {
-        <ng-container *ngTemplateOutlet="Enum"></ng-container>
-        }
-        }
+
         @if (currentFilterType === FilterType.IsNull) {
-        <mat-radio-group
-          name="filterValue"
-          [ngModel]="filter.filterValue"
-        >
-          <mat-radio-button [value]="true">True</mat-radio-button>
-          <mat-radio-button [value]="false">False</mat-radio-button>
-        </mat-radio-group>
+          <span class="fp-form-lbl">Match</span>
+          <span class="fp-form-toggle">
+            <button
+              type="button"
+              [class.active]="currentFilterValue === true"
+              (click)="setFilterValue(true)"
+              preventEnter
+            >True</button>
+            <button
+              type="button"
+              [class.active]="currentFilterValue === false"
+              (click)="setFilterValue(false)"
+              preventEnter
+            >False</button>
+          </span>
+          <input type="hidden" name="filterValue" [(ngModel)]="currentFilterValue" />
         }
       </div>
-      <button
-        mat-button
-        (click)="state.addFilter(form.value)"
-        disableRipple
-        [disabled]="form.value.filterValue==undefined || !form.value.filterType"
-      >
-        Apply
-      </button>
 
-
-      <ng-template #String>
-        @if (currentFilterType !== FilterType.IsNull && currentFilterType !== FilterType.In) {
-        <mat-form-field class="my-filter">
-          <input
-            matInput
-            name="filterValue"
-            tbPreservePasteDelimiters
-            [ngModel]="filter.filterValue"
-          />
-        </mat-form-field>
-        }
-        @if (currentFilterType === FilterType.In) {
-        <lib-in-filter
-          [type]="FieldType.String"
-          name='filterValue'
-          [(ngModel)]="filter.filterValue"
-        ></lib-in-filter>
-        }
-      </ng-template>
-
-      <ng-template #Boolean>
-        @if (currentFilterType === FilterType.BooleanEquals) {
-        <div class="switch">
-          <mat-radio-group
-            name="filterValue"
-            [ngModel]="filter.filterValue"
-          >
-            <mat-radio-button
-              [value]="true"
-              preventEnter
-            >True</mat-radio-button>
-            <mat-radio-button
-              [value]="false"
-              preventEnter
-            >False</mat-radio-button>
-          </mat-radio-group>
-        </div>
-        }
-      </ng-template>
-      <ng-template #Enum>
-        @if (currentFilterType === FilterType.In) {
-        <tb-in-list-filter
-          [key]='filter.key'
-          name='filterValue'
-          [(ngModel)]='filter.filterValue'
-        ></tb-in-list-filter>
-        }
-      </ng-template>
+      <div class="fp-form-actions">
+        <button
+          type="button"
+          class="fp-btn-ghost"
+          (click)="close.emit()"
+        >Cancel</button>
+        <button
+          type="button"
+          class="fp-btn-primary"
+          (click)="state.addFilter(form.value)"
+          [disabled]="form.value.filterValue == null || !form.value.filterType"
+        >Apply</button>
+      </div>
     </form>
-  </mat-card-content>
-</mat-card>
+  </div>
 }

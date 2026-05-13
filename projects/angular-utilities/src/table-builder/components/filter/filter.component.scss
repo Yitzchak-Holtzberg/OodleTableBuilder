@@ -1,64 +1,196 @@
-.filter-name {
-  color: var(--tb-filter-name-color, cornflowerblue);
-  margin: 10px 0;
+:host {
+  display: block;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.fp-dialog {
+  background: var(--mat-sys-surface, #fff);
+  border: 1px solid var(--mat-sys-primary, #006a6a);
+  border-radius: 12px;
+  padding: 14px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 280px;
+  max-width: 420px;
+  box-shadow:
+    0 12px 32px -10px color-mix(in srgb, var(--mat-sys-primary, #006a6a) 35%, transparent),
+    0 4px 14px -4px color-mix(in srgb, var(--mat-sys-primary, #006a6a) 20%, transparent);
+  color: var(--mat-sys-on-surface, #1d1b1e);
+  font-size: 13px;
+}
+
+.fp-dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fp-expanded-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-primary, #006a6a) 14%, transparent);
+}
+
+.fp-col-name {
   font-weight: 600;
-  display: inline-block;
+  font-size: 13.5px;
+  letter-spacing: -0.01em;
+  flex: 1;
+  color: var(--mat-sys-on-surface, #1d1b1e);
 }
 
-.switch {
-  display: inline-block;
+.fp-x-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--mat-sys-on-surface-variant, #6b6970);
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
-.my-filter {
-  margin-right: 15px;
+.fp-x-btn:hover {
+  background: color-mix(in srgb, var(--mat-sys-error, #ba1a1a) 18%, transparent);
+  color: var(--mat-sys-error, #ba1a1a);
 }
 
-.cancel-button {
-  float: right;
+.fp-form-grid {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 8px 12px;
+  align-items: center;
 }
 
-.head-row {
+.fp-form-lbl {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--mat-sys-on-surface-variant, #6b6970);
+  font-weight: 600;
+}
+
+.fp-form-input,
+.fp-form-select {
+  font: inherit;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface, #1d1b1e);
+  background: var(--mat-sys-surface, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 6px;
+  padding: 6px 8px;
+  outline: none;
   width: 100%;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
 }
-.filter-row{
+
+.fp-form-input:focus,
+.fp-form-select:focus {
+  border-color: var(--mat-sys-primary, #006a6a);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-primary, #006a6a) 15%, transparent);
+}
+
+.fp-form-input::placeholder {
+  color: var(--mat-sys-on-surface-variant, #6b6970);
+  font-style: italic;
+}
+
+.fp-form-toggle {
+  display: inline-flex;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary, #006a6a) 22%, transparent);
+  overflow: hidden;
   width: fit-content;
 }
-mat-card.filter-card{
-  &::ng-deep mat-form-field{
-    width: 150px;
-  }
-  &::ng-deep.mat-mdc-form-field-subscript-wrapper{
-    line-height: 0;
-    &::before{
-      height: 0;
-    }
-  }
-}
-.inline{
-  display: inline-block;
-}
-.small-button {
-  height: 18px;
-  width: 18px;
-  font-size: 18px;
-  padding: 0;
-  margin: 0;
-  ::ng-deep * {
-    line-height: initial;
-    font-size: initial;
-    height: 18px;
-    width: 18px;
-    font-size: 18px;
-    bottom: initial;
 
+.fp-form-toggle button {
+  background: transparent;
+  border: none;
+  padding: 5px 16px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant, #6b6970);
+  font-family: inherit;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.fp-form-toggle button.active {
+  background: var(--mat-sys-primary, #006a6a);
+  color: var(--mat-sys-on-primary, #fff);
+  font-weight: 600;
+}
+
+.fp-form-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  padding-top: 6px;
+}
+
+.fp-btn-ghost,
+.fp-btn-primary {
+  border: none;
+  padding: 7px 16px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: background 0.12s ease, filter 0.12s ease;
+}
+
+.fp-btn-ghost {
+  background: transparent;
+  color: var(--mat-sys-on-surface-variant, #6b6970);
+}
+
+.fp-btn-ghost:hover {
+  background: color-mix(in srgb, var(--mat-sys-on-surface, #6b6970) 8%, transparent);
+}
+
+.fp-btn-primary {
+  background: var(--mat-sys-primary, #006a6a);
+  color: var(--mat-sys-on-primary, #fff);
+  box-shadow: 0 1px 3px -1px color-mix(in srgb, var(--mat-sys-primary, #006a6a) 50%, transparent);
+}
+
+.fp-btn-primary:hover:not(:disabled) {
+  filter: brightness(0.96);
+}
+
+.fp-btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* The sub-filter components (tb-number-filter, tb-date-filter, tb-date-time-filter,
+   lib-in-filter, tb-in-list-filter) still render Material form fields internally.
+   Compact their subscript spacing so they fit the tighter form grid without
+   reaching across encapsulation. */
+::ng-deep tb-number-filter,
+::ng-deep tb-date-filter,
+::ng-deep tb-date-time-filter,
+::ng-deep lib-in-filter,
+::ng-deep tb-in-list-filter {
+  .mat-mdc-form-field {
+    width: 100%;
   }
-}
-.cancel-button{
-  float: right;
-  font-weight: 700;
-}
-.date-toggle ::ng-deep svg{
-  position: absolute;
-  left: 0;
-  top: 0;
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
 }
