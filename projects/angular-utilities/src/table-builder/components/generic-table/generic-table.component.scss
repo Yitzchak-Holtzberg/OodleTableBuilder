@@ -6,11 +6,11 @@
 .sticky {
   bottom: 0px;
   position: sticky;
-  border-top: .5px solid rgba(0,0,0,.12);
+  border-top: .5px solid var(--mat-sys-outline-variant, rgba(0,0,0,.12));
 }
 
 .page-amounts{
-  color: rgba(0, 0, 0, 0.54);
+  color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.54));
   font-family: Roboto, "Helvetica Neue", sans-serif;
   font-size: 12px;
   margin-right: .2rem;

@@ -16,9 +16,9 @@
 
 .list{
   padding: 5px 2px;
-  border-bottom: solid 1px #ccc;
-  color: rgba(0, 0, 0, 0.87);
-  background: var(--mat-app-background-color, white);
+  border-bottom: solid 1px var(--mat-sys-outline-variant, #ccc);
+  color: var(--mat-sys-on-surface, rgba(0, 0, 0, 0.87));
+  background: var(--mat-app-background-color, var(--mat-sys-surface, white));
 }
 
 .light-arrow{
@@ -30,9 +30,9 @@
 }
 
 .up-down-button{
-  background-color: var(--mat-app-background-color, white);
+  background-color: var(--mat-app-background-color, var(--mat-sys-surface, white));
   border-radius: 30%;
-  border-color: aqua;
+  border-color: var(--mat-sys-outline, aqua);
   padding: 1px 1px 0;
   border-width: .5px;
   cursor: pointer;
@@ -78,10 +78,10 @@
 }
 
 .not-sorted-name{
-  color: rgb(147 177 234);
+  color: var(--tb-primary-light, rgb(147 177 234));
   font-size: 17px;
   font-weight: 700;
-  
+
 }
 
 .apply-border{
@@ -89,7 +89,7 @@
 }
 
 .apply-border:hover{
-  background-color: antiquewhite;
+  background-color: color-mix(in srgb, var(--mat-sys-primary, antiquewhite) 8%, transparent);
 }
 
 .apply-button-wrapper{
@@ -105,7 +105,7 @@
 
 .tip{
   padding: 0 3px;
-  color: lightgray;
+  color: var(--mat-sys-on-surface-variant, lightgray);
 }
 
 .direction-text{

@@ -85,7 +85,7 @@
   font-size: 13px;
   color: var(--mat-sys-on-surface, #1d1b1e);
   background: var(--mat-sys-surface, #fff);
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--mat-sys-outline-variant, rgba(0, 0, 0, 0.12));
   border-radius: 6px;
   padding: 6px 8px;
   outline: none;
