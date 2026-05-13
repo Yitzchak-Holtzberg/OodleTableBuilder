@@ -70,7 +70,22 @@
                   }
                 </select>
 
-                @if (d.filterType !== FilterType.IsNull) {
+                @if (d.filterType === FilterType.IsNull) {
+                  <!-- IsNull operator takes a boolean direction: true = match blanks,
+                       false = match non-blanks. Mirrors the legacy filter dialog's
+                       True/False mat-radio so users can pick either direction. -->
+                  <span class="fp-form-lbl">Match</span>
+                  <span class="fp-form-toggle">
+                    <button type="button"
+                            [class.active]="d.value === true"
+                            (click)="draftSetValue(true)"
+                            stop-propagation>True</button>
+                    <button type="button"
+                            [class.active]="d.value === false"
+                            (click)="draftSetValue(false)"
+                            stop-propagation>False</button>
+                  </span>
+                } @else {
                   @if (isBetween(d.filterType)) {
                     <!-- Between operators: render Start + End side-by-side. inputKindFor
                          drives input type the same way as a single-value filter. -->

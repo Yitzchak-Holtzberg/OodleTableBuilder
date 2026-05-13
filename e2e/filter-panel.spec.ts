@@ -373,25 +373,48 @@ test.describe('Filter panel — combo 4 inline-edit', () => {
       expect(after.total).toBeGreaterThan(0);
     });
 
-    test('"is empty" hides the value input and commits filterValue=true', async () => {
-      // Regression: picking "is empty" used to render a stale value input AND
-      // commit filterValue=undefined, which made the legacy filter-list chip
-      // display "Is Not Blank" (the inverse) and made the filter inert.
+    test('"is empty" renders True/False toggle, defaults to True, commits filterValue=true', async () => {
+      // The IsNull operator's filterValue is a boolean direction:
+      // true = match blanks, false = match non-blanks. The dialog renders a True/False
+      // toggle (legacy parity) instead of a value input. Default is True, matching the
+      // legacy default and matching what Melissa expected when she picked "is empty".
       await h.pickColumn('Party');
       await h.pickOperator('is empty');
-      // No value input should be rendered for IsNull
+      // True/False toggle should be rendered; no value-input
+      const toggleButtons = h.expandedForm.locator('.fp-form-toggle button');
+      await expect(toggleButtons).toHaveCount(2);
+      await expect(toggleButtons.nth(0)).toHaveText('True');
+      await expect(toggleButtons.nth(1)).toHaveText('False');
+      await expect(toggleButtons.nth(0)).toHaveClass(/active/);
       await expect(h.expandedForm.locator('input.fp-form-input')).toHaveCount(0);
       await h.apply();
 
-      // V3-A chip should display "is empty" (the OPERATOR_LABELS entry for IsNull)
+      // V3-A chip should display "is empty" when filterValue is true
       const v3Chip = h.panel.locator('.fp-chip').first();
       await expect(v3Chip).toContainText('is empty');
+      await expect(v3Chip).not.toContainText('is not empty');
 
-      // Legacy filter-list chip (which uses formatFilterType pipe) should now
-      // read "Is Blank" — NOT "Is Not Blank". This is the symptom Melissa hit.
+      // Legacy filter-list chip (formatFilterType pipe) should read "Is Blank"
       const legacyChip = h.page.locator('.fp-stack-inline .fp-op-pill').first();
       await expect(legacyChip).toHaveText(/Is Blank/);
       await expect(legacyChip).not.toHaveText(/Is Not Blank/);
+    });
+
+    test('"is empty" toggle set to False produces "is not empty" chip and filters non-blanks', async () => {
+      // Same operator (FilterType.IsNull) but filterValue=false means
+      // "match non-blank rows" instead of "match blanks". The chip label flips
+      // to "is not empty" and the legacy chip flips to "Is Not Blank".
+      await h.pickColumn('Party');
+      await h.pickOperator('is empty');
+      await h.expandedForm.locator('.fp-form-toggle button').nth(1).click(); // False
+      await expect(h.expandedForm.locator('.fp-form-toggle button').nth(1)).toHaveClass(/active/);
+      await h.apply();
+
+      const v3Chip = h.panel.locator('.fp-chip').first();
+      await expect(v3Chip).toContainText('is not empty');
+
+      const legacyChip = h.page.locator('.fp-stack-inline .fp-op-pill').first();
+      await expect(legacyChip).toHaveText(/Is Not Blank/);
     });
   });
 

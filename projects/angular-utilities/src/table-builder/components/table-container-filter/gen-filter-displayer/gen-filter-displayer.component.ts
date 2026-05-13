@@ -119,7 +119,9 @@ export class GenFilterDisplayerComponent {
               columnKey: key,
               filterType: f.filterType,
               fieldType: (f as FilterInfo).fieldType,
-              operatorLabel: f.filterType ? (OPERATOR_LABELS[f.filterType] || f.filterType) : 'select',
+              operatorLabel: f.filterType === FilterType.IsNull
+                ? ((f as FilterInfo).filterValue ? 'is empty' : 'is not empty')
+                : (f.filterType ? (OPERATOR_LABELS[f.filterType] || f.filterType) : 'select'),
               valueDisplay: this.formatValue((f as FilterInfo).filterValue),
               rawValue: (f as FilterInfo).filterValue,
               isCustom: false,
@@ -177,6 +179,11 @@ export class GenFilterDisplayerComponent {
     const ops = this.operatorsFor(metaData.fieldType);
     const defaultType = ops.length ? ops[0].value : undefined;
     const filterId = uuid();
+    // IsNull's filterValue is a boolean direction (true=blanks, false=non-blanks).
+    // For Enum fields the default operator IS IsNull, so set filterValue=true upfront
+    // so the placeholder chip reads "is empty" instead of "is not empty" during the
+    // brief window before Apply.
+    const placeholderValue = defaultType === FilterType.IsNull ? true : undefined;
     // Insert a placeholder filter so the chip renders. With filterValue: undefined,
     // createFilterFunc returns defaultPredicate (everything matches) — no table change.
     this.tableState.addFilter({
@@ -184,13 +191,13 @@ export class GenFilterDisplayerComponent {
       key: metaData.key,
       fieldType: metaData.fieldType,
       filterType: defaultType,
-      filterValue: undefined,
+      filterValue: placeholderValue,
     } as FilterInfo);
     // Open the expanded form for editing and close the column picker.
     this.draft.set({
       filterId,
       filterType: defaultType,
-      value: this.defaultDraftValue(metaData.fieldType),
+      value: defaultType === FilterType.IsNull ? true : this.defaultDraftValue(metaData.fieldType),
       isNew: true,
     });
     this.pickerOpen.set(false);
@@ -224,11 +231,18 @@ export class GenFilterDisplayerComponent {
     // hand a primitive to the between filter (or vice versa) on Apply.
     const wasBetween = this.isBetween(d.filterType);
     const willBeBetween = this.isBetween(filterType);
+    const wasIsNull = d.filterType === FilterType.IsNull;
+    const willBeIsNull = filterType === FilterType.IsNull;
     let value = d.value;
-    if (wasBetween !== willBeBetween) {
-      value = willBeBetween
-        ? { Start: this.defaultDraftValue(fieldType), End: this.defaultDraftValue(fieldType) }
-        : this.defaultDraftValue(fieldType);
+    if (wasBetween !== willBeBetween || wasIsNull !== willBeIsNull) {
+      // Three shapes: Range {Start,End} for Between, boolean for IsNull, primitive otherwise.
+      if (willBeBetween) {
+        value = { Start: this.defaultDraftValue(fieldType), End: this.defaultDraftValue(fieldType) };
+      } else if (willBeIsNull) {
+        value = true; // default to "match blanks" — same as legacy filter dialog's default
+      } else {
+        value = this.defaultDraftValue(fieldType);
+      }
     }
     this.draft.set({ ...d, filterType, value });
   }
@@ -321,10 +335,12 @@ export class GenFilterDisplayerComponent {
   private parseDraftValue(raw: any, fieldType: FieldType, ft: FilterType | undefined): any {
     // FilterType.IsNull is overloaded: filterValue is a *boolean* indicating direction.
     // true = match rows where the column is blank/null; false = match non-blank rows.
-    // The V3-A dialog only exposes the "is empty" operator, so we always commit `true`.
-    // (Without this, undefined filterValue makes the filter inert and the old chip pipe
-    // displays "Is Not Blank" — see format-filter-type.pipe.ts.)
-    if (ft === FilterType.IsNull) return true;
+    // The V3-A dialog renders a True/False toggle when IsNull is selected; we coerce
+    // the draft's value here. Default to true if somehow undefined slips through, so
+    // the filter is never inert when the user picked IsNull.
+    if (ft === FilterType.IsNull) {
+      return raw === false || raw === 'false' ? false : true;
+    }
 
     // Between operators (NumberBetween, DateBetween, DateTimeBetween) take a Range
     // {Start, End}. The draft holds an object with each side parsed independently
