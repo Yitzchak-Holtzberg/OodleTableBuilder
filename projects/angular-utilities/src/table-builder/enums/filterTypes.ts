@@ -39,8 +39,8 @@ export const NumberFilterMap:FilterToFiltersMap = {
 };
 
 export const StringFilterMap:FilterToFiltersMap = {
-    [FilterType.StringEquals]: [FilterType.StringEquals],
     [FilterType.StringContains]: [FilterType.StringContains],
+    [FilterType.StringEquals]: [FilterType.StringEquals],
     [FilterType.StringDoesNotContain]: [FilterType.StringDoesNotContain],
     [FilterType.StringStartWith]: [FilterType.StringStartWith],
     [FilterType.StringEndsWith]: [FilterType.StringEndsWith],

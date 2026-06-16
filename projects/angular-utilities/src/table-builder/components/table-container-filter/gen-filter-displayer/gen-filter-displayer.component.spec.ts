@@ -16,6 +16,7 @@ import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { TableStore } from '../../../classes/table-store';
 import { WrapperFilterStore } from '../table-wrapper-filter-store';
+import { FilterType } from '../../../enums/filterTypes';
 
 
 function getMetaData() {
@@ -83,6 +84,16 @@ describe('generic filter displayer', () => {
     clickFilter(0);
     const filter = await firstValueFrom(fixture.componentInstance.filterStore.state$.pipe(map(x => x.filterInfo)));
     expect(filter.length).toBe(1);
+  });
+
+  it('defaults a new String filter to "contains"', () => {
+    component.addFilter({ key: 'name', displayName: 'first name', fieldType: FieldType.String } as any);
+    expect(component.draft()?.filterType).toBe(FilterType.StringContains);
+  });
+
+  it('lists "contains" first in the String operator dropdown', () => {
+    const ops = component.operatorsFor(FieldType.String);
+    expect(ops[0].value).toBe(FilterType.StringContains);
   });
 
 });
