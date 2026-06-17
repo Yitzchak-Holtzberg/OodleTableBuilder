@@ -17,6 +17,8 @@ jobs:
       with:
         node-version: '22'
         registry-url: 'https://registry.npmjs.org'
+    - name: Upgrade npm for Trusted Publishing (OIDC)
+      run: npm install -g npm@latest
     - run: npm ci --legacy-peer-deps
     - run: node node_modules/@angular/cli/bin/ng build AngularUtilities --configuration production
     - name: Auto-increment patch version and publish
@@ -40,5 +42,3 @@ jobs:
           npm version "$NEXT" --no-git-tag-version --allow-same-version
           npm publish --access public --provenance --tag beta
         fi
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
