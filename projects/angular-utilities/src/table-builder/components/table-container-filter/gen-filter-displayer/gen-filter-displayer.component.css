@@ -185,42 +185,35 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
+  user-select: none; /* double-click starts editing, it shouldn't select the label */
 }
 
-/* Inline value editor shown on double-click of the chip. */
+/* Inline per-value editor (double-click a value row in the dropdown). It fills the
+   row as a clear text field. The focus highlight is an INSET ring so it is never
+   clipped by the menu's overflow (which produced a broken partial glow before). */
 .fp-edit-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 26px;
   font: inherit;
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--mat-sys-on-surface, #1d1b1e);
   background: var(--mat-sys-surface, #fff);
   border: 1px solid var(--mat-sys-primary, #006a6a);
   border-radius: 6px;
   padding: 3px 8px;
   outline: none;
-  min-width: 120px;
-  max-width: 340px;
-  width: clamp(120px, 32vw, 340px);
 }
 
 .fp-edit-input:focus {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-primary, #006a6a) 15%, transparent);
+  box-shadow: inset 0 0 0 1px var(--mat-sys-primary, #006a6a);
 }
 
-/* Row variant: fills the menu row cleanly (border-box so the border isn't clipped
-   by the row), with a soft focus ring. */
-.fp-edit-input-row {
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
-  max-width: none;
-  height: 28px;
-  padding: 4px 8px;
-  font-size: 12.5px;
-  background: var(--mat-sys-surface, #fff);
-}
-
-/* While a row is being edited, slim the row's chrome so the input shows in full. */
-.filter-value-pill:has(.fp-edit-input-row) {
+/* While a row is being edited, slim the row's chrome so the field shows in full,
+   and suppress the hover tint so no colored slivers show beside the input. */
+.fp-pill-overflow .filter-value-pill:has(.fp-edit-input),
+.fp-pill-overflow .filter-value-pill:has(.fp-edit-input):hover {
   padding: 2px 8px;
   overflow: visible;
   background: transparent;
