@@ -148,12 +148,13 @@
   justify-content: space-between;
   gap: 10px;
   margin: 0;
-  padding: 6px 12px;
+  padding: 5px 6px 5px 12px;
   border-radius: 0;
   background: transparent;
   color: var(--mat-sys-on-surface, #1d1b1e);
   font-weight: 500;
-  overflow: hidden;
+  /* no overflow:hidden — the label clips itself (.fp-pill-text), and clipping
+     here would cut off the remove button's hover circle */
 }
 
 .fp-pill-overflow .filter-value-pill:hover {
@@ -162,6 +163,9 @@
 
 .fp-pill-overflow .filter-value-pill .fp-pill-x {
   flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  font-size: 11px;
   color: var(--mat-sys-on-surface-variant, #6b6970);
   opacity: 0.7;
 }
