@@ -16,18 +16,49 @@
   max-width: 90vw;
 }
 .filter-value-pill {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   background: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 15%, transparent);
   color: var(--mat-sys-primary, #006a6a);
-  padding: 1px 8px;
+  padding: 1px 4px 1px 8px;
   border-radius: 10px;
   margin: 0 2px;
   font-size: 0.85em;
   line-height: 1.4;
   font-weight: 500;
+  white-space: nowrap;
 }
 
-/* filter-list page-level wrapper: flow chips + clear-all horizontally */
+/* Per-value remove button inside a value pill. */
+.fp-pill-x {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  opacity: 0.6;
+  font-size: 9px;
+  line-height: 1;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  transition: background 0.12s ease, opacity 0.12s ease, color 0.12s ease;
+}
+
+.fp-pill-x:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--mat-sys-error, #ba1a1a) 18%, transparent);
+  color: var(--mat-sys-error, #ba1a1a);
+}
+
+/* filter-list page-level wrapper: flow chips + clear-all horizontally.
+   min-width:0 lets this flex child shrink instead of pushing the sibling
+   export menu off the header row. */
 .fl-row {
   display: flex;
   flex-direction: row;
@@ -35,16 +66,161 @@
   justify-content: flex-end;
   gap: 6px;
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 /* Inline flow variant of the chip stack — used when chips render in a page row
-   (filter-list) rather than stacked in a popup panel. */
+   (filter-list) rather than stacked in a popup panel. Bounded width + min-width:0
+   so a long multi-value filter wraps/collapses instead of growing into the
+   top-right export menu. */
 .fp-stack-inline {
   display: flex;
   flex-direction: row;
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
+  min-width: 0;
+  max-width: min(60vw, 640px);
+}
+
+/* Clickable trigger that collapses a long multi-value list. Shares the
+   filter-value-pill visual language but reads as an actionable control. */
+.fp-pills-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 15%, transparent);
+  color: var(--mat-sys-primary, #006a6a);
+  padding: 1px 8px;
+  border: none;
+  border-radius: 10px;
+  margin: 0 2px;
+  font-size: 0.85em;
+  line-height: 1.4;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.fp-pills-toggle:hover {
+  background: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 24%, transparent);
+}
+
+/* Expanded value list floats out of the header as a vertical menu popover
+   anchored under the chip. It overflows the container and layers above the table
+   below, so the chip stays a compact pill. The card is a fixed padded frame; an
+   inner element does the scrolling so the scrollbar stays inset from the rounded
+   corners instead of running flush past them. */
+.fp-pill-overflow {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 102;
+  box-sizing: border-box;
+  width: 240px;
+  padding: 6px;
+  background: var(--mat-sys-surface, #fff);
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary, #006a6a) 25%, transparent);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px -6px color-mix(in srgb, var(--mat-sys-primary, #006a6a) 35%, transparent);
+}
+
+/* Inner scroller — height-capped so a long list scrolls within the card. */
+.fp-menu-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  max-height: 204px; /* ~card cap minus padding; then scroll within */
+  overflow-x: hidden; /* never scroll sideways — long values ellipsize instead */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Inside the popover the values read as full-width menu rows — value on the left,
+   remove ✕ on the right — rather than teal pills. */
+.fp-pill-overflow .filter-value-pill {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0;
+  padding: 6px 8px 6px 10px;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--mat-sys-on-surface, #1d1b1e);
+  font-weight: 500;
+  overflow: hidden;
+}
+
+.fp-pill-overflow .filter-value-pill:hover {
+  background: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 10%, transparent);
+}
+
+.fp-pill-overflow .filter-value-pill .fp-pill-x {
+  flex-shrink: 0;
+  color: var(--mat-sys-on-surface-variant, #6b6970);
+  opacity: 0.7;
+}
+
+.fp-pill-overflow .filter-value-pill:hover .fp-pill-x {
+  opacity: 1;
+}
+
+/* Keep the native scrollbar, just round the thumb corners. */
+.fp-menu-scroll::-webkit-scrollbar { width: 11px; }
+.fp-menu-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.22);
+  border-radius: 8px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Truncate over-long values within the row instead of overflowing. */
+.fp-pill-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+/* Inline value editor shown on double-click of the chip. */
+.fp-edit-input {
+  font: inherit;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface, #1d1b1e);
+  background: var(--mat-sys-surface, #fff);
+  border: 1px solid var(--mat-sys-primary, #006a6a);
+  border-radius: 6px;
+  padding: 3px 8px;
+  outline: none;
+  min-width: 120px;
+  max-width: 340px;
+  width: clamp(120px, 32vw, 340px);
+}
+
+.fp-edit-input:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-primary, #006a6a) 15%, transparent);
+}
+
+/* Row variant: fills the menu row cleanly (border-box so the border isn't clipped
+   by the row), with a soft focus ring. */
+.fp-edit-input-row {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  height: 28px;
+  padding: 4px 8px;
+  font-size: 12.5px;
+  background: var(--mat-sys-surface, #fff);
+}
+
+/* While a row is being edited, drop the row's chrome so the input shows in full. */
+.filter-value-pill:has(.fp-edit-input-row) {
+  padding: 0;
+  overflow: visible;
+  background: transparent;
 }
 
 /* Read-only value text (no inline input) — for filter-list page chips */
@@ -155,6 +331,7 @@
 }
 
 .fp-chip {
+  position: relative; /* anchor for the expanded .fp-pill-overflow popover */
   display: inline-flex;
   align-self: flex-start;
   align-items: center;

@@ -22,7 +22,7 @@
               [class.flat-menu]="(collapseHeader$ | async)">
               <mat-icon class="tb-icon-primary">{{(collapseHeader$ | async) ? 'more_horiz' : 'more_vert'}}</mat-icon>
             </button>
-            <mat-menu #mainMenu='matMenu'>
+            <mat-menu #mainMenu='matMenu' class="tb-menu" panelClass="tb-menu">
               <ng-container *ngTemplateOutlet="headerMenuExtra"></ng-container>
             </mat-menu>
           } @else {
@@ -30,7 +30,7 @@
               [class.flat-menu]="(collapseHeader$ | async)">
               <mat-icon class="tb-icon-primary">{{(collapseHeader$ | async) ? 'more_horiz' : 'more_vert'}}</mat-icon>
             </button>
-            <mat-menu #mainMenu='matMenu'>
+            <mat-menu #mainMenu='matMenu' class="tb-menu" panelClass="tb-menu">
               <div class="flex-column">
                 <ng-container *ngTemplateOutlet="headerMenu"></ng-container>
               </div>
@@ -94,7 +94,7 @@
         }
       }
 
-      <mat-menu #savedNames='matMenu' panelClass='wide-menu'>
+      <mat-menu #savedNames='matMenu' panelClass='wide-menu tb-menu'>
         <button mat-menu-item clickEmitter  #add='clickEmitter'>
           <mat-icon>add</mat-icon>
           <span>New</span>

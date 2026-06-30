@@ -16,12 +16,50 @@
 
   <div class="fp-stack-inline" *ngrxLet="filters$ as filters">
     @for (filter of filters; track filter.filterId) {
-      <div class="fp-chip" [matTooltip]="'Double-click to edit'" (dblclick)="addFilter(filter)">
+      <div class="fp-chip" (dblclick)="addFilter(filter)">
         <span class="fp-col-name">{{ filter.key | keyDisplay | async }}</span>
         <span class="fp-op-pill">{{ filter.filterType | formatFilterType : filter.filterValue }}</span>
         @if (filter.filterValue | asFilterPills; as pills) {
-          @for (v of pills; track $index) {
-            <span class="filter-value-pill">{{ v }}</span>
+          @if (pills.length > maxInlinePills) {
+            <button class="fp-pills-toggle fp-pills-count" type="button"
+                    (click)="toggleExpanded(filter.filterId!)"
+                    [attr.aria-label]="(isExpanded(filter.filterId!) ? 'Collapse' : 'Show all ' + pills.length) + ' values'"
+                    [attr.aria-expanded]="isExpanded(filter.filterId!)">
+              {{ pills.length }} values&nbsp;{{ isExpanded(filter.filterId!) ? '▴' : '▾' }}
+            </button>
+            @if (isExpanded(filter.filterId!)) {
+              <span class="fp-pill-overflow">
+                <span class="fp-menu-scroll">
+                  @for (v of pills; track $index) {
+                    <span class="filter-value-pill" title="Double-click to edit"
+                          (dblclick)="$event.stopPropagation(); startValueEdit(filter, $index)">
+                      @if (isEditingValue(filter.filterId, $index)) {
+                        <input class="fp-edit-input fp-edit-input-row" type="text" [value]="v"
+                               (keydown.enter)="commitValueEdit(filter, pills, $index, $any($event.target).value)"
+                               (keydown.escape)="cancelEdit()"
+                               (blur)="commitValueEdit(filter, pills, $index, $any($event.target).value)"
+                               (click)="$event.stopPropagation()"
+                               [attr.aria-label]="'Edit value ' + v" />
+                      } @else {
+                        <span class="fp-pill-text">{{ v }}</span>
+                        <button class="fp-pill-x" type="button"
+                                (click)="removeValue(filter, pills, v)"
+                                [attr.aria-label]="'Remove value ' + v">✕</button>
+                      }
+                    </span>
+                  }
+                </span>
+              </span>
+            }
+          } @else {
+            @for (v of pills; track $index) {
+              <span class="filter-value-pill">
+                <span class="fp-pill-text">{{ v }}</span>
+                <button class="fp-pill-x" type="button"
+                        (click)="removeValue(filter, pills, v)"
+                        [attr.aria-label]="'Remove value ' + v">✕</button>
+              </span>
+            }
           }
         } @else {
           <span class="fp-val-text">{{ filter.filterValue | formatFilterValue: filter.key : filter.filterType | async }}</span>

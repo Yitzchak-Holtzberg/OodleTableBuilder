@@ -16,6 +16,20 @@
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
+  min-width: 0;
+}
+
+/* The filter list takes the flexible space and may shrink; the export menu
+   button and collapse icon must never shrink or be overlapped so they stay
+   clickable even when a long multi-value filter is active. */
+.flx-row-end lib-filter-list{
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.flx-row-end > button[mat-icon-button],
+.flx-row-end .collapse-icon.header{
+  flex-shrink: 0;
 }
 
 .flat-menu{
@@ -34,6 +48,29 @@
 :host ::ng-deep .tb-icon-warn,
 ::ng-deep .tb-icon-warn {
   color: var(--mat-sys-error, #ba1a1a);
+}
+
+/* Table header menu (Reset / Export / Save / Choose Profile) — match the V3-A
+   filter-panel language: softly rounded surface, teal-tinted hover, teal icons.
+   Rendered in the cdk-overlay-container, so ::ng-deep with the panelClass. */
+::ng-deep .tb-menu.mat-mdc-menu-panel {
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary, #006a6a) 16%, transparent);
+  box-shadow: 0 10px 30px -12px color-mix(in srgb, var(--mat-sys-primary, #006a6a) 38%, transparent);
+  overflow: hidden;
+}
+::ng-deep .tb-menu .mat-mdc-menu-item {
+  min-height: 42px;
+  font-size: 13.5px;
+}
+::ng-deep .tb-menu .mat-mdc-menu-item:hover:not([disabled]),
+::ng-deep .tb-menu .mat-mdc-menu-item.cdk-program-focused:not([disabled]),
+::ng-deep .tb-menu .mat-mdc-menu-item.cdk-keyboard-focused:not([disabled]) {
+  background: color-mix(in srgb, var(--mat-sys-primary, #006a6a) 10%, transparent);
+}
+/* Default the menu icons to primary teal (warn icons keep their own color). */
+::ng-deep .tb-menu .mat-mdc-menu-item .mat-icon:not(.tb-icon-warn) {
+  color: var(--mat-sys-primary, #006a6a);
 }
 
 

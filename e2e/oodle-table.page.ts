@@ -112,4 +112,54 @@ export class OodleTablePage {
   async waitForTableUpdate() {
     await this.page.waitForTimeout(500);
   }
+
+  /** Repro control in the example: applies a 30-value comma-separated search. */
+  async addManyValueSearch() {
+    await this.page.getByRole('button', { name: /Add many-value search/i }).click();
+    await this.waitForTableUpdate();
+  }
+
+  /** The table header's 3-dot export / main menu button (more_vert). */
+  get exportMenuButton(): Locator {
+    return this.page
+      .locator('.header-wrapper .flx-row-end button[mat-icon-button]')
+      .filter({ has: this.page.locator('mat-icon', { hasText: 'more_vert' }) });
+  }
+
+  /** Collapsed "{n} values" pill shown for a long multi-value filter. */
+  get filterCountPill(): Locator {
+    return this.page.locator('lib-filter-list .fp-pills-count');
+  }
+
+  /** The "Active filters" panel rendered inside the filter button's mat-menu. */
+  get filterPanel(): Locator {
+    return this.page.locator('.filter-panel-menu .fp-panel');
+  }
+
+  /** Open the "Active filters" panel via the filter (funnel) trigger button. */
+  async openFilterPanel() {
+    await this.page.locator('.filter-trigger-button').click();
+    await this.filterPanel.waitFor({ state: 'visible' });
+  }
+
+  /** From an open panel, click "+ Add filter" and pick a column by display name. */
+  async addFilterFor(columnName: string) {
+    await this.page.locator('.fp-add-pill').click();
+    await this.page
+      .locator('.fp-col-picker-item', { hasText: columnName })
+      .first()
+      .click();
+    await this.page.locator('.fp-expanded').waitFor({ state: 'visible' });
+  }
+
+  /** Type a value into the expanded edit card and click Apply. */
+  async setFilterValueAndApply(value: string) {
+    await this.page.locator('.fp-expanded .fp-form-input').first().fill(value);
+    await this.page.locator('.fp-expanded .fp-btn-primary').click();
+  }
+
+  /** Click Cancel in the expanded edit card. */
+  async cancelFilterEdit() {
+    await this.page.locator('.fp-expanded .fp-btn-ghost').click();
+  }
 }

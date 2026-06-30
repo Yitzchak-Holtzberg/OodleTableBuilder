@@ -1,4 +1,5 @@
-import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, ViewChild } from '@angular/core';
+import { MatMenuTrigger } from '@angular/material/menu';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { v4 as uuid } from 'uuid';
@@ -84,6 +85,9 @@ export class GenFilterDisplayerComponent {
 
   /** Expose FilterType to the template so it can compare against d.filterType. */
   protected readonly FilterType = FilterType;
+
+  /** The panel's menu trigger, so Apply can dismiss the whole "Active filters" panel. */
+  @ViewChild(MatMenuTrigger) private readonly trigger!: MatMenuTrigger;
 
   constructor(public tableState: TableStore, public filterStore: WrapperFilterStore) {
     this.filterCols$ = tableState.metaDataArray$.pipe(
@@ -270,7 +274,7 @@ export class GenFilterDisplayerComponent {
     this.draft.set({ ...d, value: { ...range, End: end } });
   }
 
-  /** Apply: commit the draft to TableStore, collapse. */
+  /** Apply: commit the draft to TableStore, collapse the card, and close the panel. */
   apply(chip: FilterChipVm) {
     const d = this.draft();
     if (!d || d.filterId !== chip.filterId) return;
@@ -283,6 +287,7 @@ export class GenFilterDisplayerComponent {
       filterValue: value,
     } as FilterInfo);
     this.draft.set(null);
+    this.trigger?.closeMenu();
   }
 
   /** Cancel: collapse without committing. For new chips, also remove the placeholder. */

@@ -1,10 +1,11 @@
 /* Size the VS viewport to "viewport minus the chrome": 48px navbar +
-   ~56px of .filters-container chrome (12px top/bottom padding +
-   button-toggle group with its 12px bottom margin). The library's
-   VirtualScrollViewportDirective overrides this inline at runtime,
-   but our CSS provides the baseline so initial render is correct. */
+   ~88px of .filters-container chrome (12px top/bottom padding + the
+   controls row holding the data-source select and the Summary/Lines
+   toggle). The library's VirtualScrollViewportDirective overrides this
+   inline at runtime, but our CSS provides the baseline so initial
+   render is correct. */
 .tb-virtual-scroll-viewport {
-  height: calc(100vh - 48px - 56px) !important;
+  height: calc(100vh - 48px - 88px) !important;
 }
 
 /* Clip mat-elevation shadow that leaks past the routed component's
@@ -18,8 +19,20 @@ table-builder-oodle-example {
   padding: 12px 16px;
 }
 
-.filters-container mat-button-toggle-group {
+/* Controls row: data-source dropdown + Summary/Lines toggle + repro button. */
+.oodle-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
   margin-bottom: 12px;
+}
+
+.oodle-controls .dataset-select {
+  width: 240px;
+}
+
+.oodle-controls .flex-spacer {
+  flex: 1 1 auto;
 }
 
 .chargeback-table-container {
@@ -71,29 +84,48 @@ table-builder-oodle-example {
   font-size: 13px;
 }
 
+/* Numeric / short columns centered. */
 .chargeback-table .mat-column-id,
-.chargeback-table .mat-column-eventYear {
+.chargeback-table .mat-column-eventYear,
+.chargeback-table .mat-column-filmYear,
+.chargeback-table .mat-column-releaseYear {
   justify-content: center;
   text-align: center;
 }
 
-.chargeback-table .mat-column-presidentName {
+/* Primary name column: bold and emphasized (one per dataset). */
+.chargeback-table .mat-column-presidentName,
+.chargeback-table .mat-column-monsterName,
+.chargeback-table .mat-column-languageName {
   color: #0f3d5e;
   font-weight: 700;
 }
 
+/* Secondary categorical columns: muted, semi-bold. */
 .chargeback-table .mat-column-party,
 .chargeback-table .mat-column-vicePresident,
-.chargeback-table .mat-column-policyArea {
+.chargeback-table .mat-column-policyArea,
+.chargeback-table .mat-column-creatureType,
+.chargeback-table .mat-column-paradigm,
+.chargeback-table .mat-column-typing,
+.chargeback-table .mat-column-role {
   color: #44546a;
   font-weight: 600;
 }
 
+/* Free-text columns: allow wrapping for readability. */
 .chargeback-table .mat-column-birthplace,
 .chargeback-table .mat-column-priorOffice,
 .chargeback-table .mat-column-notes,
 .chargeback-table .mat-column-eventName,
-.chargeback-table .mat-column-description {
+.chargeback-table .mat-column-description,
+.chargeback-table .mat-column-originFilm,
+.chargeback-table .mat-column-weakness,
+.chargeback-table .mat-column-lore,
+.chargeback-table .mat-column-filmTitle,
+.chargeback-table .mat-column-designer,
+.chargeback-table .mat-column-about,
+.chargeback-table .mat-column-version {
   line-height: 1.35;
   white-space: normal;
 }

@@ -1,98 +1,121 @@
 <div class="page rounded-card mat-elevation-z1">
   <div appearance="outlined" class="rounded-card search-card filters-container">
-    <mat-button-toggle-group [value]="isLinesView ? 'lines' : 'summary'" (change)="isLinesView = $event.value === 'lines'">
-      <mat-button-toggle value="summary">Summary</mat-button-toggle>
-      <mat-button-toggle value="lines">Lines</mat-button-toggle>
-    </mat-button-toggle-group>
 
-    <!-- Without Lines View -->
-    @if (!isLinesView) {
-      <div class="chargeback-table-container mat-elevation-z2 rounded-card">
-        <tb-table-container isVs [offset]="100" [tableBuilder]="tableBuilder" tableId="chargebacks" class="chargeback-table">
-          <ng-container customCell="notes" matColumnDef="notes">
-            <mat-cell *matCellDef="let element = element">
-              <span>{{ element.notes || "-" }}</span>
-              <span class="flex-spacer"></span>
-              <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-button-mover">
-                <mat-icon color="primary">more_vert</mat-icon>
-              </button>
-              <mat-menu #menu="matMenu">
-                <button mat-menu-item>
-                  <mat-icon color="primary">receipt_long</mat-icon>
-                  <span>View Profile</span>
-                </button>
-                <button mat-menu-item>
-                  <span>Compare Term</span>
-                </button>
-                <button mat-menu-item>
-                  <span>Open Timeline</span>
-                </button>
-                <button mat-menu-item>
-                  <mat-icon color="primary">send</mat-icon>
-                  <span>Share Record</span>
-                </button>
-                <button mat-menu-item>
-                  <mat-icon color="primary">edit</mat-icon>
-                  <span>Edit Notes</span>
-                </button>
-                <button mat-menu-item>
-                  <mat-icon color="warn">email</mat-icon>
-                  <span>Email Summary</span>
-                </button>
-                <button mat-menu-item>
-                  <mat-icon color="warn">delete_forever</mat-icon>
-                  <span>Archive</span>
-                </button>
-                <button mat-menu-item>
-                  <mat-icon color="primary">picture_as_pdf</mat-icon>
-                  <span>View Brief</span>
-                </button>
-              </mat-menu>
-            </mat-cell>
-          </ng-container>
-        </tb-table-container>
-      </div>
-    }
+    <div class="oodle-controls">
+      <mat-form-field appearance="outline" class="dataset-select" subscriptSizing="dynamic">
+        <mat-label>Data source</mat-label>
+        <mat-select [(value)]="selectedDataset">
+          @for (opt of datasetOptions; track opt.key) {
+            <mat-option [value]="opt.key">{{ opt.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
 
-    <!-- With Lines View -->
-    @if (isLinesView) {
-      <div class="chargeback-table-container mat-elevation-z2 rounded-card">
-        <tb-table-container isVs [offset]="100" [tableBuilder]="tableBuilderWithLines" tableId="chargebacksWithLines" class="chargeback-table">
-        <ng-container customCell="eventName" matColumnDef="eventName">
-          <mat-cell *matCellDef="let element = element">
-            {{ element.eventName }}
-            <span class="flex-spacer"></span>
-            <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-button-mover">
-              <mat-icon color="primary">more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu">
-              <button mat-menu-item>
-                <mat-icon color="primary">receipt_long</mat-icon>
-                <span>View Initiative</span>
-              </button>
-              <button mat-menu-item>
-                <span>Compare Year</span>
-              </button>
-              <button mat-menu-item>
-                <mat-icon color="primary">send</mat-icon>
-                <span>Share Record</span>
-              </button>
-              <button mat-menu-item>
-                <mat-icon color="primary">edit</mat-icon>
-                <span>Edit Notes</span>
-              </button>
-              <button mat-menu-item>
-                <mat-icon color="primary">picture_as_pdf</mat-icon>
-                <span>View Brief</span>
-              </button>
-              <button mat-menu-item>
-                <span>Archive</span>
-              </button>
-            </mat-menu>
-          </mat-cell>
-        </ng-container>
-      </tb-table-container>
+      <mat-button-toggle-group [value]="isLinesView ? 'lines' : 'summary'" (change)="isLinesView = $event.value === 'lines'">
+        <mat-button-toggle value="summary">Summary</mat-button-toggle>
+        <mat-button-toggle value="lines">Lines</mat-button-toggle>
+      </mat-button-toggle-group>
+
+      <span class="flex-spacer"></span>
+
+      <!-- Repro: applies a multi-value comma-separated search to exercise the
+           filter chip collapse and verify it never covers the 3-dot export menu. -->
+      <button mat-stroked-button type="button" (click)="addManyValueSearch()">
+        Add many-value search (repro)
+      </button>
     </div>
-  }
-</div>
+
+    @switch (selectedDataset) {
+
+      <!-- ============================ U.S. PRESIDENTS ============================ -->
+      @case ('presidents') {
+        @if (!isLinesView) {
+          <div class="chargeback-table-container mat-elevation-z2 rounded-card">
+            <tb-table-container isVs [offset]="100" [tableBuilder]="datasets.presidents.summary" tableId="presidents-summary" class="chargeback-table">
+              <ng-container customCell="notes" matColumnDef="notes">
+                <mat-cell *matCellDef="let element = element">
+                  <span>{{ element.notes || "-" }}</span>
+                  <span class="flex-spacer"></span>
+                  <button mat-icon-button [matMenuTriggerFor]="presidentMenu" class="menu-button-mover">
+                    <mat-icon color="primary">more_vert</mat-icon>
+                  </button>
+                  <mat-menu #presidentMenu="matMenu">
+                    <button mat-menu-item><mat-icon color="primary">person</mat-icon><span>View Profile</span></button>
+                    <button mat-menu-item><mat-icon color="primary">history</mat-icon><span>Open Timeline</span></button>
+                    <button mat-menu-item><mat-icon color="primary">send</mat-icon><span>Share Record</span></button>
+                    <button mat-menu-item><mat-icon color="primary">edit</mat-icon><span>Edit Notes</span></button>
+                    <button mat-menu-item><mat-icon color="warn">archive</mat-icon><span>Archive</span></button>
+                  </mat-menu>
+                </mat-cell>
+              </ng-container>
+            </tb-table-container>
+          </div>
+        } @else {
+          <div class="chargeback-table-container mat-elevation-z2 rounded-card">
+            <tb-table-container isVs [offset]="100" [tableBuilder]="datasets.presidents.lines" tableId="presidents-lines" class="chargeback-table"></tb-table-container>
+          </div>
+        }
+      }
+
+      <!-- ============================ MOVIE MONSTERS ============================ -->
+      @case ('monsters') {
+        @if (!isLinesView) {
+          <div class="chargeback-table-container mat-elevation-z2 rounded-card">
+            <tb-table-container isVs [offset]="100" [tableBuilder]="datasets.monsters.summary" tableId="monsters-summary" class="chargeback-table">
+              <ng-container customCell="lore" matColumnDef="lore">
+                <mat-cell *matCellDef="let element = element">
+                  <span>{{ element.lore || "-" }}</span>
+                  <span class="flex-spacer"></span>
+                  <button mat-icon-button [matMenuTriggerFor]="monsterMenu" class="menu-button-mover">
+                    <mat-icon color="primary">more_vert</mat-icon>
+                  </button>
+                  <mat-menu #monsterMenu="matMenu">
+                    <button mat-menu-item><mat-icon color="primary">menu_book</mat-icon><span>View Bestiary</span></button>
+                    <button mat-menu-item><mat-icon color="primary">play_circle</mat-icon><span>Watch Trailer</span></button>
+                    <button mat-menu-item><mat-icon color="warn">local_fire_department</mat-icon><span>Summon</span></button>
+                    <button mat-menu-item><mat-icon color="primary">shield</mat-icon><span>Banish</span></button>
+                    <button mat-menu-item><mat-icon color="warn">archive</mat-icon><span>Archive</span></button>
+                  </mat-menu>
+                </mat-cell>
+              </ng-container>
+            </tb-table-container>
+          </div>
+        } @else {
+          <div class="chargeback-table-container mat-elevation-z2 rounded-card">
+            <tb-table-container isVs [offset]="100" [tableBuilder]="datasets.monsters.lines" tableId="monsters-lines" class="chargeback-table"></tb-table-container>
+          </div>
+        }
+      }
+
+      <!-- ========================= PROGRAMMING LANGUAGES ========================= -->
+      @case ('languages') {
+        @if (!isLinesView) {
+          <div class="chargeback-table-container mat-elevation-z2 rounded-card">
+            <tb-table-container isVs [offset]="100" [tableBuilder]="datasets.languages.summary" tableId="languages-summary" class="chargeback-table">
+              <ng-container customCell="about" matColumnDef="about">
+                <mat-cell *matCellDef="let element = element">
+                  <span>{{ element.about || "-" }}</span>
+                  <span class="flex-spacer"></span>
+                  <button mat-icon-button [matMenuTriggerFor]="languageMenu" class="menu-button-mover">
+                    <mat-icon color="primary">more_vert</mat-icon>
+                  </button>
+                  <mat-menu #languageMenu="matMenu">
+                    <button mat-menu-item><mat-icon color="primary">description</mat-icon><span>View Docs</span></button>
+                    <button mat-menu-item><mat-icon color="primary">terminal</mat-icon><span>Open REPL</span></button>
+                    <button mat-menu-item><mat-icon color="primary">star</mat-icon><span>Star Repo</span></button>
+                    <button mat-menu-item><mat-icon color="primary">content_copy</mat-icon><span>Copy Snippet</span></button>
+                    <button mat-menu-item><mat-icon color="warn">archive</mat-icon><span>Archive</span></button>
+                  </mat-menu>
+                </mat-cell>
+              </ng-container>
+            </tb-table-container>
+          </div>
+        } @else {
+          <div class="chargeback-table-container mat-elevation-z2 rounded-card">
+            <tb-table-container isVs [offset]="100" [tableBuilder]="datasets.languages.lines" tableId="languages-lines" class="chargeback-table"></tb-table-container>
+          </div>
+        }
+      }
+    }
+  </div>
 </div>
