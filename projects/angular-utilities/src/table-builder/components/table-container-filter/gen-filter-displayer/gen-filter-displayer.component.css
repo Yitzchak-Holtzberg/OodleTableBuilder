@@ -108,9 +108,9 @@
 
 /* Expanded value list floats out of the header as a vertical menu popover
    anchored under the chip. It overflows the container and layers above the table
-   below, so the chip stays a compact pill. The card is a fixed padded frame; an
-   inner element does the scrolling so the scrollbar stays inset from the rounded
-   corners instead of running flush past them. */
+   below, so the chip stays a compact pill. The card clips its scrolling content
+   to the rounded shape (overflow:hidden) so the scrollbar hugs the rounded right
+   edge like a normal dropdown — no padding gap floating around it. */
 .fp-pill-overflow {
   position: absolute;
   top: calc(100% + 6px);
@@ -118,26 +118,29 @@
   z-index: 102;
   box-sizing: border-box;
   width: 240px;
-  padding: 6px;
   background: var(--mat-sys-surface, #fff);
   border: 1px solid color-mix(in srgb, var(--mat-sys-primary, #006a6a) 25%, transparent);
   border-radius: 12px;
+  overflow: hidden;
   box-shadow: 0 6px 20px -6px color-mix(in srgb, var(--mat-sys-primary, #006a6a) 35%, transparent);
 }
 
-/* Inner scroller — height-capped so a long list scrolls within the card. */
+/* Inner scroller — height-capped so a long list scrolls within the card. Vertical
+   padding keeps the first/last rows off the rounded corners; the scrollbar sits at
+   the card's right edge. */
 .fp-menu-scroll {
   display: flex;
   flex-direction: column;
   gap: 1px;
-  max-height: 204px; /* ~card cap minus padding; then scroll within */
+  max-height: 210px; /* then scroll within */
+  padding: 4px 0;
   overflow-x: hidden; /* never scroll sideways — long values ellipsize instead */
   overflow-y: auto;
   overscroll-behavior: contain;
 }
 
 /* Inside the popover the values read as full-width menu rows — value on the left,
-   remove ✕ on the right — rather than teal pills. */
+   remove ✕ on the right — rather than teal pills. Full-bleed hover, even padding. */
 .fp-pill-overflow .filter-value-pill {
   box-sizing: border-box;
   width: 100%;
@@ -145,8 +148,8 @@
   justify-content: space-between;
   gap: 10px;
   margin: 0;
-  padding: 6px 8px 6px 10px;
-  border-radius: 8px;
+  padding: 6px 12px;
+  border-radius: 0;
   background: transparent;
   color: var(--mat-sys-on-surface, #1d1b1e);
   font-weight: 500;
@@ -216,9 +219,9 @@
   background: var(--mat-sys-surface, #fff);
 }
 
-/* While a row is being edited, drop the row's chrome so the input shows in full. */
+/* While a row is being edited, slim the row's chrome so the input shows in full. */
 .filter-value-pill:has(.fp-edit-input-row) {
-  padding: 0;
+  padding: 2px 8px;
   overflow: visible;
   background: transparent;
 }
